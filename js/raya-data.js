@@ -56,5 +56,11 @@ const RAYA_PHOTOS = [
     "date": "2025-12-13",
     "caption": "Weihnachten",
     "src": "assets/raya/1785965170534-P1040411optimiert.jpg"
+  },
+  {
+    "id": "88bd4ebf-09f4-429a-b0f3-6545d851b14a",
+    "date": "2025-12-13",
+    "caption": "Weihnachten",
+    "src": "assets/raya/1785965236446-P1040535optimiert.jpg"
   }
 ];
