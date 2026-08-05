@@ -238,19 +238,16 @@ body {
   margin: 0 0 1.2rem;
 }
 #td-embeds {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: .9rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: start;
+  gap: 1rem;
 }
-@media (min-width: 640px) {
-  #td-embeds { flex-wrap: nowrap; }
+#td-embeds .embed-block:only-child { grid-column: 1 / -1; }
+@media (max-width: 560px) {
+  #td-embeds { grid-template-columns: 1fr; }
 }
-.embed-block {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 100%;
-}
+.embed-block { min-width: 0; }
 .embed-label {
   font-family: "IBM Plex Mono", monospace;
   font-size: .68rem;
