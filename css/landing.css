@@ -426,6 +426,22 @@ body { background: var(--hero-bg); }
 }
 .story-cycling .chip-value { font-family: "IBM Plex Mono", monospace; color: var(--cycling-moss); font-weight: 600; }
 
+.story-strava-widget { margin: 0 0 1.6rem; }
+.story-strava-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .7rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--cycling-moss);
+  margin: 0 0 .6rem;
+}
+.story-strava-widget iframe {
+  display: block;
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--cycling-line);
+}
+
 /* ---------- Raya-Kapitel ---------- */
 .story-raya {
   background: var(--raya-paper);
