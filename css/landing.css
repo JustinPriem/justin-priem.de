@@ -30,25 +30,6 @@
 
 body { background: var(--hero-bg); }
 
-/* ---------- Cursor-Glow (folgt der Maus, Farbe je Kapitel) ---------- */
-.cursor-glow {
-  position: fixed;
-  top: 0; left: 0;
-  width: 460px; height: 460px;
-  margin-left: -230px; margin-top: -230px;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--glow-color, #33E7FF) 60%, transparent) 0%, transparent 72%);
-  pointer-events: none;
-  z-index: 40;
-  opacity: 0;
-  transition: opacity .5s ease, background .6s ease;
-  will-change: transform;
-}
-.cursor-glow.is-active { opacity: .55; }
-@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
-  .cursor-glow { display: none; }
-}
-
 /* ---------- Quicknav ---------- */
 .quicknav {
   position: fixed;
@@ -186,11 +167,14 @@ body { background: var(--hero-bg); }
 .story-stats { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
 .story-stats > div { display: flex; flex-direction: column; }
 .story-cta {
-  display: inline-flex; align-items: center; gap: .4rem;
+  display: inline-flex; align-items: center; gap: .5rem;
   margin-top: 2rem;
   font-weight: 600;
-  font-size: .95rem;
-  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  font-size: .9rem;
+  padding: .85rem 1.6rem;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1), background-color .25s ease, border-color .25s ease, box-shadow .25s ease, color .25s ease;
 }
 .story-cta i { font-style: normal; transition: transform .25s ease; }
 .story-cta:hover i { transform: translateX(4px); }
@@ -347,7 +331,15 @@ body { background: var(--hero-bg); }
   text-shadow: 0 0 16px rgba(51,231,255,.35);
 }
 .story-gaming .label { font-family: "JetBrains Mono", monospace; font-size: .7rem; color: var(--gaming-dim); }
-.story-gaming .story-cta { color: var(--gaming-text); }
+.story-gaming .story-cta {
+  color: var(--gaming-cyan);
+  border-color: var(--gaming-cyan);
+  background: rgba(51,231,255,.08);
+}
+.story-gaming .story-cta:hover {
+  background: rgba(51,231,255,.18);
+  box-shadow: 0 10px 26px -12px var(--gaming-cyan);
+}
 
 .story-chips { display: flex; flex-wrap: wrap; gap: .6rem; }
 .story-gaming .chip {
@@ -408,7 +400,16 @@ body { background: var(--hero-bg); }
   font-variant-numeric: tabular-nums;
 }
 .story-cycling .label { font-size: .74rem; color: var(--cycling-dim); }
-.story-cycling .story-cta { color: var(--cycling-ink); }
+.story-cycling .story-cta {
+  color: #fff;
+  border-color: var(--cycling-clay);
+  background: var(--cycling-clay);
+}
+.story-cycling .story-cta:hover {
+  background: #B94815;
+  border-color: #B94815;
+  box-shadow: 0 12px 26px -12px var(--cycling-clay);
+}
 
 .story-cycling .chip {
   display: inline-flex; align-items: center; gap: .6rem;
@@ -467,22 +468,22 @@ body { background: var(--hero-bg); }
   100% { transform: translateY(-260px) scale(1.1); opacity: 0; }
 }
 
-/* Pfötchen-Spur, die der Maus folgt (nur hier, per JS erzeugt) */
-.paw-print {
+/* Themen-Spur, die der Maus in jedem Kapitel folgt (per JS erzeugt, Symbol je Kapitel) */
+.cursor-trail-mark {
   position: absolute;
   z-index: 6;
   font-size: 1rem;
   opacity: .55;
   pointer-events: none;
   transform: translate(-50%, -50%) scaleX(var(--flip, 1)) rotate(var(--rot, 0deg));
-  animation: paw-fade .7s ease-out forwards;
+  animation: trail-fade .7s ease-out forwards;
 }
-@keyframes paw-fade {
+@keyframes trail-fade {
   from { opacity: .55; transform: translate(-50%, -50%) scaleX(var(--flip, 1)) rotate(var(--rot, 0deg)) scale(1); }
   to   { opacity: 0; transform: translate(-50%, -50%) scaleX(var(--flip, 1)) rotate(var(--rot, 0deg)) scale(.6) translateY(-8px); }
 }
 @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
-  .paw-print { display: none; }
+  .cursor-trail-mark { display: none; }
 }
 
 .story-raya .story-inner { display: flex; flex-direction: column; align-items: center; }
@@ -498,7 +499,16 @@ body { background: var(--hero-bg); }
   font-variant-numeric: tabular-nums;
 }
 .story-raya .label { font-size: .74rem; color: var(--raya-dim); text-transform: uppercase; letter-spacing: .04em; }
-.story-raya .story-cta { color: var(--raya-ink); }
+.story-raya .story-cta {
+  color: var(--raya-ink);
+  border-color: var(--raya-blush);
+  background: #fff;
+}
+.story-raya .story-cta:hover {
+  background: var(--raya-blush);
+  color: #fff;
+  box-shadow: 0 12px 24px -12px var(--raya-blush);
+}
 
 .story-photo-preview { display: flex; gap: .8rem; margin: 1.6rem 0; }
 .preview-tile {
