@@ -23,9 +23,9 @@ const RAYA_PHOTOS = [
   },
   {
     "id": "r3",
-    "src": "",
-    "date": "2024-07-09",
-    "caption": "Abkühlung am See"
+    "date": "2022-11-06",
+    "caption": "Neu bei uns",
+    "src": "assets/raya/1785965336042-IMG-20221106-WA0005optimiert.jpg"
   },
   {
     "id": "r5",
