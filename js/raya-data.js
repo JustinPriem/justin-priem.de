@@ -41,9 +41,9 @@ const RAYA_PHOTOS = [
   },
   {
     "id": "r6",
-    "src": "",
-    "date": "2025-02-14",
-    "caption": ""
+    "date": "2025-12-13",
+    "caption": "Weihnachten",
+    "src": "assets/raya/1785965213849-P1040557optimiert.jpg"
   },
   {
     "id": "r7",
