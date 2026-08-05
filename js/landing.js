@@ -84,8 +84,16 @@ function animateCount(el) {
 
 // ---------- Scroll-Story: Reveal, Zähler, Quicknav-Theme ----------
 
+const THEME_GLOW_COLORS = {
+  hero: "#33E7FF",
+  gaming: "#33E7FF",
+  cycling: "#D45A22",
+  raya: "#C98572",
+};
+
 function setupScrollStory() {
   const nav = document.getElementById("quicknav");
+  const glow = document.getElementById("cursor-glow");
   const sections = document.querySelectorAll(".story");
   const navLinks = document.querySelectorAll(".qn-links a");
 
@@ -98,6 +106,7 @@ function setupScrollStory() {
         navLinks.forEach((link) =>
           link.classList.toggle("is-active", link.dataset.section === theme)
         );
+        if (glow) glow.style.setProperty("--glow-color", THEME_GLOW_COLORS[theme] || "#33E7FF");
       });
     },
     { threshold: 0.55 }
@@ -110,6 +119,7 @@ function setupScrollStory() {
         if (!entry.isIntersecting) return;
         const inner = entry.target;
         inner.classList.add("is-visible");
+        inner.closest(".story")?.classList.add("is-visible");
         inner.querySelectorAll("[data-count]").forEach(animateCount);
         revealObserver.unobserve(inner);
       });
@@ -185,6 +195,88 @@ function setupParallax() {
   window.addEventListener("resize", update);
 }
 
+// ---------- Cursor-Glow: folgt der Maus, Farbe kommt aus setupScrollStory ----------
+
+const hasFineCursor = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+function setupCursorGlow() {
+  if (prefersReducedMotion || !hasFineCursor) return;
+  const glow = document.getElementById("cursor-glow");
+  if (!glow) return;
+
+  let raf = null;
+  window.addEventListener(
+    "mousemove",
+    (e) => {
+      glow.classList.add("is-active");
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        glow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+        raf = null;
+      });
+    },
+    { passive: true }
+  );
+  document.documentElement.addEventListener("mouseleave", () => glow.classList.remove("is-active"));
+}
+
+// ---------- Magnetische Buttons: CTA & Chips ziehen sich leicht zum Cursor ----------
+
+function setupMagnetic(selector, strength, maxOffset, lift) {
+  if (prefersReducedMotion || !hasFineCursor) return;
+
+  document.body.addEventListener("mouseover", (e) => {
+    const el = e.target.closest(selector);
+    if (!el || el.dataset.magnetBound) return;
+    el.dataset.magnetBound = "true";
+
+    el.addEventListener("mousemove", (ev) => {
+      const rect = el.getBoundingClientRect();
+      const relX = ev.clientX - (rect.left + rect.width / 2);
+      const relY = ev.clientY - (rect.top + rect.height / 2);
+      const x = Math.max(-maxOffset, Math.min(maxOffset, relX * strength));
+      const y = Math.max(-maxOffset, Math.min(maxOffset, relY * strength)) - lift;
+      el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+    });
+    el.addEventListener("mouseleave", () => {
+      el.style.transform = "";
+    });
+  });
+}
+
+// ---------- Pfötchen-Spur, nur im Raya-Kapitel ----------
+
+function setupPawTrail() {
+  if (prefersReducedMotion || !hasFineCursor) return;
+  const section = document.getElementById("raya");
+  if (!section) return;
+
+  let lastSpawn = 0;
+  let flip = 1;
+
+  section.addEventListener(
+    "mousemove",
+    (e) => {
+      const now = performance.now();
+      if (now - lastSpawn < 150) return;
+      lastSpawn = now;
+      flip *= -1;
+
+      const rect = section.getBoundingClientRect();
+      const paw = document.createElement("span");
+      paw.className = "paw-print";
+      paw.textContent = "🐾";
+      paw.style.left = `${e.clientX - rect.left}px`;
+      paw.style.top = `${e.clientY - rect.top}px`;
+      paw.style.setProperty("--flip", flip);
+      paw.style.setProperty("--rot", `${(Math.random() * 20 - 10).toFixed(1)}deg`);
+      section.appendChild(paw);
+      paw.addEventListener("animationend", () => paw.remove());
+    },
+    { passive: true }
+  );
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   fillGamingTeaser(GAMES);
   fillCyclingTeaser(TOURS);
@@ -192,4 +284,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupScrollStory();
   setupProgressBar();
   setupParallax();
+  setupCursorGlow();
+  setupMagnetic(".story-cta", 0.3, 10, 3);
+  setupMagnetic(".chip", 0.25, 6, 2);
+  setupPawTrail();
 });

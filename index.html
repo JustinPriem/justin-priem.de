@@ -13,6 +13,8 @@
 </head>
 <body>
 
+<div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+
 <nav class="quicknav" id="quicknav" aria-label="Schnellzugriff">
   <a class="qn-logo" href="#hero">Justin Priem</a>
   <div class="qn-links">
@@ -40,6 +42,7 @@
     <div class="story-bg" aria-hidden="true"></div>
     <div class="story-scanlines" aria-hidden="true"></div>
     <div class="story-inner">
+      <p class="hud-status" aria-hidden="true"><span class="hud-dot"></span>SYSTEM ONLINE // STATS GELADEN<span class="hud-cursor">▌</span></p>
       <p class="story-eyebrow">01 — Loading Screen</p>
       <h2>Gaming</h2>
       <p class="story-text">Meine Gaming History: jedes Spiel, das einen Save-State hinterlassen hat — mit Spielzeit, Rang und ein paar Highlights.</p>
@@ -53,7 +56,9 @@
 
   <section id="cycling" class="story story-cycling" data-theme="cycling">
     <div class="story-bg" aria-hidden="true"></div>
-    <div class="story-road" aria-hidden="true"></div>
+    <svg class="story-road" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
+      <path pathLength="1" d="M-10,90 C70,20 130,110 210,55 S350,10 410,50" />
+    </svg>
     <div class="story-inner">
       <p class="story-eyebrow">02 — Auf der Strecke</p>
       <h2>Radfahren</h2>
@@ -68,6 +73,13 @@
 
   <section id="raya" class="story story-raya" data-theme="raya">
     <div class="story-bg" aria-hidden="true"></div>
+    <div class="heart-field" aria-hidden="true">
+      <span class="heart hf-1">🤍</span>
+      <span class="heart hf-2">✨</span>
+      <span class="heart hf-3">🤍</span>
+      <span class="heart hf-4">✨</span>
+      <span class="heart hf-5">🤍</span>
+    </div>
     <div class="story-inner">
       <p class="story-eyebrow">03 — Gute Hündin</p>
       <h2>Raya</h2>
