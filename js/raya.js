@@ -11,7 +11,7 @@ function photoTemplate(photo) {
        </div>`;
 
   return `
-  <figure class="photo-card">
+  <figure class="photo-card"${photo.src ? ` data-src="${photo.src}" data-caption="${(photo.caption || "").replace(/"/g, "&quot;")}" tabindex="0" role="button" aria-label="Foto vergrößern"` : ""}>
     ${media}
     <figcaption>
       <span class="photo-date">${formatDate(photo.date)}</span>
@@ -22,6 +22,51 @@ function photoTemplate(photo) {
 
 function render(photos) {
   document.getElementById("raya-grid").innerHTML = photos.map(photoTemplate).join("");
+}
+
+// ---------- Lightbox: Foto beim Antippen vergrößert anzeigen ----------
+
+function setupLightbox() {
+  const lightbox = document.getElementById("lightbox");
+  const img = document.getElementById("lightbox-img");
+  const caption = document.getElementById("lightbox-caption");
+  const closeBtn = document.getElementById("lightbox-close");
+
+  function open(src, captionText) {
+    img.src = src;
+    img.alt = captionText || "Foto von Raya";
+    caption.textContent = captionText || "";
+    lightbox.hidden = false;
+    document.body.style.overflow = "hidden";
+    closeBtn.focus();
+  }
+
+  function close() {
+    lightbox.hidden = true;
+    img.src = "";
+    document.body.style.overflow = "";
+  }
+
+  document.getElementById("raya-grid").addEventListener("click", (e) => {
+    const card = e.target.closest(".photo-card[data-src]");
+    if (!card) return;
+    open(card.dataset.src, card.dataset.caption);
+  });
+  document.getElementById("raya-grid").addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const card = e.target.closest(".photo-card[data-src]");
+    if (!card) return;
+    e.preventDefault();
+    open(card.dataset.src, card.dataset.caption);
+  });
+
+  closeBtn.addEventListener("click", close);
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !lightbox.hidden) close();
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -36,4 +81,5 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   sortSelect.addEventListener("change", apply);
   apply();
+  setupLightbox();
 });

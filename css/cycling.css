@@ -23,9 +23,30 @@ body {
 
 .cy-hero {
   position: relative;
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 6rem 1.6rem 2.5rem;
+  display: flex;
+  gap: 2.4rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.cy-hero-main { flex: 1 1 380px; min-width: 0; }
+.cy-hero-widget { flex: 0 0 auto; }
+.cy-strava-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .7rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin: 0 0 .6rem;
+}
+.cy-hero-widget iframe {
+  display: block;
+  max-width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--line);
 }
 .cy-hero-line {
   width: 100%; height: 40px;
@@ -246,12 +267,9 @@ body {
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--paper-soft);
-  max-height: 320px;
 }
-.embed-media iframe { width: 100%; height: 100%; border: none; display: block; }
-.embed-media--komoot iframe { height: 320px; }
+.embed-media iframe { width: 100%; border: none; display: block; }
 .embed-media--strava { padding: .15rem; }
-.embed-media--strava iframe { max-height: 320px; }
 
 .td-embeds-empty {
   padding: 1.6rem;
