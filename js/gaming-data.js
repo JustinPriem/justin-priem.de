@@ -60,12 +60,12 @@ const GAMES = [
     "title": "Apex Legends",
     "genre": "Battle Royal",
     "status": "retired",
-    "hours": 2000,
+    "hours": 2045,
     "since": "",
     "rank": "Master",
     "rankPct": 90,
     "accent": "#ff0000",
-    "highlight": "Mein höchster Rang in Apex Legends.",
+    "highlight": "Einer meiner absoluten Lieblingsspiele - 1968 Spielstunden über EA, weiter laufend auf Steam. Ich war mehrere Seasons Master.",
     "cover": "assets/games/1785960721930-apex-rank.png"
   }
 ];
