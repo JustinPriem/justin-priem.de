@@ -54,6 +54,16 @@ const TOURS = [
         "type": "strava",
         "label": "Tag 1",
         "code": "<div class=\"strava-embed-placeholder\" data-embed-type=\"activity\" data-embed-id=\"18693817681\" data-style=\"standard\" data-from-embed=\"false\" data-token=\"KvyYK0dCEliFFD0oJT710swkuT1DAvnxup3VQWj2oCU\"></div>"
+      },
+      {
+        "type": "strava",
+        "label": "Tag 2",
+        "code": "<div class=\"strava-embed-placeholder\" data-embed-type=\"activity\" data-embed-id=\"18781711374\" data-style=\"standard\" data-from-embed=\"false\" data-token=\"MUSrJKOBW_fuGJwsgttbKNXmjcfu37q1aueC28EOzxo\"></div>"
+      },
+      {
+        "type": "strava",
+        "label": "Tag 3",
+        "code": "<div class=\"strava-embed-placeholder\" data-embed-type=\"activity\" data-embed-id=\"18723116349\" data-style=\"standard\" data-from-embed=\"false\" data-token=\"g_cH0X_7i1CC8kwMdLqWRGfZNx2FNsbtxGTEtTP4jsY\"></div>"
       }
     ]
   },
