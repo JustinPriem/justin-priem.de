@@ -33,7 +33,18 @@ const TOURS = [
     "description": "Mehrtägige Tour über die Grenze bis in die tschechische Hauptstadt. Eigentlich war Camping geplant, aber wir haben dann doch bei Vincenzo übernachtet, da wir am ersten Tag viel zu lang unterwegs waren.",
     "stravaUrl": "https://www.strava.com/activities/15262735608",
     "komootUrl": "https://www.komoot.com/de-de/tour/2444066877",
-    "embeds": []
+    "embeds": [
+      {
+        "type": "strava",
+        "label": "Tag 1",
+        "code": "<div class=\"strava-embed-placeholder\" data-embed-type=\"activity\" data-embed-id=\"15262735608\" data-style=\"standard\" data-from-embed=\"false\" data-token=\"QDMWjLrTFt8Ch598gYbmjIgmkvuGSjABbOGuRwmfct0\"></div>"
+      },
+      {
+        "type": "strava",
+        "label": "Tag 2",
+        "code": "<div class=\"strava-embed-placeholder\" data-embed-type=\"activity\" data-embed-id=\"15245411532\" data-style=\"standard\" data-from-embed=\"false\" data-token=\"Fnkp8MYEtboHl9paow2l2hBRT2NQdr4IvGHZVLDee-o\"></div>"
+      }
+    ]
   },
   {
     "id": "amsterdam",
