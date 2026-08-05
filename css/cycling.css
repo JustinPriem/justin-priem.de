@@ -1,0 +1,174 @@
+:root {
+  --paper: #F6F3EC;
+  --paper-soft: #EFEADF;
+  --ink: #232922;
+  --ink-dim: #767065;
+  --clay: #D45A22;
+  --moss: #5C7A52;
+  --line: #DAD3C2;
+  --footer-line: #DAD3C2;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+}
+
+.back-link {
+  position: absolute; top: 1.6rem; left: 1.6rem; z-index: 10;
+  font-size: .82rem; color: var(--ink-dim);
+}
+.back-link:hover { color: var(--clay); }
+
+.cy-hero {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 6rem 1.6rem 2.5rem;
+}
+.cy-hero-line {
+  width: 100%; height: 40px;
+  stroke: var(--clay);
+  stroke-width: 2;
+  fill: none;
+  margin-bottom: 1.6rem;
+  opacity: .8;
+}
+.cy-eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin: 0 0 .8rem;
+}
+.cy-hero h1 {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  margin: 0 0 1rem;
+  letter-spacing: -.01em;
+}
+.cy-lede {
+  color: var(--ink-dim);
+  max-width: 560px;
+  line-height: 1.6;
+  margin: 0 0 2.2rem;
+}
+.cy-stats { display: flex; gap: 2.2rem; flex-wrap: wrap; }
+.cy-stat { display: flex; flex-direction: column; }
+.cy-stat .value {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--clay);
+}
+.cy-stat .label { font-size: .74rem; color: var(--ink-dim); letter-spacing: .03em; }
+
+.cy-main { max-width: 1160px; margin: 0 auto; padding: 0 1.6rem 4rem; }
+
+.cy-controls {
+  display: flex; gap: .6rem; flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.3rem;
+  margin-bottom: 1.8rem;
+}
+.cy-filter {
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  border-radius: 999px;
+  padding: .45rem 1rem;
+  font-size: .82rem;
+  transition: all .2s ease;
+}
+.cy-filter.is-active, .cy-filter:hover {
+  background: var(--moss);
+  border-color: var(--moss);
+  color: #fff;
+}
+
+.tour-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.4rem;
+}
+
+.tour-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.tour-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgba(35,41,34,.35); }
+
+.tour-cover {
+  position: relative;
+  height: 150px;
+  background: linear-gradient(135deg, var(--paper-soft), #fff);
+  display: flex; align-items: center; justify-content: center;
+  border-bottom: 1px solid var(--line);
+}
+.tour-cover img { width: 100%; height: 100%; object-fit: cover; }
+.route-spark { width: 82%; height: 60%; stroke: var(--clay); stroke-width: 2.4; fill: none; }
+.tour-type {
+  position: absolute; top: .6rem; right: .6rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .68rem;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+}
+
+.tour-body { padding: 1.2rem 1.3rem 1.4rem; }
+.tour-route {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .74rem;
+  color: var(--moss);
+  margin: 0 0 .3rem;
+}
+.tour-body h3 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.3rem;
+  margin: 0 0 .2rem;
+}
+.tour-date { font-size: .8rem; color: var(--ink-dim); margin: 0 0 1rem; }
+
+.tour-stats {
+  display: flex; gap: 1.4rem;
+  padding: .8rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1rem;
+}
+.tour-stats > div { display: flex; flex-direction: column; }
+.tour-stats .value {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.tour-stats .unit { font-size: .68rem; color: var(--ink-dim); }
+
+.tour-desc { font-size: .88rem; line-height: 1.55; color: var(--ink-dim); margin: 0 0 1rem; }
+
+.embed { width: 100%; border-radius: 10px; border: 1px solid var(--line); }
+.embed--empty {
+  height: 130px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem;
+  background: var(--paper-soft);
+  color: var(--ink-dim);
+  font-size: .78rem;
+  text-align: center;
+  padding: 1rem;
+}
+.embed-links { display: flex; gap: 1rem; }
+.embed-links a { color: var(--clay); font-weight: 600; font-size: .78rem; }
+.embed-links a:hover { text-decoration: underline; }
+
+/* Footer im Cycling-Look */
+.footer-name { color: var(--ink); font-family: "Space Grotesk", sans-serif; }
+.footer-tag, .social-link { color: var(--ink-dim); }
+.social-link:hover { color: var(--clay); border-color: var(--clay); }

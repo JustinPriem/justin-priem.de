@@ -1,0 +1,100 @@
+:root {
+  --paper: #FAF7F2;
+  --ink: #2B2A26;
+  --ink-dim: #8B8577;
+  --blush: #C98572;
+  --line: #E9E2D4;
+  --footer-line: #E9E2D4;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+}
+
+.back-link {
+  position: absolute; top: 1.6rem; left: 1.6rem; z-index: 10;
+  font-size: .82rem; color: var(--ink-dim);
+}
+.back-link:hover { color: var(--blush); }
+
+.ry-hero {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 6.5rem 1.6rem 3rem;
+  text-align: center;
+}
+.ry-eyebrow {
+  font-size: .8rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--blush);
+  margin: 0 0 1rem;
+}
+.ry-hero h1 {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2.8rem, 8vw, 4.6rem);
+  margin: 0 0 .9rem;
+}
+.ry-lede {
+  color: var(--ink-dim);
+  font-size: 1rem;
+}
+.ry-lede span { color: var(--ink); font-weight: 600; }
+
+.ry-main { max-width: 1100px; margin: 0 auto; padding: 0 1.6rem 4.5rem; }
+
+.ry-controls {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: .6rem;
+  margin-bottom: 1.6rem;
+}
+.ry-sort-label { font-size: .82rem; color: var(--ink-dim); }
+#raya-sort {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 8px;
+  padding: .4rem .6rem;
+  font-size: .82rem;
+  font-family: "Inter", sans-serif;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.3rem;
+}
+
+.photo-card {
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.photo-card:hover { transform: translateY(-3px); box-shadow: 0 16px 30px -20px rgba(43,42,38,.35); }
+
+.photo-card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; }
+.photo-placeholder {
+  width: 100%; aspect-ratio: 4/5;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #F1EBE0, #FAF7F2);
+  color: var(--blush);
+}
+.photo-placeholder svg { width: 40%; height: 40%; opacity: .55; }
+
+.photo-card figcaption {
+  padding: .8rem 1rem 1rem;
+  display: flex; flex-direction: column; gap: .2rem;
+}
+.photo-date { font-size: .72rem; letter-spacing: .04em; color: var(--ink-dim); text-transform: uppercase; }
+.photo-caption { font-size: .9rem; color: var(--ink); }
+
+.footer-name { color: var(--ink); font-family: "Fraunces", serif; font-style: italic; }
+.footer-tag, .social-link { color: var(--ink-dim); }
+.social-link:hover { color: var(--blush); border-color: var(--blush); }

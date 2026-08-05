@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raya — Justin Priem</title>
+<meta name="description" content="Ein Fotobuch von Raya, sortierbar nach Datum.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/raya.css">
+</head>
+<body>
+
+<a class="back-link" href="index.html">← justin-priem.de</a>
+
+<header class="ry-hero">
+  <p class="ry-eyebrow">Sehr gute Hündin</p>
+  <h1>Raya</h1>
+  <p class="ry-lede">Ein kleines Fotobuch — <span id="total-photos">0</span> Fotos und wachsend.</p>
+</header>
+
+<main class="ry-main">
+  <div class="ry-controls">
+    <label class="ry-sort-label" for="raya-sort">Sortieren</label>
+    <select id="raya-sort">
+      <option value="newest">Neueste zuerst</option>
+      <option value="oldest">Älteste zuerst</option>
+    </select>
+  </div>
+
+  <section class="photo-grid" id="raya-grid" aria-live="polite"></section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="js/socials.js"></script>
+<script src="js/raya-data.js"></script>
+<script src="js/raya.js"></script>
+</body>
+</html>
