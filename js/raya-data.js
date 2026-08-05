@@ -11,9 +11,9 @@
 const RAYA_PHOTOS = [
   {
     "id": "r1",
-    "src": "",
-    "date": "2024-03-02",
-    "caption": "Erster Spaziergang im Frühling"
+    "date": "2022-11-06",
+    "caption": "Neu bei uns",
+    "src": "assets/raya/1785965371697-IMG-20221106-WA0019optimiert.jpg"
   },
   {
     "id": "r2",
