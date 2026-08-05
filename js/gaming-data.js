@@ -19,15 +19,15 @@ const GAMES = [
   {
     "id": "warframe",
     "title": "Warframe",
-    "cover": "",
-    "accent": "#8FA6C2",
     "genre": "Looter-Shooter",
-    "status": "active",
-    "hours": 940,
-    "rank": "MR 24",
-    "rankPct": 85,
-    "since": "2019",
-    "highlight": "Über 900 Stunden im Origin System. Lieblings-Warframe hier ergänzen."
+    "status": "retired",
+    "hours": 1425,
+    "since": "2013",
+    "rank": "MR 25",
+    "rankPct": 100,
+    "accent": "#0049a3",
+    "highlight": "Die schönste Fantasie Welt die man erschaffen konnte. Es war schön sich darin zu vertiefen und die komplexen Systeme zu erkunden.",
+    "cover": "assets/games/1785961240376-warframe-rank.jpg"
   },
   {
     "id": "deltaforce",
