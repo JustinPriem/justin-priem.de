@@ -1,0 +1,234 @@
+:root {
+  --bg: #060810;
+  --panel: #0D1220;
+  --panel-line: rgba(51, 231, 255, .16);
+  --cyan: #33E7FF;
+  --magenta: #C264FF;
+  --amber: #FFB020;
+  --text: #E8F6FF;
+  --text-dim: #6C7A8C;
+  --footer-line: rgba(51, 231, 255, .14);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Chakra Petch", sans-serif;
+  background-image:
+    linear-gradient(rgba(51,231,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(51,231,255,.05) 1px, transparent 1px),
+    radial-gradient(60% 40% at 50% 0%, rgba(194,100,255,.10), transparent 70%);
+  background-size: 42px 42px, 42px 42px, auto;
+}
+
+/* Dezente Scanline-Textur über der ganzen Seite */
+.scanlines {
+  position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background: repeating-linear-gradient(
+    to bottom, rgba(255,255,255,.018) 0px, rgba(255,255,255,.018) 1px,
+    transparent 1px, transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+.back-link {
+  position: absolute; top: 1.6rem; left: 1.6rem; z-index: 10;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .78rem;
+  color: var(--text-dim);
+  letter-spacing: .03em;
+  transition: color .2s ease;
+}
+.back-link:hover { color: var(--cyan); }
+
+.gm-hero {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 6rem 1.6rem 2.5rem;
+  text-align: left;
+}
+.gm-eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .78rem;
+  color: var(--cyan);
+  letter-spacing: .08em;
+  margin: 0 0 1rem;
+}
+.gm-hero h1 {
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 700;
+  margin: 0 0 1rem;
+  letter-spacing: -.01em;
+  text-shadow: 0 0 24px rgba(51,231,255,.25);
+}
+.gm-lede {
+  color: var(--text-dim);
+  max-width: 560px;
+  line-height: 1.6;
+  font-size: 1rem;
+  margin: 0 0 2.2rem;
+}
+.gm-stats { display: flex; gap: 2.4rem; }
+.gm-stat { display: flex; flex-direction: column; }
+.gm-stat-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--cyan);
+}
+.gm-stat-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .72rem;
+  color: var(--text-dim);
+  letter-spacing: .05em;
+}
+
+.gm-main { max-width: 1160px; margin: 0 auto; padding: 0 1.6rem 4rem; }
+
+.controls {
+  display: flex; flex-wrap: wrap; gap: 1rem;
+  align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--panel-line);
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.8rem;
+}
+.filter-pills { display: flex; gap: .5rem; }
+.filter-pill {
+  background: transparent;
+  border: 1px solid var(--panel-line);
+  color: var(--text-dim);
+  border-radius: 999px;
+  padding: .4rem .95rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .78rem;
+  transition: all .2s ease;
+}
+.filter-pill.is-active, .filter-pill:hover {
+  color: var(--bg);
+  background: var(--cyan);
+  border-color: var(--cyan);
+}
+.sort-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .78rem;
+  color: var(--text-dim);
+  display: flex; align-items: center; gap: .5rem;
+}
+.sort-label select {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--panel-line);
+  border-radius: 8px;
+  padding: .35rem .5rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .78rem;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+.game-card {
+  --accent: #33E7FF;
+  background: linear-gradient(180deg, var(--panel), rgba(13,18,32,.7));
+  border: 1px solid var(--panel-line);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.game-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 14px;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), transparent 40%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  opacity: 0; transition: opacity .25s ease;
+  pointer-events: none;
+}
+.game-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px -12px var(--accent);
+}
+.game-card:hover::before { opacity: .8; }
+
+.game-cover {
+  position: relative;
+  height: 130px;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    radial-gradient(60% 100% at 50% 0%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%),
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, #060810) 0 2px, #060810 2px 10px);
+  border-bottom: 1px solid var(--panel-line);
+}
+.game-cover img { width: 100%; height: 100%; object-fit: cover; }
+.game-cover .mono {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: .05em;
+  opacity: .85;
+}
+.status {
+  position: absolute; top: .6rem; right: .6rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .65rem;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  letter-spacing: .04em;
+  background: rgba(0,0,0,.5);
+  border: 1px solid var(--panel-line);
+}
+.status--active { color: var(--cyan); }
+.status--retired { color: var(--text-dim); }
+
+.game-body { padding: 1.1rem 1.2rem 1.3rem; }
+.game-heading { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .9rem; }
+.game-heading h3 { margin: 0; font-size: 1.15rem; font-weight: 600; }
+.genre {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .68rem;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.stat-row { display: flex; gap: 1.4rem; margin-bottom: 1rem; }
+.stat { display: flex; flex-direction: column; }
+.stat-label { font-size: .68rem; color: var(--text-dim); font-family: "JetBrains Mono", monospace; }
+.stat-value { font-family: "JetBrains Mono", monospace; font-size: 1rem; font-weight: 600; }
+
+.rank-block { margin-bottom: 1rem; }
+.rank-label {
+  display: flex; justify-content: space-between;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .7rem; color: var(--text-dim);
+  margin-bottom: .35rem;
+}
+.rank-value { color: var(--amber); font-weight: 600; }
+.rank-bar {
+  height: 5px; border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+}
+.rank-bar span {
+  display: block; height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--magenta));
+  border-radius: 999px;
+}
+
+.highlight {
+  font-size: .82rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Footer im Dark-HUD-Look */
+.footer-name { color: var(--text); font-family: "Chakra Petch", sans-serif; }
+.footer-tag, .social-link { color: var(--text-dim); font-family: "JetBrains Mono", monospace; }
+.social-link:hover { color: var(--cyan); border-color: var(--cyan); }

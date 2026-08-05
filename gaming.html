@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaming — Justin Priem</title>
+<meta name="description" content="Gaming History von Justin Priem: Spielzeit, Ränge, Highlights.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/gaming.css">
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+
+<a class="back-link" href="index.html">← justin-priem.de</a>
+
+<header class="gm-hero">
+  <p class="gm-eyebrow">// SEKTOR_01 · GAMING_LOG</p>
+  <h1>Gaming History</h1>
+  <p class="gm-lede">Alle Spiele, die einen bleibenden Save-State in meinem Leben hinterlassen haben — mit Spielzeit, Rang und ein paar Highlights.</p>
+
+  <div class="gm-stats">
+    <div class="gm-stat">
+      <span class="gm-stat-value" id="total-games">0</span>
+      <span class="gm-stat-label">Spiele erfasst</span>
+    </div>
+    <div class="gm-stat">
+      <span class="gm-stat-value" id="total-hours">0</span>
+      <span class="gm-stat-label">Stunden gesamt</span>
+    </div>
+  </div>
+</header>
+
+<main class="gm-main">
+  <div class="controls">
+    <div class="filter-pills">
+      <button class="filter-pill is-active" data-status="all">Alle</button>
+      <button class="filter-pill" data-status="active">Aktiv</button>
+      <button class="filter-pill" data-status="retired">Beendet</button>
+    </div>
+    <label class="sort-label">
+      Sortieren
+      <select id="sort-select">
+        <option value="hours">Spielzeit</option>
+        <option value="az">A–Z</option>
+        <option value="since">Seit Jahr</option>
+      </select>
+    </label>
+  </div>
+
+  <section class="game-grid" id="game-grid" aria-live="polite"></section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="js/socials.js"></script>
+<script src="js/gaming-data.js"></script>
+<script src="js/gaming.js"></script>
+</body>
+</html>

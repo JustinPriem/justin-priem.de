@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radfahren — Justin Priem</title>
+<meta name="description" content="Radtouren von Justin Priem: Prag, Amsterdam und Tagestouren mit Strava & Komoot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/cycling.css">
+</head>
+<body>
+
+<a class="back-link" href="index.html">← justin-priem.de</a>
+
+<header class="cy-hero">
+  <svg class="cy-hero-line" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+    <polyline points="0,30 40,30 60,10 90,26 120,14 160,22 200,8 240,20 280,12 320,24 360,16 400,26" />
+  </svg>
+  <p class="cy-eyebrow">Strecke geladen</p>
+  <h1>Radfahren</h1>
+  <p class="cy-lede">Von Tagesausfahrten bis zur mehrtägigen Tour nach Amsterdam — hier sammle ich meine Strecken, Höhenmeter und Fotos.</p>
+
+  <div class="cy-stats">
+    <div class="cy-stat"><span class="value" id="total-tours">0</span><span class="label">Touren</span></div>
+    <div class="cy-stat"><span class="value" id="total-km">0</span><span class="label">Kilometer</span></div>
+    <div class="cy-stat"><span class="value" id="total-hm">0</span><span class="label">Höhenmeter</span></div>
+  </div>
+</header>
+
+<main class="cy-main">
+  <div class="cy-controls">
+    <button class="cy-filter is-active" data-type="all">Alle</button>
+    <button class="cy-filter" data-type="tour">Mehrtägige Touren</button>
+    <button class="cy-filter" data-type="day">Tagestouren</button>
+  </div>
+
+  <section class="tour-list" id="tour-list" aria-live="polite"></section>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="js/socials.js"></script>
+<script src="js/cycling-data.js"></script>
+<script src="js/cycling.js"></script>
+</body>
+</html>

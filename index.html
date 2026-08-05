@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Justin Priem</title>
+<meta name="description" content="Justin Priem — Gaming, Radtouren und Raya, meine Hündin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+
+<nav class="quicknav" id="quicknav" aria-label="Schnellzugriff">
+  <a class="qn-logo" href="#hero">Justin Priem</a>
+  <div class="qn-links">
+    <a href="gaming.html" data-section="gaming" aria-label="Zur Gaming-Seite"><span class="qn-dot"></span>Gaming</a>
+    <a href="cycling.html" data-section="cycling" aria-label="Zur Radfahren-Seite"><span class="qn-dot"></span>Radfahren</a>
+    <a href="raya.html" data-section="raya" aria-label="Zur Raya-Seite"><span class="qn-dot"></span>Raya</a>
+  </div>
+  <span class="qn-progress" id="qn-progress" aria-hidden="true"></span>
+</nav>
+
+<main>
+
+  <section id="hero" class="story story-hero" data-theme="hero">
+    <div class="story-bg" aria-hidden="true"></div>
+    <div class="hero-particles" aria-hidden="true"></div>
+    <div class="story-inner">
+      <p class="eyebrow">justin-priem.de</p>
+      <h1><span class="hero-word">Justin</span> <span class="hero-word">Priem</span></h1>
+      <p class="lede">Drei Ausschnitte aus meinem Leben, hintereinander erzählt: Loading Screens, Kilometer und eine sehr gute Hündin. Scroll runter.</p>
+      <span class="scroll-cue" aria-hidden="true"><span class="scroll-cue-line"></span>scrollen</span>
+    </div>
+  </section>
+
+  <section id="gaming" class="story story-gaming" data-theme="gaming">
+    <div class="story-bg" aria-hidden="true"></div>
+    <div class="story-scanlines" aria-hidden="true"></div>
+    <div class="story-inner">
+      <p class="story-eyebrow">01 — Loading Screen</p>
+      <h2>Gaming</h2>
+      <p class="story-text">Meine Gaming History: jedes Spiel, das einen Save-State hinterlassen hat — mit Spielzeit, Rang und ein paar Highlights.</p>
+
+      <div class="story-stats" id="gaming-stats"></div>
+      <div class="story-chips" id="gaming-chips"></div>
+
+      <a class="story-cta" href="gaming.html">Ganze Gaming-History ansehen <i aria-hidden="true">→</i></a>
+    </div>
+  </section>
+
+  <section id="cycling" class="story story-cycling" data-theme="cycling">
+    <div class="story-bg" aria-hidden="true"></div>
+    <div class="story-road" aria-hidden="true"></div>
+    <div class="story-inner">
+      <p class="story-eyebrow">02 — Auf der Strecke</p>
+      <h2>Radfahren</h2>
+      <p class="story-text">Von Tagesausfahrten bis zur Tour nach Amsterdam — Strecken, Höhenmeter und Fotos, aufgezeichnet mit Strava und Komoot.</p>
+
+      <div class="story-stats" id="cycling-stats"></div>
+      <div class="story-chips" id="cycling-chips"></div>
+
+      <a class="story-cta" href="cycling.html">Alle Touren ansehen <i aria-hidden="true">→</i></a>
+    </div>
+  </section>
+
+  <section id="raya" class="story story-raya" data-theme="raya">
+    <div class="story-bg" aria-hidden="true"></div>
+    <div class="story-inner">
+      <p class="story-eyebrow">03 — Gute Hündin</p>
+      <h2>Raya</h2>
+      <p class="story-text">Ein kleines Fotobuch von meiner Hündin, sortierbar nach Datum.</p>
+
+      <div class="story-stats" id="raya-stats"></div>
+      <div class="story-photo-preview" id="raya-preview"></div>
+
+      <a class="story-cta" href="raya.html">Zum Fotobuch <i aria-hidden="true">→</i></a>
+    </div>
+  </section>
+
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="js/socials.js"></script>
+<script src="js/gaming-data.js"></script>
+<script src="js/cycling-data.js"></script>
+<script src="js/raya-data.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>

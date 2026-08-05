@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin-Login — Justin Priem</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-login-body">
+
+<main class="login-shell">
+  <div class="login-card">
+    <p class="login-eyebrow">justin-priem.de</p>
+    <h1>Admin-Bereich</h1>
+    <p class="login-lede">Melde dich an, um Games, Touren und Raya-Fotos zu verwalten. Änderungen werden direkt als Commit in dein GitHub-Repo geschrieben.</p>
+
+    <form id="login-form" class="login-form" novalidate>
+      <label class="field">
+        <span>Passwort</span>
+        <input type="password" id="login-password" autocomplete="current-password" required>
+      </label>
+
+      <label class="field">
+        <span>GitHub-Zugriffstoken</span>
+        <input type="password" id="login-token" autocomplete="off" placeholder="ghp_… oder github_pat_…" required>
+      </label>
+
+      <label class="field field-checkbox">
+        <input type="checkbox" id="login-remember">
+        <span>Token in diesem Browser merken</span>
+      </label>
+
+      <button type="submit" class="btn btn-primary" id="login-submit">Anmelden</button>
+      <p class="login-error" id="login-error" role="alert" aria-live="polite"></p>
+    </form>
+
+    <details class="login-help">
+      <summary>Wo bekomme ich den Token her?</summary>
+      <p>Ein GitHub-Zugriffstoken (Personal Access Token) mit Schreibrecht
+      auf genau dieses Repo. Anleitung zum Erstellen: <code>ADMIN-SETUP.md</code>
+      im Projektordner. Der Token wird nur in deinem Browser gespeichert
+      und nie an einen anderen Ort als api.github.com gesendet.</p>
+    </details>
+
+    <a class="login-back" href="../index.html">← zurück zur Website</a>
+  </div>
+</main>
+
+<script src="js/admin-config.js"></script>
+<script src="js/github-api.js"></script>
+<script src="js/admin-login.js"></script>
+</body>
+</html>

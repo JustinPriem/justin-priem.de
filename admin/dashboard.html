@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Justin Priem</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<header class="admin-topbar">
+  <a class="admin-topbar-title" href="../index.html">Justin Priem <span>· Admin</span></a>
+  <div class="admin-topbar-right">
+    <span class="admin-user-email" id="admin-repo-label"></span>
+    <button class="btn btn-ghost" id="logout-btn">Abmelden</button>
+  </div>
+</header>
+
+<div class="admin-guard-msg" id="guard-msg" hidden></div>
+
+<nav class="admin-tabs" id="admin-tabs">
+  <button class="admin-tab is-active" data-tab="games">🎮 Games</button>
+  <button class="admin-tab" data-tab="tours">🚴 Radtouren</button>
+  <button class="admin-tab" data-tab="raya">🐾 Raya-Fotos</button>
+</nav>
+
+<main class="admin-main">
+
+  <!-- ---------------- GAMES ---------------- -->
+  <section class="admin-panel is-active" id="panel-games" data-panel="games">
+    <div class="admin-panel-grid">
+      <div class="admin-list-col">
+        <h2>Vorhandene Games (<span id="games-count">0</span>)</h2>
+        <div class="admin-list" id="games-list"></div>
+      </div>
+      <div class="admin-form-col">
+        <h2 id="games-form-title">Neues Spiel hinzufügen</h2>
+        <form class="admin-form" id="games-form">
+          <input type="hidden" id="games-id">
+          <label class="field"><span>Titel *</span><input type="text" id="games-title" required></label>
+          <div class="field-row">
+            <label class="field"><span>Genre</span><input type="text" id="games-genre" placeholder="Battle Royale"></label>
+            <label class="field"><span>Status</span>
+              <select id="games-status">
+                <option value="active">Aktiv</option>
+                <option value="retired">Beendet</option>
+              </select>
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>Spielstunden</span><input type="number" id="games-hours" min="0" step="1" value="0"></label>
+            <label class="field"><span>Seit (Jahr)</span><input type="text" id="games-since" placeholder="2023"></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>Rang (Text)</span><input type="text" id="games-rank" placeholder="Diamond III"></label>
+            <label class="field"><span>Rang-Balken % (0–100)</span><input type="number" id="games-rankpct" min="0" max="100" value="0"></label>
+          </div>
+          <label class="field"><span>Akzentfarbe (Kartenglow)</span><input type="color" id="games-accent" value="#33e7ff"></label>
+          <label class="field"><span>Highlight-Satz</span><textarea id="games-highlight" rows="2" placeholder="Höchster Rang, Lieblingswaffe, o.ä."></textarea></label>
+          <label class="field">
+            <span>Cover-Bild (optional — ohne Bild wird ein Monogramm gezeigt)</span>
+            <input type="file" id="games-cover-file" accept="image/*">
+            <img class="admin-preview" id="games-cover-preview" alt="Vorschau" hidden>
+          </label>
+          <input type="hidden" id="games-cover-url">
+
+          <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary" id="games-submit">Hinzufügen</button>
+            <button type="button" class="btn btn-ghost" id="games-cancel" hidden>Abbrechen</button>
+          </div>
+          <p class="admin-form-error" id="games-error" role="alert" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------- TOUREN ---------------- -->
+  <section class="admin-panel" id="panel-tours" data-panel="tours">
+    <div class="admin-panel-grid">
+      <div class="admin-list-col">
+        <h2>Vorhandene Touren (<span id="tours-count">0</span>)</h2>
+        <div class="admin-list" id="tours-list"></div>
+      </div>
+      <div class="admin-form-col">
+        <h2 id="tours-form-title">Neue Tour hinzufügen</h2>
+        <form class="admin-form" id="tours-form">
+          <input type="hidden" id="tours-id">
+          <label class="field"><span>Titel *</span><input type="text" id="tours-title" required placeholder="Weimar nach Prag"></label>
+          <div class="field-row">
+            <label class="field"><span>Route</span><input type="text" id="tours-route" placeholder="Weimar → Prag"></label>
+            <label class="field"><span>Typ</span>
+              <select id="tours-type">
+                <option value="tour">Mehrtägige Tour</option>
+                <option value="day">Tagestour</option>
+              </select>
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>Datum / Zeitraum</span><input type="text" id="tours-date" placeholder="Sommer 2024"></label>
+            <label class="field"><span>Anzahl Tage</span><input type="number" id="tours-days" min="1" step="1" value="1"></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>Kilometer</span><input type="number" id="tours-distance" min="0" step="0.1" value="0"></label>
+            <label class="field"><span>Höhenmeter</span><input type="number" id="tours-elevation" min="0" step="1" value="0"></label>
+          </div>
+          <label class="field"><span>Beschreibung</span><textarea id="tours-description" rows="3"></textarea></label>
+          <div class="field-row">
+            <label class="field"><span>Strava-Link</span><input type="url" id="tours-strava-url" placeholder="https://strava.com/..."></label>
+            <label class="field"><span>Komoot-Link</span><input type="url" id="tours-komoot-url" placeholder="https://komoot.com/..."></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>Strava-Embed-URL</span><input type="url" id="tours-strava-embed" placeholder="optional"></label>
+            <label class="field"><span>Komoot-Embed-URL</span><input type="url" id="tours-komoot-embed" placeholder="optional"></label>
+          </div>
+          <label class="field">
+            <span>Foto (optional — ohne Bild wird ein Höhenprofil-Icon gezeigt)</span>
+            <input type="file" id="tours-image-file" accept="image/*">
+            <img class="admin-preview" id="tours-image-preview" alt="Vorschau" hidden>
+          </label>
+          <input type="hidden" id="tours-image-url">
+
+          <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary" id="tours-submit">Hinzufügen</button>
+            <button type="button" class="btn btn-ghost" id="tours-cancel" hidden>Abbrechen</button>
+          </div>
+          <p class="admin-form-error" id="tours-error" role="alert" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------- RAYA ---------------- -->
+  <section class="admin-panel" id="panel-raya" data-panel="raya">
+    <div class="admin-panel-grid">
+      <div class="admin-list-col">
+        <h2>Vorhandene Fotos (<span id="raya-count">0</span>)</h2>
+        <div class="admin-list admin-list--grid" id="raya-list"></div>
+      </div>
+      <div class="admin-form-col">
+        <h2 id="raya-form-title">Neues Foto hinzufügen</h2>
+        <form class="admin-form" id="raya-form">
+          <input type="hidden" id="raya-id">
+          <label class="field"><span>Datum *</span><input type="date" id="raya-date" required></label>
+          <label class="field"><span>Bildunterschrift (optional)</span><input type="text" id="raya-caption" placeholder="Weihnachten"></label>
+          <label class="field">
+            <span>Foto *</span>
+            <input type="file" id="raya-src-file" accept="image/*">
+            <img class="admin-preview" id="raya-src-preview" alt="Vorschau" hidden>
+          </label>
+          <input type="hidden" id="raya-src-url">
+
+          <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary" id="raya-submit">Hinzufügen</button>
+            <button type="button" class="btn btn-ghost" id="raya-cancel" hidden>Abbrechen</button>
+          </div>
+          <p class="admin-form-error" id="raya-error" role="alert" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="js/admin-config.js"></script>
+<script src="js/github-api.js"></script>
+<script src="js/admin-dashboard.js"></script>
+</body>
+</html>
