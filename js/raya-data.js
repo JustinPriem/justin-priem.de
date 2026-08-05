@@ -47,9 +47,9 @@ const RAYA_PHOTOS = [
   },
   {
     "id": "r7",
-    "src": "",
-    "date": "2025-06-03",
-    "caption": "Radtour-Begleitung"
+    "date": "2025-12-13",
+    "caption": "Weihnachten",
+    "src": "assets/raya/1785965195931-P1040496optimiert.jpg"
   },
   {
     "id": "r8",
