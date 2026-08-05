@@ -45,15 +45,15 @@ const GAMES = [
   {
     "id": "deadlock",
     "title": "Deadlock",
-    "cover": "",
-    "accent": "#9B4DFF",
-    "genre": "Hero Shooter / MOBA",
+    "genre": "Hero Shooter",
     "status": "active",
-    "hours": 150,
-    "rank": "Ascendant",
-    "rankPct": 68,
+    "hours": 1075,
     "since": "2024",
-    "highlight": "Early-Access-Main. Lieblingscharakter hier eintragen."
+    "rank": "Eternus I",
+    "rankPct": 90,
+    "accent": "#6edcf7",
+    "highlight": "Maximaler Rang in der Beta vor dem Ranked Season Release: Eternus 1",
+    "cover": "assets/games/1785960959171-deadlock-rank.png"
   },
   {
     "id": "765e3f50-ba5d-4512-91c9-0d3d3d7a17c8",
