@@ -17,19 +17,6 @@
  */
 const GAMES = [
   {
-    "id": "apex",
-    "title": "Apex Legends",
-    "cover": "",
-    "accent": "#E2231A",
-    "genre": "Battle Royale",
-    "status": "active",
-    "hours": 620,
-    "rank": "Diamond III",
-    "rankPct": 78,
-    "since": "2021",
-    "highlight": "Höchster Rang: Diamond. Main: TBD — hier deinen Lieblings-Legend eintragen."
-  },
-  {
     "id": "warframe",
     "title": "Warframe",
     "cover": "",
