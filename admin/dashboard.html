@@ -108,14 +108,11 @@
             <label class="field"><span>Kilometer</span><input type="number" id="tours-distance" min="0" step="0.1" value="0"></label>
             <label class="field"><span>Höhenmeter</span><input type="number" id="tours-elevation" min="0" step="1" value="0"></label>
           </div>
-          <label class="field"><span>Beschreibung</span><textarea id="tours-description" rows="3"></textarea></label>
+          <label class="field"><span>Kurztext (Vorschau auf der Übersicht) *</span><textarea id="tours-summary" rows="2" required placeholder="Ein bis zwei Sätze, erscheinen auf der Kartenübersicht"></textarea></label>
+          <label class="field"><span>Langtext (nur auf der Detailseite)</span><textarea id="tours-description" rows="5" placeholder="Ausführlicher Bericht, Highlights, Übernachtungen, …"></textarea></label>
           <div class="field-row">
-            <label class="field"><span>Strava-Link</span><input type="url" id="tours-strava-url" placeholder="https://strava.com/..."></label>
-            <label class="field"><span>Komoot-Link</span><input type="url" id="tours-komoot-url" placeholder="https://komoot.com/..."></label>
-          </div>
-          <div class="field-row">
-            <label class="field"><span>Strava-Embed-URL</span><input type="url" id="tours-strava-embed" placeholder="optional"></label>
-            <label class="field"><span>Komoot-Embed-URL</span><input type="url" id="tours-komoot-embed" placeholder="optional"></label>
+            <label class="field"><span>Strava-Link (Fallback-Button)</span><input type="url" id="tours-strava-url" placeholder="https://strava.com/activities/..."></label>
+            <label class="field"><span>Komoot-Link (Fallback-Button)</span><input type="url" id="tours-komoot-url" placeholder="https://komoot.com/tour/..."></label>
           </div>
           <label class="field">
             <span>Foto (optional — ohne Bild wird ein Höhenprofil-Icon gezeigt)</span>
@@ -123,6 +120,12 @@
             <img class="admin-preview" id="tours-image-preview" alt="Vorschau" hidden>
           </label>
           <input type="hidden" id="tours-image-url">
+
+          <div class="field">
+            <span>Einbettungen (nur auf der Detailseite — beliebig viele, z.B. wenn eine Tour über mehrere Aktivitäten verteilt ist)</span>
+            <div id="tours-embeds-list" class="embed-rows"></div>
+            <button type="button" class="btn btn-ghost btn-small" id="tours-embed-add">+ Einbettung hinzufügen</button>
+          </div>
 
           <div class="admin-form-actions">
             <button type="submit" class="btn btn-primary" id="tours-submit">Hinzufügen</button>

@@ -206,6 +206,20 @@ body.admin-body {
 .admin-form-error.is-success { color: #4ADE80; }
 .admin-form-error.is-pending { color: var(--adm-dim); }
 
+.btn-small { padding: .5rem .9rem; font-size: .8rem; align-self: flex-start; }
+
+/* ---------- Wiederholbare Einbettungs-Zeilen ---------- */
+.embed-rows { display: flex; flex-direction: column; gap: .8rem; margin-top: .4rem; }
+.embed-row {
+  display: flex; flex-direction: column; gap: .6rem;
+  padding: .8rem;
+  border: 1px solid var(--adm-line);
+  border-radius: 10px;
+  background: var(--adm-panel-2);
+}
+.embed-row .embed-code { font-family: "JetBrains Mono", monospace; font-size: .78rem; }
+.embed-row .embed-remove { align-self: flex-end; }
+
 /* ---------- Item-Liste ---------- */
 .admin-list { display: flex; flex-direction: column; gap: .6rem; max-height: 640px; overflow-y: auto; padding-right: .3rem; }
 .admin-list--grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .7rem; max-height: none; }

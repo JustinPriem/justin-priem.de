@@ -1,33 +1,3 @@
-function elevationSpark(elevationM) {
-  // Kleine, generierte Zick-Zack-Linie als Platzhalter für ein Höhenprofil
-  const pts = [];
-  const steps = 8;
-  let y = 24;
-  for (let i = 0; i <= steps; i++) {
-    const x = (i / steps) * 100;
-    y = 24 - Math.sin(i * 1.3 + elevationM) * 10 - (i / steps) * 6;
-    pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
-  }
-  return pts.join(" ");
-}
-
-function embedBlock(tour) {
-  if (tour.stravaEmbed) {
-    return `<iframe class="embed" src="${tour.stravaEmbed}" height="220" frameborder="0" scrolling="no" loading="lazy" title="Strava Aktivität: ${tour.title}"></iframe>`;
-  }
-  if (tour.komootEmbed) {
-    return `<iframe class="embed" src="${tour.komootEmbed}" height="220" frameborder="0" loading="lazy" title="Komoot Tour: ${tour.title}"></iframe>`;
-  }
-  return `
-    <div class="embed embed--empty">
-      <span>Noch kein Strava-/Komoot-Embed hinterlegt</span>
-      <div class="embed-links">
-        <a href="${tour.stravaUrl}" target="_blank" rel="noopener">Auf Strava ansehen ↗</a>
-        <a href="${tour.komootUrl}" target="_blank" rel="noopener">Auf Komoot ansehen ↗</a>
-      </div>
-    </div>`;
-}
-
 function cardTemplate(tour) {
   const cover = tour.image
     ? `<img src="${tour.image}" alt="Foto von ${tour.title}">`
@@ -47,9 +17,9 @@ function cardTemplate(tour) {
         <div><span class="value">${tour.days}</span><span class="unit">${tour.days === 1 ? "Tag" : "Tage"}</span></div>
       </div>
 
-      <p class="tour-desc">${tour.description}</p>
+      <p class="tour-desc">${tour.summary || tour.description || ""}</p>
 
-      ${embedBlock(tour)}
+      <a class="tour-details-link" href="tour.html?id=${encodeURIComponent(tour.id)}">Details &amp; Strecke ansehen <i aria-hidden="true">→</i></a>
     </div>
   </article>`;
 }

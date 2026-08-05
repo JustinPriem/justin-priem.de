@@ -44,8 +44,11 @@ const HEADERS = {
  *  elevationM    Höhenmeter
  *  days          Anzahl Tage
  *  image         Pfad zu einem Foto (leer = generiertes Höhenprofil)
- *  description   kurzer Text über die Tour
- *  stravaUrl / stravaEmbed / komootUrl / komootEmbed
+ *  summary       kurzer Vorschautext für die Kartenübersicht
+ *  description   ausführlicher Text, nur auf der Detailseite (tour.html) sichtbar
+ *  stravaUrl / komootUrl   Fallback-Links, nur auf der Detailseite
+ *  embeds        Liste von { type: "strava"|"komoot", label, code }, nur auf
+ *                 der Detailseite sichtbar
  */`,
   raya: `/**
  * RAYA — Foto-Daten
@@ -362,11 +365,11 @@ function toursForm() {
     days: document.getElementById("tours-days"),
     distance: document.getElementById("tours-distance"),
     elevation: document.getElementById("tours-elevation"),
+    summary: document.getElementById("tours-summary"),
     description: document.getElementById("tours-description"),
     stravaUrl: document.getElementById("tours-strava-url"),
     komootUrl: document.getElementById("tours-komoot-url"),
-    stravaEmbed: document.getElementById("tours-strava-embed"),
-    komootEmbed: document.getElementById("tours-komoot-embed"),
+    embedsList: document.getElementById("tours-embeds-list"),
     imageFile: document.getElementById("tours-image-file"),
     imageUrl: document.getElementById("tours-image-url"),
     imagePreview: document.getElementById("tours-image-preview"),
@@ -378,6 +381,49 @@ function toursForm() {
   };
 }
 
+// ---------- Wiederholbare Einbettungs-Zeilen (Strava/Komoot, beliebig viele) ----------
+
+function stripScriptTags(html) {
+  return html.replace(/<script[\s\S]*?<\/script>/gi, "").trim();
+}
+
+function embedRowEl(embed = {}) {
+  const row = document.createElement("div");
+  row.className = "embed-row";
+  row.innerHTML = `
+    <div class="field-row">
+      <label class="field"><span>Typ</span>
+        <select class="embed-type">
+          <option value="strava">Strava</option>
+          <option value="komoot">Komoot</option>
+        </select>
+      </label>
+      <label class="field"><span>Label (optional)</span><input type="text" class="embed-label" placeholder="z.B. Etappe 1"></label>
+    </div>
+    <label class="field"><span>Embed-Code</span><textarea class="embed-code" rows="3" placeholder="Kompletten Code von Strava/Komoot hier einfügen"></textarea></label>
+    <button type="button" class="icon-btn embed-remove" title="Einbettung entfernen">🗑️</button>
+  `;
+  row.querySelector(".embed-type").value = embed.type === "komoot" ? "komoot" : "strava";
+  row.querySelector(".embed-label").value = embed.label || "";
+  row.querySelector(".embed-code").value = embed.code || "";
+  row.querySelector(".embed-remove").addEventListener("click", () => row.remove());
+  return row;
+}
+
+function addEmbedRow(embed) {
+  document.getElementById("tours-embeds-list").appendChild(embedRowEl(embed));
+}
+
+function collectEmbeds() {
+  return [...document.querySelectorAll("#tours-embeds-list .embed-row")]
+    .map((row) => ({
+      type: row.querySelector(".embed-type").value,
+      label: row.querySelector(".embed-label").value.trim(),
+      code: stripScriptTags(row.querySelector(".embed-code").value),
+    }))
+    .filter((embed) => embed.code);
+}
+
 function resetToursForm() {
   const f = toursForm();
   f.form.reset();
@@ -387,6 +433,7 @@ function resetToursForm() {
   f.days.value = 1;
   f.distance.value = 0;
   f.elevation.value = 0;
+  f.embedsList.innerHTML = "";
   f.submitBtn.textContent = "Hinzufügen";
   f.cancelBtn.hidden = true;
   f.formTitle.textContent = "Neue Tour hinzufügen";
@@ -403,14 +450,15 @@ function fillToursForm(tour) {
   f.days.value = tour.days;
   f.distance.value = tour.distanceKm;
   f.elevation.value = tour.elevationM;
+  f.summary.value = tour.summary || "";
   f.description.value = tour.description || "";
   f.stravaUrl.value = tour.stravaUrl || "";
   f.komootUrl.value = tour.komootUrl || "";
-  f.stravaEmbed.value = tour.stravaEmbed || "";
-  f.komootEmbed.value = tour.komootEmbed || "";
   f.imageUrl.value = tour.image || "";
   f.imagePreview.hidden = !tour.image;
   if (tour.image) f.imagePreview.src = tour.image;
+  f.embedsList.innerHTML = "";
+  (tour.embeds || []).forEach(addEmbedRow);
   f.submitBtn.textContent = "Speichern";
   f.cancelBtn.hidden = false;
   f.formTitle.textContent = `„${tour.title}" bearbeiten`;
@@ -434,7 +482,7 @@ function renderToursList() {
       </div>
       <div class="admin-item-body">
         <strong>${escapeHtml(t.title)}</strong>
-        <span>${escapeHtml(t.route || "—")} · ${Number(t.distanceKm).toLocaleString("de-DE")} km · ${t.type === "tour" ? `${t.days} Tage` : "Tagestour"}</span>
+        <span>${escapeHtml(t.route || "—")} · ${Number(t.distanceKm).toLocaleString("de-DE")} km · ${t.type === "tour" ? `${t.days} Tage` : "Tagestour"}${(t.embeds && t.embeds.length) ? ` · 🔗 ${t.embeds.length}` : ""}</span>
       </div>
       <div class="admin-item-actions">
         <button type="button" class="icon-btn" data-action="edit" title="Bearbeiten">✏️</button>
@@ -449,6 +497,7 @@ function setupTours() {
   const f = toursForm();
   previewFile(f.imageFile, f.imagePreview);
   f.cancelBtn.addEventListener("click", resetToursForm);
+  document.getElementById("tours-embed-add").addEventListener("click", () => addEmbedRow());
 
   document.getElementById("tours-list").addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-action]");
@@ -492,11 +541,11 @@ function setupTours() {
         distanceKm: Number(f.distance.value) || 0,
         elevationM: Number(f.elevation.value) || 0,
         image,
+        summary: f.summary.value.trim(),
         description: f.description.value.trim(),
         stravaUrl: f.stravaUrl.value.trim(),
-        stravaEmbed: f.stravaEmbed.value.trim(),
         komootUrl: f.komootUrl.value.trim(),
-        komootEmbed: f.komootEmbed.value.trim(),
+        embeds: collectEmbeds(),
       };
 
       if (editingId) {

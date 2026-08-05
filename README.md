@@ -72,19 +72,30 @@ angezeigt.
 
 ### Radfahren
 → `js/cycling-data.js`
-Ein Eintrag pro Tour: Strecke, Datum, Kilometer, Höhenmeter, Beschreibung.
-Fotos optional unter `assets/cycling/` ablegen und im Feld `image` verlinken.
+Ein Eintrag pro Tour: Strecke, Datum, Kilometer, Höhenmeter. `summary` ist
+der kurze Vorschautext auf der Kartenübersicht (`cycling.html`), `description`
+der ausführliche Text — der erscheint nur auf der eigenen Detailseite
+(`tour.html?id=…`, verlinkt von jeder Karte). Fotos optional unter
+`assets/cycling/` ablegen und im Feld `image` verlinken.
+
+**Mehrere Aktivitäten pro Tour:** Ist eine Tour über mehrere Strava-/Komoot-
+Aktivitäten verteilt hochgeladen, trägst du im Feld `embeds` einfach mehrere
+Einträge ein (Liste von `{ type, label, code }`) — alle werden nacheinander
+auf der Detailseite angezeigt. Am einfachsten geht das über den
+[Admin-Bereich](#-admin-bereich-zum-verwalten-der-inhalte), der dafür ein
+„+ Einbettung hinzufügen"-Formular hat.
 
 **Strava einbetten:** Öffne deine Aktivität auf strava.com → „Teilen" →
 „Auf Website einbetten" (nur bei öffentlichen Aktivitäten verfügbar). Den
-kompletten `<iframe src="...">`-Link kopierst du in das Feld `stravaEmbed`
-des jeweiligen Tour-Eintrags.
+kompletten Code (das `<div class="strava-embed-placeholder">`) fügst du als
+`code` eines Embed-Eintrags ein.
 
 **Komoot einbetten:** Auf deiner Komoot-Tour → „Teilen" → „Einbetten" →
-die angezeigte Embed-URL in `komootEmbed` eintragen.
+den `<iframe>`-Code als `code` eines Embed-Eintrags einfügen.
 
-Ist bei einer Tour kein Embed hinterlegt, zeigt die Karte automatisch nur
-Buttons zu Strava/Komoot an.
+Ist bei einer Tour noch kein Embed hinterlegt, zeigt die Detailseite
+stattdessen nur die Buttons „Auf Strava/Komoot ansehen" (aus `stravaUrl`/
+`komootUrl`, falls gesetzt).
 
 ### Raya
 → `js/raya-data.js`
@@ -139,18 +150,21 @@ GitHub Pages):**
 ```
 index.html          Hub-Seite
 gaming.html          Gaming-Sektion
-cycling.html         Radfahren-Sektion
+cycling.html         Radfahren-Sektion (Kartenübersicht)
+tour.html            Tour-Detailseite (?id=…, verlinkt von jeder Karte)
 raya.html            Raya-Sektion
 css/
   base.css            gemeinsamer Reset + Footer-Grundgerüst
   landing.css          Theme für index.html
   gaming.css           Theme für gaming.html
-  cycling.css          Theme für cycling.html
+  cycling.css          Theme für cycling.html + tour.html
   raya.css             Theme für raya.html
 js/
   socials.js          zentrale Social-Links + Footer-Rendering
   gaming-data.js / gaming.js     (GAMES + Render-Logik)
-  cycling-data.js / cycling.js   (TOURS + Render-Logik)
+  cycling-data.js / cycling.js   (TOURS + Karten-Render-Logik)
+  route-spark.js       geteiltes Höhenprofil-Icon (cycling.js + tour.js)
+  tour.js              Render-Logik der Tour-Detailseite
   raya-data.js / raya.js         (RAYA_PHOTOS + Render-Logik)
 admin/
   index.html           Login (Passwort + GitHub-Token)
