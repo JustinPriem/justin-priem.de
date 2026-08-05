@@ -4,7 +4,7 @@ function cardTemplate(tour) {
     : `<svg class="route-spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline points="${elevationSpark(tour.elevationM)}" /></svg>`;
 
   return `
-  <article class="tour-card tour-card--${tour.type}">
+  <a class="tour-card tour-card--${tour.type}" href="tour.html?id=${encodeURIComponent(tour.id)}">
     <div class="tour-cover">${cover}<span class="tour-type">${tour.type === "tour" ? `${tour.days} Tage` : "Tagestour"}</span></div>
     <div class="tour-body">
       <p class="tour-route">${tour.route}</p>
@@ -19,9 +19,9 @@ function cardTemplate(tour) {
 
       <p class="tour-desc">${tour.summary || tour.description || ""}</p>
 
-      <a class="tour-details-link" href="tour.html?id=${encodeURIComponent(tour.id)}">Details &amp; Strecke ansehen <i aria-hidden="true">→</i></a>
+      <span class="tour-details-link">Details &amp; Strecke ansehen <i aria-hidden="true">→</i></span>
     </div>
-  </article>`;
+  </a>`;
 }
 
 function render(tours) {
