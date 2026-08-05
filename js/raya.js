@@ -69,6 +69,27 @@ function setupLightbox() {
   });
 }
 
+// ---------- Spalten pro Reihe (nur auf schmalen Bildschirmen relevant) ----------
+
+function setupColumnControl() {
+  const buttons = document.querySelectorAll(".ry-col-btn");
+  const grid = document.getElementById("raya-grid");
+  const stored = localStorage.getItem("raya-cols") || "2";
+
+  function apply(cols) {
+    grid.style.setProperty("--mobile-cols", cols);
+    buttons.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.cols === cols));
+  }
+
+  apply(stored);
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      localStorage.setItem("raya-cols", btn.dataset.cols);
+      apply(btn.dataset.cols);
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("total-photos").textContent = RAYA_PHOTOS.length;
 
@@ -82,4 +103,5 @@ document.addEventListener("DOMContentLoaded", () => {
   sortSelect.addEventListener("change", apply);
   apply();
   setupLightbox();
+  setupColumnControl();
 });

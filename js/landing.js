@@ -44,10 +44,16 @@ function fillCyclingTeaser(TOURS) {
 function fillRayaTeaser(RAYA_PHOTOS) {
   document.getElementById("raya-stats").innerHTML = statBlock(RAYA_PHOTOS.length, "Fotos");
 
+  // Immer die 3 Fotos mit dem aktuellsten Datum
   const latest = [...RAYA_PHOTOS].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
   document.getElementById("raya-preview").innerHTML = latest
-    .map(
-      () => `
+    .map((photo) =>
+      photo.src
+        ? `
+      <div class="preview-tile" aria-hidden="true">
+        <img src="${photo.src}" alt="" loading="lazy">
+      </div>`
+        : `
       <div class="preview-tile" aria-hidden="true">
         <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="30" r="10" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="14" r="5" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="9" r="5" stroke="currentColor" stroke-width="2"/><circle cx="36" cy="14" r="5" stroke="currentColor" stroke-width="2"/></svg>
       </div>`

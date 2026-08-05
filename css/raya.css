@@ -101,7 +101,8 @@ body {
 
 .ry-controls {
   display: flex; align-items: center; justify-content: flex-end;
-  gap: .6rem;
+  flex-wrap: wrap;
+  gap: .6rem 1.2rem;
   margin-bottom: 1.6rem;
 }
 .ry-sort-label { font-size: .82rem; color: var(--ink-dim); }
@@ -115,10 +116,31 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+/* Spalten-Auswahl: nur auf schmalen Bildschirmen relevant/sichtbar,
+   auf breiten Bildschirmen übernimmt das responsive auto-fill-Raster */
+.ry-cols { display: none; align-items: center; gap: .4rem; }
+.ry-cols-label { font-size: .82rem; color: var(--ink-dim); margin-right: .2rem; }
+.ry-col-btn {
+  width: 30px; height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink-dim);
+  font-size: .8rem;
+  font-family: "Inter", sans-serif;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+.ry-col-btn:hover { border-color: var(--blush); color: var(--blush); }
+.ry-col-btn.is-active { background: var(--blush); border-color: var(--blush); color: #fff; }
+
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1.3rem;
+}
+@media (max-width: 640px) {
+  .ry-cols { display: flex; }
+  .photo-grid { grid-template-columns: repeat(var(--mobile-cols, 2), 1fr); gap: .7rem; }
 }
 
 .photo-card {
