@@ -75,6 +75,11 @@ const TOURS = [
         "type": "strava",
         "label": "Tag 3",
         "code": "<div class=\"strava-embed-placeholder\" data-embed-type=\"activity\" data-embed-id=\"18723116349\" data-style=\"standard\" data-from-embed=\"false\" data-token=\"g_cH0X_7i1CC8kwMdLqWRGfZNx2FNsbtxGTEtTP4jsY\"></div>"
+      },
+      {
+        "type": "komoot",
+        "label": "gesamt",
+        "code": "<iframe src=\"https://www.komoot.com/tour/3002629882/embed?share_token=aOCXLq1Jsc5PzJzBOBJ4Jn4hPfjvJq0uZPDRbYQdkcqi250U67&amp;hl=de&amp;layout=classic&amp;profile=1\" width=\"100%\" height=\"700\" frameborder=\"0\" scrolling=\"no\"></iframe>"
       }
     ]
   },
