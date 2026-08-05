@@ -32,15 +32,15 @@ const GAMES = [
   {
     "id": "deltaforce",
     "title": "Delta Force",
-    "cover": "",
-    "accent": "#C99A45",
     "genre": "Tactical Shooter",
     "status": "active",
-    "hours": 210,
-    "rank": "Gold II",
-    "rankPct": 55,
+    "hours": 801,
     "since": "2024",
-    "highlight": "Platzhalter-Stat — echten Rang & Lieblingsmodus ergänzen."
+    "rank": "DF Pinnacle",
+    "rankPct": 100,
+    "accent": "#c99a45",
+    "highlight": "Platzhalter-Stat — echten Rang & Lieblingsmodus ergänzen.",
+    "cover": ""
   },
   {
     "id": "deadlock",
