@@ -243,7 +243,6 @@ body {
   align-items: start;
   gap: 1rem;
 }
-#td-embeds .embed-block:only-child { grid-column: 1 / -1; }
 @media (max-width: 560px) {
   #td-embeds { grid-template-columns: 1fr; }
 }
