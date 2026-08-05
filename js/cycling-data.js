@@ -49,7 +49,13 @@ const TOURS = [
     "description": "Die bisher längste Tour, quer durch Deutschland bis in die Niederlande. Erster Tag auf dem FKK Camping Platz, zweiter Notgedrungen im Hotel aufgrund eines Unwetters und anschließend im Hotel in Prag geschlafen. Am letzten Tag 260km von Deutschland über die Grenze bis nach Amsterdam.",
     "stravaUrl": "https://www.strava.com/activities/18723116349",
     "komootUrl": "https://www.komoot.com/de-de/tour/3002629882",
-    "embeds": []
+    "embeds": [
+      {
+        "type": "strava",
+        "label": "Tag 1",
+        "code": "<div class=\"strava-embed-placeholder\" data-embed-type=\"activity\" data-embed-id=\"18693817681\" data-style=\"standard\" data-from-embed=\"false\" data-token=\"KvyYK0dCEliFFD0oJT710swkuT1DAvnxup3VQWj2oCU\"></div>"
+      }
+    ]
   },
   {
     "id": "tagestour-1",
