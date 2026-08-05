@@ -82,12 +82,31 @@ function animateCount(el) {
   requestAnimationFrame(tick);
 }
 
+// ---------- Farb-Pulsschlag beim Kapitelwechsel ----------
+
+const THEME_PULSE_COLORS = {
+  hero: "#33E7FF",
+  gaming: "#33E7FF",
+  cycling: "#D45A22",
+  raya: "#C98572",
+};
+
+function triggerThemePulse(theme) {
+  const pulse = document.getElementById("theme-pulse");
+  if (!pulse) return;
+  pulse.style.setProperty("--pulse-color", THEME_PULSE_COLORS[theme] || "#33E7FF");
+  pulse.classList.remove("is-pulsing");
+  void pulse.offsetWidth; // Reflow erzwingen, damit die Animation bei erneutem Zufügen neu startet
+  pulse.classList.add("is-pulsing");
+}
+
 // ---------- Scroll-Story: Reveal, Zähler, Quicknav-Theme ----------
 
 function setupScrollStory() {
   const nav = document.getElementById("quicknav");
   const sections = document.querySelectorAll(".story");
   const navLinks = document.querySelectorAll(".qn-links a");
+  let lastTheme = null;
 
   const themeObserver = new IntersectionObserver(
     (entries) => {
@@ -98,6 +117,9 @@ function setupScrollStory() {
         navLinks.forEach((link) =>
           link.classList.toggle("is-active", link.dataset.section === theme)
         );
+        // Nicht beim ersten Laden pulsieren, nur bei einem echten Kapitelwechsel
+        if (lastTheme !== null && theme !== lastTheme) triggerThemePulse(theme);
+        lastTheme = theme;
       });
     },
     { threshold: 0.55 }

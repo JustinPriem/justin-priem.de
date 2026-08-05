@@ -30,6 +30,22 @@
 
 body { background: var(--hero-bg); }
 
+/* ---------- Farb-Pulsschlag beim Kapitelwechsel ---------- */
+.theme-pulse {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--pulse-color, #33E7FF) 55%, transparent) 0%, transparent 65%);
+}
+.theme-pulse.is-pulsing { animation: theme-pulse-anim .9s ease-out; }
+@keyframes theme-pulse-anim {
+  0%   { opacity: 0; }
+  12%  { opacity: .4; }
+  100% { opacity: 0; }
+}
+
 /* ---------- Quicknav ---------- */
 .quicknav {
   position: fixed;
