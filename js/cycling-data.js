@@ -50,18 +50,18 @@ const TOURS = [
   },
   {
     "id": "tagestour-1",
-    "title": "Tagestour Beispiel",
+    "title": "Bleilochtalsperre",
+    "route": "Bad Berka → Bleilochtalsperre",
     "type": "day",
-    "route": "Weimar-Runde",
-    "date": "2024",
+    "date": "2026",
+    "days": 1,
     "distanceKm": 85,
     "elevationM": 650,
-    "days": 1,
-    "image": "",
+    "image": "assets/cycling/1785962088464-Bleilochtalsperre.png",
     "description": "Platzhalter für eine deiner Tagestouren — Titel, Strecke und Beschreibung anpassen.",
-    "stravaUrl": "https://www.strava.com/athletes/128212099",
+    "stravaUrl": "https://www.strava.com/activities/18349931780",
     "stravaEmbed": "",
-    "komootUrl": "https://www.komoot.com/de-de/user/758104319088",
+    "komootUrl": "https://www.komoot.com/de-de/tour/2934625578",
     "komootEmbed": ""
   }
 ];
