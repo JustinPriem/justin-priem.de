@@ -23,13 +23,13 @@ const TOURS = [
     "type": "tour",
     "date": "Sommer 2025",
     "days": 2,
-    "distanceKm": 380,
-    "elevationM": 3200,
-    "image": "",
+    "distanceKm": 340,
+    "elevationM": 3827,
+    "image": "assets/cycling/1785961653822-Prag.png",
     "description": "Mehrtägige Tour über die Grenze bis in die tschechische Hauptstadt. Eigentlich war Camping geplant, aber wir haben dann doch bei Vincenzo übernachtet, da wir am ersten Tag viel zu lang unterwegs waren.",
-    "stravaUrl": "https://www.strava.com/athletes/128212099",
+    "stravaUrl": "https://www.strava.com/activities/15262735608",
     "stravaEmbed": "",
-    "komootUrl": "https://www.komoot.com/de-de/user/758104319088",
+    "komootUrl": "https://www.komoot.com/de-de/tour/2444066877",
     "komootEmbed": ""
   },
   {
