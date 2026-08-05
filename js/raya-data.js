@@ -28,12 +28,6 @@ const RAYA_PHOTOS = [
     "caption": "Abkühlung am See"
   },
   {
-    "id": "r4",
-    "src": "",
-    "date": "2024-09-21",
-    "caption": ""
-  },
-  {
     "id": "r5",
     "src": "",
     "date": "2024-12-24",
