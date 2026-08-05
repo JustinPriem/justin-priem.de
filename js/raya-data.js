@@ -17,9 +17,9 @@ const RAYA_PHOTOS = [
   },
   {
     "id": "r2",
-    "src": "",
-    "date": "2024-05-18",
-    "caption": ""
+    "date": "2023-08-08",
+    "caption": "Mystisch",
+    "src": "assets/raya/1785965541460-P1020699optimiert.jpg"
   },
   {
     "id": "r3",
