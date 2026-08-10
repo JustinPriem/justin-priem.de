@@ -67,5 +67,18 @@ const GAMES = [
     "accent": "#ff0000",
     "highlight": "Einer meiner absoluten Lieblingsspiele - 1968 Spielstunden über EA, weiter laufend auf Steam. Ich war mehrere Seasons Master.",
     "cover": "assets/games/1785960721930-apex-rank.png"
+  },
+  {
+    "id": "73b6a225-73cd-4550-8957-2070f7f27f01",
+    "title": "Planetside 2",
+    "genre": "MMO Shooter",
+    "status": "retired",
+    "hours": 1845,
+    "since": "2012",
+    "rank": "BR120",
+    "rankPct": 100,
+    "accent": "#9900ff",
+    "highlight": "Damit hat alles so richtig begonnen - Planetside 2. Mit insgesamt 1845h Spielzeit eines meiner meist gespieltesten und vor allem vielleicht sogar mein Overall Lieblingsspiel. Vanu - BR103 / TR - BR45 / NC - BR120",
+    "cover": ""
   }
 ];
