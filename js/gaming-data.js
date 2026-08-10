@@ -132,5 +132,18 @@ const GAMES = [
     "accent": "#ff6600",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "aa348f3d-99de-46f8-9897-55b1acd3ad04",
+    "title": "Brawlhalla",
+    "genre": "Fighting Game",
+    "status": "active",
+    "hours": 246,
+    "since": "2020",
+    "rank": "Gold Duo",
+    "rankPct": 60,
+    "accent": "#7dc733",
+    "highlight": "",
+    "cover": ""
   }
 ];
