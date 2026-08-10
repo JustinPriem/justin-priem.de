@@ -262,5 +262,18 @@ const GAMES = [
     "accent": "#949494",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "9defe7db-0bdb-48ef-8ff4-dc52fbd324ca",
+    "title": "Battlefield 2042",
+    "genre": "Shooter",
+    "status": "retired",
+    "hours": 276,
+    "since": "2021",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#33e7ff",
+    "highlight": "",
+    "cover": ""
   }
 ];
