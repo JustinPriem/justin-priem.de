@@ -314,5 +314,18 @@ const GAMES = [
     "accent": "#fe7134",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "780b5da3-1c7c-40cd-b56d-ef9d12fc0f0d",
+    "title": "StarCraft II",
+    "genre": "Strategie",
+    "status": "retired",
+    "hours": 100,
+    "since": "",
+    "rank": "Diamond",
+    "rankPct": 70,
+    "accent": "#adf5ff",
+    "highlight": "",
+    "cover": ""
   }
 ];
