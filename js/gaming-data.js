@@ -90,7 +90,7 @@ const GAMES = [
     "since": "2010",
     "rank": "",
     "rankPct": 50,
-    "accent": "#33e7ff",
+    "accent": "#0b5c00",
     "highlight": "Mein erstes Speil in welchem ich wahrscheinlich mehrere hundert Spielstunden habe. Es müssten ca. 350 Spielstunden auf dem Laptop gewesen sein. Keine Ahnung wie ich damals das Top Leaderboard mit Mousepad erreicht habe^^",
     "cover": ""
   }
