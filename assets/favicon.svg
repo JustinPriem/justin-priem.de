@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="bg" cx="32%" cy="28%" r="90%">
+      <stop offset="0%" stop-color="#1a1628"/>
+      <stop offset="100%" stop-color="#12121a"/>
+    </radialGradient>
+    <linearGradient id="letters" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe08a"/>
+      <stop offset="100%" stop-color="#ffc94a"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="62" height="62" rx="14" fill="url(#bg)"/>
+  <rect x="4" y="4" width="56" height="56" rx="11" fill="none" stroke="#ffc94a" stroke-opacity=".85" stroke-width="1.4"/>
+  <text x="32" y="42" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="26"
+        fill="url(#letters)" letter-spacing="-0.5">JCP</text>
+</svg>
