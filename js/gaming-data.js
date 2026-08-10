@@ -137,7 +137,7 @@ const GAMES = [
     "id": "aa348f3d-99de-46f8-9897-55b1acd3ad04",
     "title": "Brawlhalla",
     "genre": "Fighting Game",
-    "status": "active",
+    "status": "retired",
     "hours": 246,
     "since": "2020",
     "rank": "Gold Duo",
