@@ -236,5 +236,18 @@ const GAMES = [
     "accent": "#ff8585",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "3186bbed-f41b-4df4-99f6-bad40d56ecdf",
+    "title": "Minecraft",
+    "genre": "Craft Build",
+    "status": "retired",
+    "hours": 0,
+    "since": "2012",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#33ff5c",
+    "highlight": "",
+    "cover": ""
   }
 ];
