@@ -80,5 +80,18 @@ const GAMES = [
     "accent": "#9900ff",
     "highlight": "Damit hat alles so richtig begonnen - Planetside 2. Mit insgesamt 1845h Spielzeit eines meiner meist gespieltesten und vor allem vielleicht sogar mein Overall Lieblingsspiel. Vanu - BR103 / TR - BR45 / NC - BR120",
     "cover": ""
+  },
+  {
+    "id": "f108159f-4608-4c0b-a3c7-fc4697349865",
+    "title": "Battlefield Heroes",
+    "genre": "Shooter",
+    "status": "retired",
+    "hours": 350,
+    "since": "2010",
+    "rank": "",
+    "rankPct": 50,
+    "accent": "#33e7ff",
+    "highlight": "Mein erstes Speil in welchem ich wahrscheinlich mehrere hundert Spielstunden habe. Es müssten ca. 350 Spielstunden auf dem Laptop gewesen sein. Keine Ahnung wie ich damals das Top Leaderboard mit Mousepad erreicht habe^^",
+    "cover": ""
   }
 ];
