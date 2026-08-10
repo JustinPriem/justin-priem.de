@@ -111,7 +111,7 @@ const GAMES = [
     "id": "b1b12ff3-3f9f-43de-a2d8-ad2afa9d331f",
     "title": "Destiny 2",
     "genre": "Loot Shooter",
-    "status": "active",
+    "status": "retired",
     "hours": 729,
     "since": "2021",
     "rank": "Ascendant",
