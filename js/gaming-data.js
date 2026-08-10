@@ -327,5 +327,18 @@ const GAMES = [
     "accent": "#adf5ff",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "7d610c5d-9fb2-4124-8b15-2bbd42805178",
+    "title": "Heroes of the Storm",
+    "genre": "MOBA",
+    "status": "retired",
+    "hours": 100,
+    "since": "2015",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#8fff33",
+    "highlight": "",
+    "cover": ""
   }
 ];
