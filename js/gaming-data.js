@@ -288,5 +288,18 @@ const GAMES = [
     "accent": "#d3ff33",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "fa555654-d07c-4e07-86f5-07acb6e2ba75",
+    "title": "Paladins",
+    "genre": "Hero Shooter",
+    "status": "retired",
+    "hours": 659,
+    "since": "2016",
+    "rank": "Master",
+    "rankPct": 90,
+    "accent": "#80f0ff",
+    "highlight": "",
+    "cover": ""
   }
 ];
