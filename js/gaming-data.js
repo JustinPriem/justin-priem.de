@@ -301,5 +301,18 @@ const GAMES = [
     "accent": "#80f0ff",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "6af459e1-93ee-4cdb-b139-eb32033db10f",
+    "title": "Overwatch 2",
+    "genre": "Hero Shooter",
+    "status": "retired",
+    "hours": 200,
+    "since": "2018",
+    "rank": "Master",
+    "rankPct": 80,
+    "accent": "#fe7134",
+    "highlight": "",
+    "cover": ""
   }
 ];
