@@ -26,6 +26,14 @@
   --raya-dim: #8B8577;
   --raya-blush: #C98572;
   --raya-line: #E9E2D4;
+
+  --ub-deep: #1a0a2e;
+  --ub-mid: #2d1155;
+  --ub-purple-card: #3a1868;
+  --ub-gold: #ffc94a;
+  --ub-gold-bright: #ffe08a;
+  --ub-pink: #ff3ea5;
+  --ub-cream: #fff8ec;
 }
 
 body { background: var(--hero-bg); }
@@ -111,6 +119,13 @@ body { background: var(--hero-bg); }
   color: var(--raya-ink);
 }
 .quicknav[data-theme="raya"] a.is-active { color: var(--raya-blush); }
+
+.quicknav[data-theme="unbesiegbar"] {
+  background: rgba(26,10,46,.75);
+  border-color: rgba(255,201,74,.3);
+  color: var(--ub-cream);
+}
+.quicknav[data-theme="unbesiegbar"] a.is-active { color: var(--ub-gold); }
 
 /* ---------- Story-Sections: gemeinsames Gerüst ---------- */
 .story {
@@ -544,12 +559,68 @@ body { background: var(--hero-bg); }
 }
 .preview-tile svg { width: 45%; height: 45%; opacity: .55; }
 
-/* ---------- Footer je nach letztem Kapitel (Raya = hell) ---------- */
-#site-footer { background: var(--raya-paper); border-color: var(--raya-line); }
-.footer-name { color: var(--raya-ink); font-family: "Fraunces", serif; font-style: italic; }
-.footer-tag, .social-link { color: var(--raya-dim); }
-.social-link { border-color: var(--raya-line); }
-.social-link:hover { color: var(--raya-blush); border-color: var(--raya-blush); }
+/* ---------- Unbesiegbar-Kapitel ---------- */
+.story-unbesiegbar {
+  background: var(--ub-deep);
+  color: var(--ub-cream);
+  font-family: "Nunito", "Inter", sans-serif;
+  align-items: center;
+  text-align: center;
+}
+.story-unbesiegbar .story-bg {
+  background-image:
+    radial-gradient(50% 40% at 20% 10%, rgba(255,201,74,.16), transparent 45%),
+    radial-gradient(55% 45% at 80% 85%, rgba(255,62,165,.18), transparent 50%),
+    linear-gradient(160deg, var(--ub-deep), var(--ub-mid) 60%, #170a2b);
+}
+.crown-field {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.crown {
+  position: absolute;
+  bottom: -5%;
+  opacity: 0;
+}
+.story-unbesiegbar.is-visible .crown {
+  animation-name: heart-rise;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+.cf-1 { left: 8%;  font-size: 1.3rem; animation-duration: 10s;   animation-delay: .3s; }
+.cf-2 { left: 26%; font-size: .8rem;  animation-duration: 8s;    animation-delay: 2.8s; }
+.cf-3 { left: 48%; font-size: 1.5rem; animation-duration: 11.5s; animation-delay: 1.2s; }
+.cf-4 { left: 68%; font-size: .85rem; animation-duration: 9s;    animation-delay: 4s; }
+.cf-5 { left: 88%; font-size: 1.2rem; animation-duration: 12s;   animation-delay: .9s; }
+
+.story-unbesiegbar .story-inner { display: flex; flex-direction: column; align-items: center; }
+.story-unbesiegbar .story-eyebrow { color: var(--ub-gold); }
+.story-unbesiegbar h2 {
+  font-family: "Baloo 2", "Fraunces", serif;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--ub-gold-bright), var(--ub-pink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.story-unbesiegbar .story-text { color: rgba(255,248,236,.75); text-align: center; }
+.story-unbesiegbar .story-cta {
+  color: var(--ub-deep);
+  border-color: var(--ub-gold);
+  background: linear-gradient(135deg, var(--ub-gold-bright), var(--ub-gold));
+  font-weight: 700;
+}
+.story-unbesiegbar .story-cta:hover {
+  box-shadow: 0 12px 26px -12px var(--ub-gold);
+}
+
+/* ---------- Footer je nach letztem Kapitel (Unbesiegbar) ---------- */
+#site-footer { background: var(--ub-deep); border-color: rgba(255,201,74,.25); }
+.footer-name { color: var(--ub-gold-bright); font-family: "Fraunces", serif; font-style: italic; }
+.footer-tag, .social-link { color: rgba(255,248,236,.6); }
+.social-link { border-color: rgba(255,201,74,.25); }
+.social-link:hover { color: var(--ub-gold); border-color: var(--ub-gold); }
 
 @media (max-width: 640px) {
   .qn-links { gap: .9rem; }

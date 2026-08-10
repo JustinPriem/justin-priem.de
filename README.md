@@ -1,11 +1,13 @@
 # justin-priem.de
 
-Eine statische Website (reines HTML/CSS/JS, kein Build-Prozess nötig) mit vier Seiten:
+Eine statische Website (reines HTML/CSS/JS, kein Build-Prozess nötig) mit fünf Seiten:
 
-- `index.html` — Hub mit den drei Bereichen
+- `index.html` — Hub mit den vier Bereichen
 - `gaming.html` — Gaming History (futuristisches HUD-Theme)
 - `cycling.html` — Radtouren (Strava/Komoot-inspiriertes Theme)
 - `raya.html` — Foto-Galerie, nach Datum sortierbar (schlicht & clean)
+- `unbesiegbar.html` — eigenständiges Mini-Spiel (komplett selbst-enthalten,
+  eigenes HTML/CSS/JS, kein gemeinsames Theme mit dem Rest der Seite)
 
 Alle Inhalte sind aktuell **Platzhalter** — die Seite ist voll funktionsfähig,
 und lässt sich entweder über die Daten-Dateien (siehe unten) oder bequem über
@@ -153,6 +155,7 @@ gaming.html          Gaming-Sektion
 cycling.html         Radfahren-Sektion (Kartenübersicht)
 tour.html            Tour-Detailseite (?id=…, verlinkt von jeder Karte)
 raya.html            Raya-Sektion
+unbesiegbar.html     Mini-Spiel, komplett eigenständig (eigenes CSS/JS im File)
 css/
   base.css            gemeinsamer Reset + Footer-Grundgerüst
   landing.css          Theme für index.html

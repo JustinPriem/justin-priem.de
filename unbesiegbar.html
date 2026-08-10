@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>UNBESIEGBAR 👑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.2/confetti.browser.min.js"></script>
+<style>
+  :root{
+    --bg-deep: #1a0a2e;
+    --bg-mid: #2d1155;
+    --gold: #ffc94a;
+    --gold-bright: #ffe08a;
+    --pink: #ff3ea5;
+    --cream: #fff8ec;
+    --purple-card: #3a1868;
+  }
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{ height:100%; margin:0; overscroll-behavior:none; }
+  body{
+    font-family:'Nunito', sans-serif;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,201,74,0.15), transparent 40%),
+      radial-gradient(circle at 80% 85%, rgba(255,62,165,0.18), transparent 45%),
+      linear-gradient(160deg, var(--bg-deep), var(--bg-mid) 60%, #170a2b);
+    color: var(--cream);
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 18px;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
+  .app{
+    width:100%;
+    max-width: 430px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+
+  /* ---- LAYOUT / NAVIGATION ---- */
+  .layout{
+    display:flex;
+    align-items:flex-start;
+    gap:20px;
+    width:100%;
+    max-width: 700px;
+    justify-content:center;
+  }
+  .sidebar{
+    width:210px;
+    flex-shrink:0;
+    background: linear-gradient(160deg, var(--purple-card), #23103f);
+    border: 2px solid rgba(255,201,74,0.25);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .sidebar-title{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    color: var(--gold-bright);
+    font-size: 1rem;
+    margin-bottom: 12px;
+    padding: 0 6px;
+  }
+  .game-list{
+    list-style:none;
+    margin:0; padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .game-list button{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    text-align:left;
+    background:transparent;
+    border:none;
+    color: rgba(255,248,236,0.85);
+    font-family:'Nunito', sans-serif;
+    font-weight:700;
+    font-size:0.85rem;
+    padding: 9px 10px;
+    border-radius: 12px;
+    cursor:pointer;
+  }
+  .game-list button:hover{ background: rgba(255,255,255,0.07); }
+  .game-list button.active{
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: var(--bg-deep);
+  }
+  .menu-toggle{
+    display:none;
+    position:fixed;
+    top:16px; left:16px;
+    z-index:90;
+    width:44px; height:44px;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    border: 2px solid rgba(255,201,74,0.4);
+    background: var(--purple-card);
+    color: var(--gold-bright);
+    font-size: 1.3rem;
+    cursor:pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  }
+  .sidebar-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background: rgba(0,0,0,0.55);
+    z-index:70;
+  }
+  .sidebar-overlay.show{ display:block; }
+
+  @media (max-width: 760px){
+    .menu-toggle{ display:flex; }
+    .layout{ margin-top: 54px; }
+    .sidebar{
+      position:fixed;
+      top:0; left:0;
+      height:100%;
+      width:78%;
+      max-width: 300px;
+      border-radius: 0 20px 20px 0;
+      transform: translateX(-105%);
+      transition: transform .28s ease;
+      z-index:80;
+      overflow-y:auto;
+      padding-top: 70px;
+    }
+    .sidebar.open{ transform: translateX(0); }
+  }
+
+  /* ---- HUD ---- */
+  .hud{
+    background: linear-gradient(135deg, var(--purple-card), #2a1050);
+    border: 2px solid rgba(255,201,74,0.35);
+    border-radius: 22px;
+    padding: 14px 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  .hud-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .level-badge{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 1.05rem;
+    color: var(--bg-deep);
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    padding: 6px 14px;
+    border-radius: 999px;
+    box-shadow: 0 3px 0 #c98f1c;
+  }
+  .title-name{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    color: var(--gold-bright);
+    text-align:right;
+    line-height:1.15;
+  }
+  .xp-bar-track{
+    height: 16px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 999px;
+    overflow:hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .xp-bar-fill{
+    height:100%;
+    border-radius:999px;
+    background: linear-gradient(90deg, var(--pink), var(--gold));
+    transition: width 0.6s cubic-bezier(.2,.9,.25,1.2);
+    box-shadow: 0 0 12px rgba(255,201,74,0.7);
+  }
+  .xp-label{
+    font-size:0.72rem;
+    color: rgba(255,248,236,0.7);
+    margin-top:6px;
+    text-align:center;
+    font-weight:800;
+    letter-spacing:0.03em;
+  }
+
+  /* ---- CARD ---- */
+  .card{
+    background: linear-gradient(160deg, var(--purple-card), #23103f);
+    border-radius: 26px;
+    border: 2px solid rgba(255,201,74,0.25);
+    padding: 26px 20px 28px;
+    min-height: 380px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    position:relative;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.4);
+  }
+
+  .crown-emoji{ font-size: 3.2rem; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.4)); }
+
+  h1.hero{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 2rem;
+    margin: 10px 0 4px;
+    background: linear-gradient(90deg, var(--gold-bright), var(--pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sub{
+    font-size:0.95rem;
+    color: rgba(255,248,236,0.8);
+    font-weight:600;
+    max-width: 300px;
+    margin-bottom: 18px;
+  }
+
+  .btn{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:1.15rem;
+    color: var(--bg-deep);
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    border:none;
+    border-radius: 999px;
+    padding: 16px 38px;
+    box-shadow: 0 6px 0 #c98f1c, 0 10px 20px rgba(0,0,0,0.35);
+    cursor:pointer;
+    touch-action: manipulation;
+    transition: transform .08s ease;
+  }
+  .btn:active{ transform: translateY(4px); box-shadow: 0 2px 0 #c98f1c, 0 4px 10px rgba(0,0,0,0.35); }
+
+  .game-title{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:1.3rem;
+    color: var(--gold-bright);
+    margin-bottom: 6px;
+  }
+  .game-instr{
+    font-size:0.88rem;
+    color: rgba(255,248,236,0.75);
+    font-weight:600;
+    margin-bottom: 20px;
+  }
+
+  .grid2{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width:100%;
+  }
+  .tile{
+    aspect-ratio: 1;
+    border-radius: 18px;
+    border: none;
+    cursor:pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35), inset 0 -6px 0 rgba(0,0,0,0.15);
+    transition: transform .08s ease;
+  }
+  .tile:active{ transform: scale(0.94); }
+
+  .row3{
+    display:flex;
+    gap:14px;
+    width:100%;
+    justify-content:center;
+  }
+  .card-flip{
+    width: 78px;
+    height: 108px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4a2088, #2a1050);
+    border: 2px solid var(--gold);
+    font-size: 2rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color: var(--gold-bright);
+    transition: transform .12s ease;
+  }
+  .card-flip:active{ transform: scale(0.93) rotateY(15deg); }
+
+  .num-row{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    width:100%;
+  }
+  .num-btn{
+    aspect-ratio:1;
+    border-radius: 12px;
+    border:none;
+    background: linear-gradient(135deg, #4a2088, #33125e);
+    color: var(--cream);
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:1.1rem;
+    cursor:pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+  }
+  .num-btn:active{ transform: translateY(3px); box-shadow:none; }
+
+  .simon-seq{
+    font-size: 1rem;
+    color: var(--gold-bright);
+    font-weight:800;
+    margin-bottom: 14px;
+    min-height: 1.4em;
+    letter-spacing: 0.15em;
+  }
+
+  .tap-target{
+    width: 160px;
+    height:160px;
+    border-radius: 50%;
+    border:none;
+    background: radial-gradient(circle at 35% 30%, var(--pink), #b3116a);
+    color:#fff;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size:1.1rem;
+    box-shadow: 0 10px 25px rgba(255,62,165,0.4);
+    cursor:pointer;
+  }
+  .tap-target:active{ transform: scale(0.92); }
+
+  .balance-track{
+    position:relative;
+    width:100%;
+    height: 14px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 999px;
+    margin: 10px 0 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .balance-target{
+    position:absolute;
+    left:50%; top:50%;
+    width: 4px; height: 28px;
+    background: var(--gold-bright);
+    transform: translate(-50%,-50%);
+    border-radius: 4px;
+  }
+  .balance-marker{
+    position:absolute;
+    top:50%;
+    width: 20px; height: 20px;
+    border-radius:50%;
+    background: var(--pink);
+    box-shadow: 0 0 12px rgba(255,62,165,0.8);
+    transform: translate(-50%,-50%);
+    animation: balanceSlide 1.1s ease-in-out infinite alternate;
+  }
+  @keyframes balanceSlide{ from{ left:6%; } to{ left:94%; } }
+
+  .memory-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width:100%;
+  }
+  .mem-card{
+    aspect-ratio:1;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4a2088, #2a1050);
+    border: 2px solid var(--gold);
+    color: var(--gold-bright);
+    font-size: 1.6rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+
+  .stack-area{
+    width:100%;
+    min-height: 130px;
+    display:flex;
+    flex-direction:column-reverse;
+    align-items:center;
+    gap:4px;
+    margin-bottom: 16px;
+  }
+  .stack-block{
+    width: 90px;
+    height: 26px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    box-shadow: 0 3px 0 #c98f1c;
+  }
+
+  .scratch-wrap{
+    position:relative;
+    width: 240px;
+    height: 140px;
+    border-radius: 16px;
+    overflow:hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  }
+  .scratch-prize{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    gap: 12px;
+    font-size: 2rem;
+    background: linear-gradient(135deg, #4a2088, #2a1050);
+  }
+  .scratch-canvas{
+    position:absolute; inset:0;
+    touch-action: none;
+    cursor: pointer;
+  }
+
+  .dartboard{
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--pink) 0 12%, #fff 12% 24%, var(--pink) 24% 36%, #fff 36% 48%, var(--pink) 48% 60%, #fff 60% 100%);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  }
+  .dart-center{ font-size: 1.6rem; }
+
+  /* ---- WIN OVERLAY ---- */
+  .win-overlay{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background: rgba(10,3,20,0.75);
+    backdrop-filter: blur(3px);
+    z-index: 50;
+    padding: 20px;
+  }
+  .win-overlay.show{ display:flex; }
+  .win-box{
+    background: linear-gradient(160deg, var(--gold-bright), var(--gold) 60%, #e8a51f);
+    border-radius: 28px;
+    padding: 34px 26px;
+    text-align:center;
+    max-width: 340px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    animation: popIn .45s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes popIn{
+    0%{ transform: scale(0.3) rotate(-8deg); opacity:0; }
+    60%{ transform: scale(1.08) rotate(2deg); opacity:1; }
+    100%{ transform: scale(1) rotate(0); }
+  }
+  .win-emoji{ font-size: 4rem; animation: bounce 0.9s infinite; }
+  @keyframes bounce{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-14px);} }
+  .win-title{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 1.7rem;
+    color: var(--bg-deep);
+    margin: 8px 0 4px;
+  }
+  .win-quote{
+    font-weight:800;
+    color: #5a3a00;
+    font-size: 0.95rem;
+    margin-bottom: 18px;
+  }
+  .win-xp{
+    display:inline-block;
+    background: var(--bg-deep);
+    color: var(--gold-bright);
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    padding: 8px 18px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+  }
+
+  /* ---- LEVEL UP OVERLAY ---- */
+  .lvl-overlay{
+    position:fixed; inset:0;
+    display:none;
+    align-items:center; justify-content:center;
+    background: radial-gradient(circle at 50% 40%, rgba(255,201,74,0.25), rgba(10,3,20,0.9));
+    z-index: 60;
+    padding:20px;
+  }
+  .lvl-overlay.show{ display:flex; }
+  .lvl-box{
+    text-align:center;
+    animation: lvlPop .6s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes lvlPop{
+    0%{ transform: scale(0.2); opacity:0; }
+    70%{ transform: scale(1.15); opacity:1; }
+    100%{ transform: scale(1); }
+  }
+  .lvl-crown{ font-size: 5.5rem; filter: drop-shadow(0 0 30px var(--gold)); animation: spin360 1.4s ease-out; }
+  @keyframes spin360{ from{ transform: rotate(0deg) scale(0.5);} to{ transform: rotate(360deg) scale(1);} }
+  .lvl-title{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 2.1rem;
+    color: var(--gold-bright);
+    margin-top: 10px;
+    text-shadow: 0 0 20px rgba(255,201,74,0.8);
+  }
+  .lvl-sub{
+    font-weight:800;
+    color: var(--cream);
+    margin-top: 6px;
+    font-size:1.05rem;
+  }
+
+  .footer-note{
+    text-align:center;
+    font-size: 0.72rem;
+    color: rgba(255,248,236,0.4);
+    font-weight:600;
+    padding-bottom: 6px;
+  }
+
+  .back-link{
+    position:fixed;
+    top:16px; right:16px;
+    z-index:95;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background: rgba(58,24,104,0.75);
+    border: 1.5px solid rgba(255,201,74,0.4);
+    color: var(--gold-bright);
+    font-family:'Nunito', sans-serif;
+    font-weight:800;
+    font-size:0.78rem;
+    text-decoration:none;
+    padding: 8px 14px;
+    border-radius: 999px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    backdrop-filter: blur(4px);
+  }
+  .back-link:hover{ border-color: var(--gold-bright); }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="index.html">← justin-priem.de</a>
+
+<button class="menu-toggle" id="menuToggle" aria-label="Spiele-Menü">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-title">👑 Spiele</div>
+    <ul class="game-list" id="gameList"></ul>
+  </nav>
+
+  <div class="app">
+    <div class="hud">
+      <div class="hud-top">
+        <span class="level-badge" id="levelBadge">Level 1</span>
+        <span class="title-name" id="titleName">Anfängerin<br>der Perfektion</span>
+      </div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="xpFill" style="width:0%"></div></div>
+      <div class="xp-label" id="xpLabel">0 / 100 XP</div>
+    </div>
+
+    <div class="card" id="cardArea">
+      <!-- dynamic content injected here -->
+    </div>
+
+    <div class="footer-note">100 % Gewinnquote · wissenschaftlich nicht geprüft 👑</div>
+  </div>
+</div>
+
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-box">
+    <div class="win-emoji">🏆</div>
+    <div class="win-title" id="winTitle">GEWONNEN!</div>
+    <div class="win-quote" id="winQuote">Absolut makellos.</div>
+    <div class="win-xp" id="winXp">+20 XP</div>
+    <div><button class="btn" id="continueBtn">Weiter so →</button></div>
+  </div>
+</div>
+
+<div class="lvl-overlay" id="lvlOverlay">
+  <div class="lvl-box">
+    <div class="lvl-crown">👑</div>
+    <div class="lvl-title">LEVEL UP!</div>
+    <div class="lvl-sub" id="lvlSubText">Level 2 erreicht</div>
+    <div style="margin-top:22px;"><button class="btn" id="lvlContinueBtn">Weiter →</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- STATE ---------------- */
+  const STORAGE_KEY = "unbesiegbar_state_v1";
+  let state = loadState();
+  if(typeof state.gameIndex !== "number") state.gameIndex = 0;
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return { xp: 0, level: 1, gamesPlayed: 0, gameIndex: 0 };
+  }
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  const XP_PER_LEVEL = 100;
+  const TITLES = [
+    "Anfängerin der Perfektion",
+    "Meisterin des Zufalls",
+    "Genie ohne Anstrengung",
+    "Unaufhaltsame Legende",
+    "Königin der Fehlversuche",
+    "Grandmaster of Everything",
+    "Lebende Legende",
+    "Unbesiegbare Ikone",
+    "Chaos-Champion",
+    "Ultimative Siegerin"
+  ];
+
+  function titleForLevel(lvl){
+    return TITLES[Math.min(lvl-1, TITLES.length-1)];
+  }
+
+  function updateHUD(){
+    document.getElementById("levelBadge").textContent = "Level " + state.level;
+    document.getElementById("titleName").textContent = titleForLevel(state.level);
+    const pct = Math.min(100, Math.round((state.xp / XP_PER_LEVEL) * 100));
+    document.getElementById("xpFill").style.width = pct + "%";
+    document.getElementById("xpLabel").textContent = state.xp + " / " + XP_PER_LEVEL + " XP";
+  }
+
+  /* ---------------- WIN QUOTES ---------------- */
+  const WIN_TITLES = ["GEWONNEN!", "PERFEKT!", "TRIUMPH!", "GENIE-MODUS!", "FLAWLESS!", "LEGENDÄR!", "UNGLAUBLICH!"];
+  const WIN_QUOTES = [
+    "Absolut makellos, Schatz.",
+    "Niemand hätte das besser gekonnt.",
+    "Die Konkurrenz gibt bereits auf.",
+    "Das war reines Naturtalent, Vivi.",
+    "Ein Meisterwerk der Entscheidungsfindung.",
+    "Sogar die App ist beeindruckt.",
+    "100 % Erfolgsquote bleibt bestehen.",
+    "Historisch. Episch. Unbestreitbar.",
+    "Du hast die Spielregeln neu geschrieben.",
+    "Das war Kunst, kein Spiel.",
+    "Raya ist stolz auf dich.",
+    "Selbst Raya bellt vor Begeisterung.",
+    "Vivi räumt wieder alles ab.",
+    "Raya würde jetzt mit dir feiern, Schatz.",
+    "Du bist die Beste, Schatz — Punkt.",
+    "Vivi, unangefochtene Championesse.",
+    "Raya hätte es nicht besser gemacht (aber du auch nicht schlechter).",
+    "Schatz, das nennt man Klasse.",
+    "Selbst im Schlaf gewinnst du, Vivi."
+  ];
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  /* ---------------- CONFETTI ---------------- */
+  function bigConfetti(){
+    if(typeof confetti !== "function") return;
+    const colors = ["#ffc94a", "#ff3ea5", "#fff8ec", "#ffe08a"];
+    confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 }, colors: colors });
+    setTimeout(()=> confetti({ particleCount: 60, angle: 60, spread: 70, origin: { x: 0 }, colors: colors }), 150);
+    setTimeout(()=> confetti({ particleCount: 60, angle: 120, spread: 70, origin: { x: 1 }, colors: colors }), 150);
+  }
+  function megaConfetti(){
+    if(typeof confetti !== "function") return;
+    const duration = 1600;
+    const end = Date.now() + duration;
+    const colors = ["#ffc94a", "#ff3ea5", "#fff8ec"];
+    (function frame(){
+      confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0 }, colors });
+      confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1 }, colors });
+      if(Date.now() < end) requestAnimationFrame(frame);
+    })();
+    confetti({ particleCount: 180, spread: 160, origin: { y: 0.5 }, colors, startVelocity: 55 });
+  }
+
+  /* ---------------- WIN FLOW ---------------- */
+  const winOverlay = document.getElementById("winOverlay");
+  const lvlOverlay = document.getElementById("lvlOverlay");
+  let pendingLevelUp = false;
+
+  function triggerWin(xpGain, customTitle){
+    document.getElementById("winTitle").textContent = customTitle || rand(WIN_TITLES);
+    document.getElementById("winQuote").textContent = rand(WIN_QUOTES);
+    document.getElementById("winXp").textContent = "+" + xpGain + " XP";
+    bigConfetti();
+
+    state.xp += xpGain;
+    state.gamesPlayed += 1;
+    pendingLevelUp = false;
+    if(state.xp >= XP_PER_LEVEL){
+      state.xp -= XP_PER_LEVEL;
+      state.level += 1;
+      pendingLevelUp = true;
+    }
+    saveState();
+    updateHUD();
+    winOverlay.classList.add("show");
+  }
+
+  document.getElementById("continueBtn").addEventListener("click", function(){
+    winOverlay.classList.remove("show");
+    if(pendingLevelUp){
+      document.getElementById("lvlSubText").textContent = "Level " + state.level + " erreicht — " + titleForLevel(state.level);
+      lvlOverlay.classList.add("show");
+      megaConfetti();
+    } else {
+      playNextGame();
+    }
+  });
+
+  document.getElementById("lvlContinueBtn").addEventListener("click", function(){
+    lvlOverlay.classList.remove("show");
+    playNextGame();
+  });
+
+  /* ---------------- SCREENS ---------------- */
+  const cardArea = document.getElementById("cardArea");
+
+  function renderStart(){
+    cardArea.innerHTML =
+      '<div class="crown-emoji">👑</div>' +
+      '<h1 class="hero">UNBESIEGBAR</h1>' +
+      '<div class="sub">Es wird nicht leicht, Schatz. Aber du schaffst das.</div>' +
+      '<button class="btn" id="playBtn">SPIELEN</button>';
+    document.getElementById("playBtn").addEventListener("click", () => playGameAt(state.gameIndex));
+  }
+
+  const GAME_LIST = [
+    { id:"colorTap",   icon:"🎯", label:"Farb-Reflex",           render: () => renderColorTap() },
+    { id:"cardPick",   icon:"🎴", label:"Glücks-Karten",         render: () => renderCardPick() },
+    { id:"numberGuess",icon:"🔢", label:"Zahlen-Orakel",         render: () => renderNumberGuess() },
+    { id:"simonSays",  icon:"🧠", label:"Merk-Meisterin",        render: () => renderSimonSays() },
+    { id:"speedTap",   icon:"⚡", label:"Blitz-Test",            render: () => renderSpeedTap() },
+    { id:"rps",        icon:"✂️", label:"Schere, Stein, Papier", render: () => renderRPS() },
+    { id:"balance",    icon:"⚖️", label:"Balance-Test",          render: () => renderBalance() },
+    { id:"emojiMatch", icon:"🍀", label:"Emoji-Memory",          render: () => renderEmojiMatch() },
+    { id:"towerStack", icon:"🧱", label:"Wackel-Turm",           render: () => renderTowerStack() },
+    { id:"rayaSniff",  icon:"🐾", label:"Rayas Schnüffel-Test",  render: () => renderRayaSniff() },
+    { id:"scratch",    icon:"🎫", label:"Rubbellos",             render: () => renderScratch() },
+    { id:"dart",       icon:"🎯", label:"Dart-Wurf",             render: () => renderDart() }
+  ];
+
+  function playGameAt(index){
+    state.gameIndex = ((index % GAME_LIST.length) + GAME_LIST.length) % GAME_LIST.length;
+    saveState();
+    updateSidebarActive();
+    GAME_LIST[state.gameIndex].render();
+    closeSidebarOnMobile();
+  }
+
+  function playNextGame(){
+    playGameAt(state.gameIndex + 1);
+  }
+
+  /* ---------------- SIDEBAR / MENÜ ---------------- */
+  const sidebar = document.getElementById("sidebar");
+  const sidebarOverlay = document.getElementById("sidebarOverlay");
+  const menuToggle = document.getElementById("menuToggle");
+  const gameListEl = document.getElementById("gameList");
+
+  function buildSidebar(){
+    gameListEl.innerHTML = "";
+    GAME_LIST.forEach((g, idx) => {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.dataset.index = idx;
+      btn.innerHTML = '<span>' + g.icon + '</span><span>' + g.label + '</span>';
+      btn.addEventListener("click", () => playGameAt(idx));
+      li.appendChild(btn);
+      gameListEl.appendChild(li);
+    });
+  }
+
+  function updateSidebarActive(){
+    const buttons = gameListEl.querySelectorAll("button");
+    buttons.forEach(b => {
+      b.classList.toggle("active", Number(b.dataset.index) === state.gameIndex);
+    });
+  }
+
+  function openSidebar(){
+    sidebar.classList.add("open");
+    sidebarOverlay.classList.add("show");
+  }
+  function closeSidebar(){
+    sidebar.classList.remove("open");
+    sidebarOverlay.classList.remove("show");
+  }
+  function closeSidebarOnMobile(){
+    if(window.innerWidth <= 760) closeSidebar();
+  }
+
+  menuToggle.addEventListener("click", () => {
+    if(sidebar.classList.contains("open")) closeSidebar(); else openSidebar();
+  });
+  sidebarOverlay.addEventListener("click", closeSidebar);
+
+  /* --- Game 1: Tippe auf die richtige Farbe (egal was du tippst) --- */
+  function renderColorTap(){
+    const colors = [
+      {name:"Blau", hex:"#3d7bff"},
+      {name:"Rot", hex:"#ff4d4d"},
+      {name:"Grün", hex:"#3ddc84"},
+      {name:"Gelb", hex:"#ffd93d"}
+    ];
+    const shuffled = colors.slice().sort(()=>Math.random()-0.5);
+    const target = rand(colors);
+
+    cardArea.innerHTML =
+      '<div class="game-title">🎯 Farb-Reflex</div>' +
+      '<div class="game-instr">Tippe auf das <b>' + target.name + '</b>e Feld!</div>' +
+      '<div class="grid2" id="tileGrid"></div>';
+
+    const grid = document.getElementById("tileGrid");
+    shuffled.forEach(c => {
+      const btn = document.createElement("button");
+      btn.className = "tile";
+      btn.style.background = c.hex;
+      btn.addEventListener("click", () => triggerWin(15 + Math.floor(Math.random()*10)));
+      grid.appendChild(btn);
+    });
+  }
+
+  /* --- Game 2: Ziehe eine Karte (jede ist ein Gewinn) --- */
+  function renderCardPick(){
+    cardArea.innerHTML =
+      '<div class="game-title">🎴 Glücks-Karten</div>' +
+      '<div class="game-instr">Ziehe eine Karte — jede führt zum Sieg.</div>' +
+      '<div class="row3" id="cardRow"></div>';
+
+    const row = document.getElementById("cardRow");
+    for(let i=0;i<3;i++){
+      const c = document.createElement("div");
+      c.className = "card-flip";
+      c.textContent = "🂠";
+      c.addEventListener("click", function(){
+        c.textContent = "⭐";
+        setTimeout(()=> triggerWin(15 + Math.floor(Math.random()*10)), 250);
+      });
+      row.appendChild(c);
+    }
+  }
+
+  /* --- Game 3: Zahl raten (jede Zahl ist richtig) --- */
+  function renderNumberGuess(){
+    cardArea.innerHTML =
+      '<div class="game-title">🔢 Zahlen-Orakel</div>' +
+      '<div class="game-instr">Rate eine Zahl zwischen 1 und 10.</div>' +
+      '<div class="num-row" id="numRow"></div>';
+
+    const row = document.getElementById("numRow");
+    for(let i=1;i<=10;i++){
+      const b = document.createElement("button");
+      b.className = "num-btn";
+      b.textContent = i;
+      b.addEventListener("click", () => triggerWin(15 + Math.floor(Math.random()*10)));
+      row.appendChild(b);
+    }
+  }
+
+  /* --- Game 4: Merk dir die Reihenfolge (3 Taps, immer richtig) --- */
+  function renderSimonSays(){
+    const symbols = ["🔴","🟡","🟢","🔵"];
+    const seq = [rand(symbols), rand(symbols), rand(symbols)];
+    let tapCount = 0;
+
+    cardArea.innerHTML =
+      '<div class="game-title">🧠 Merk-Meisterin</div>' +
+      '<div class="game-instr">Merke dir die Reihenfolge, dann tippe 3-mal nach.</div>' +
+      '<div class="simon-seq" id="seqDisplay">' + seq.join(" ") + '</div>' +
+      '<div class="grid2" id="simonGrid"></div>';
+
+    setTimeout(()=>{
+      const disp = document.getElementById("seqDisplay");
+      if(disp) disp.textContent = "??? ??? ???";
+    }, 1800);
+
+    const grid = document.getElementById("simonGrid");
+    symbols.forEach(s => {
+      const btn = document.createElement("button");
+      btn.className = "tile";
+      btn.style.fontSize = "2rem";
+      btn.style.display = "flex";
+      btn.style.alignItems = "center";
+      btn.style.justifyContent = "center";
+      btn.style.background = "linear-gradient(135deg,#4a2088,#2a1050)";
+      btn.textContent = s;
+      btn.addEventListener("click", () => {
+        tapCount++;
+        btn.style.transform = "scale(0.9)";
+        setTimeout(()=> btn.style.transform = "", 150);
+        const disp = document.getElementById("seqDisplay");
+        if(disp) disp.textContent = "Eingabe " + Math.min(tapCount,3) + " / 3";
+        if(tapCount >= 3){
+          triggerWin(15 + Math.floor(Math.random()*10));
+        }
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  /* --- Game 5: Schnelligkeitstest (rot -> grün, immer "blitzschnell") --- */
+  function renderSpeedTap(){
+    cardArea.innerHTML =
+      '<div class="game-title">⚡ Blitz-Test</div>' +
+      '<div class="game-instr">Warte auf Grün, dann tippe so schnell du kannst!</div>' +
+      '<button class="tap-target" id="tapTarget">WARTE...</button>';
+
+    const target = document.getElementById("tapTarget");
+    target.style.background = "radial-gradient(circle at 35% 30%, #ff5b5b, #b3122c)";
+    target.style.boxShadow = "0 10px 25px rgba(255,80,80,0.4)";
+
+    const delay = 1000 + Math.random() * 2000; // 1-3 Sekunden
+    let isGreen = false;
+    const readyTimer = setTimeout(()=>{
+      isGreen = true;
+      target.style.background = "radial-gradient(circle at 35% 30%, #3ddc84, #1e9c58)";
+      target.style.boxShadow = "0 10px 25px rgba(61,220,132,0.5)";
+      target.textContent = "JETZT!";
+    }, delay);
+
+    const speedTitles = ["BLITZSCHNELL!", "MEGA SCHNELL!", "WAHNSINNIG FIX!", "REAKTIONS-GÖTTIN!", "SCHNELLER GEHT'S NICHT!"];
+
+    target.addEventListener("click", function(){
+      clearTimeout(readyTimer);
+      triggerWin(15 + Math.floor(Math.random()*10), rand(speedTitles));
+    });
+  }
+
+  /* --- Game 6: Schere, Stein, Papier (jede Wahl gewinnt) --- */
+  function renderRPS(){
+    cardArea.innerHTML =
+      '<div class="game-title">✂️ Schere, Stein, Papier</div>' +
+      '<div class="game-instr">Wähle dein Symbol!</div>' +
+      '<div class="row3" id="rpsRow"></div>';
+
+    const row = document.getElementById("rpsRow");
+    ["✂️","🪨","📄"].forEach(sym => {
+      const b = document.createElement("button");
+      b.className = "card-flip";
+      b.style.fontSize = "2.2rem";
+      b.textContent = sym;
+      b.addEventListener("click", () => triggerWin(15 + Math.floor(Math.random()*10)));
+      row.appendChild(b);
+    });
+  }
+
+  /* --- Game 7: Balance-Test (Stopp ist immer perfekt) --- */
+  function renderBalance(){
+    cardArea.innerHTML =
+      '<div class="game-title">⚖️ Balance-Test</div>' +
+      '<div class="game-instr">Tippe auf STOPP, wenn der Zeiger in der Mitte ist.</div>' +
+      '<div class="balance-track"><div class="balance-target"></div><div class="balance-marker"></div></div>' +
+      '<button class="btn" id="balanceBtn" style="margin-top:26px;">STOPP</button>';
+
+    document.getElementById("balanceBtn").addEventListener("click", () => triggerWin(15 + Math.floor(Math.random()*10), "PERFEKT GETROFFEN!"));
+  }
+
+  /* --- Game 8: Emoji-Memory (alle Paare aufdecken, jedes Paar "stimmt") --- */
+  function renderEmojiMatch(){
+    cardArea.innerHTML =
+      '<div class="game-title">🍀 Emoji-Memory</div>' +
+      '<div class="game-instr" id="memInstr">Finde alle 3 Paare — dreh immer zwei Karten um!</div>' +
+      '<div class="memory-grid" id="memGrid"></div>';
+
+    const grid = document.getElementById("memGrid");
+    const instr = document.getElementById("memInstr");
+    const emojis = ["🍀","🍀","⭐","⭐","🌸","🌸"].sort(()=>Math.random()-0.5);
+    let openCards = [];
+    let matchedPairs = 0;
+    let locked = false;
+
+    emojis.forEach(e => {
+      const c = document.createElement("button");
+      c.className = "mem-card";
+      c.textContent = "❓";
+      c.dataset.matched = "0";
+      c.addEventListener("click", function(){
+        if(locked || c.dataset.matched === "1" || openCards.includes(c)) return;
+
+        c.textContent = e;
+        openCards.push(c);
+
+        if(openCards.length === 2){
+          locked = true;
+          instr.textContent = "Richtig! Perfektes Paar! ✓";
+          setTimeout(()=>{
+            openCards.forEach(card => card.dataset.matched = "1");
+            openCards.forEach(card => card.style.opacity = "0.55");
+            openCards = [];
+            matchedPairs++;
+            locked = false;
+
+            if(matchedPairs >= 3){
+              triggerWin(15 + Math.floor(Math.random()*10), "ALLE PAARE GEFUNDEN!");
+            } else {
+              instr.textContent = matchedPairs + " von 3 Paaren gefunden — weiter geht's!";
+            }
+          }, 700);
+        }
+      });
+      grid.appendChild(c);
+    });
+  }
+
+  /* --- Game 9: Wackel-Turm (fällt nie um) --- */
+  function renderTowerStack(){
+    cardArea.innerHTML =
+      '<div class="game-title">🧱 Wackel-Turm</div>' +
+      '<div class="game-instr">Staple 3 Bausteine — er fällt garantiert nicht um.</div>' +
+      '<div class="stack-area" id="stackArea"></div>' +
+      '<button class="btn" id="stackBtn">BAUSTEIN SETZEN</button>';
+
+    const area = document.getElementById("stackArea");
+    let count = 0;
+    document.getElementById("stackBtn").addEventListener("click", function(){
+      count++;
+      const block = document.createElement("div");
+      block.className = "stack-block";
+      block.style.transform = "rotate(" + (Math.random()*10 - 5) + "deg)";
+      area.appendChild(block);
+      if(count >= 3){
+        triggerWin(15 + Math.floor(Math.random()*10), "TURM STEHT (SCHIEF, ABER STOLZ)!");
+      }
+    });
+  }
+
+  /* --- Game 10: Rayas Schnüffel-Test (findet immer das Leckerli) --- */
+  function renderRayaSniff(){
+    cardArea.innerHTML =
+      '<div class="game-title">🐾 Rayas Schnüffel-Test</div>' +
+      '<div class="game-instr">Welcher Napf hat das Leckerli? Tippe für Raya!</div>' +
+      '<div class="row3" id="bowlRow"></div>';
+
+    const row = document.getElementById("bowlRow");
+    for(let i=0;i<3;i++){
+      const b = document.createElement("button");
+      b.className = "card-flip";
+      b.style.fontSize = "2.2rem";
+      b.textContent = "🥣";
+      b.addEventListener("click", () => triggerWin(15 + Math.floor(Math.random()*10), "RAYA HAT'S GEFUNDEN!"));
+      row.appendChild(b);
+    }
+  }
+
+  /* --- Game 11: Rubbellos (frei rubbeln per Touch/Maus, jedes Ergebnis gewinnt) --- */
+  function renderScratch(){
+    cardArea.innerHTML =
+      '<div class="game-title">🎫 Rubbellos</div>' +
+      '<div class="game-instr">Rubbel mit dem Finger oder gedrückter Maus frei!</div>' +
+      '<div class="scratch-wrap">' +
+        '<div class="scratch-prize" id="scratchPrize"></div>' +
+        '<canvas class="scratch-canvas" id="scratchCanvas" width="240" height="140"></canvas>' +
+      '</div>';
+
+    const symbols = ["⭐","🍀","💎","🔔","🍒","👑"];
+    const prizeSymbols = [rand(symbols), rand(symbols), rand(symbols)];
+    document.getElementById("scratchPrize").textContent = prizeSymbols.join("   ");
+
+    const canvas = document.getElementById("scratchCanvas");
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width, h = canvas.height;
+
+    ctx.fillStyle = "#c7c7d4";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#7d7d90";
+    ctx.font = "bold 15px 'Baloo 2', sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("HIER FREI RUBBELN", w / 2, h / 2);
+
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.lineWidth = 28;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    let drawing = false;
+    let lastX = null, lastY = null;
+    let won = false;
+
+    function getPos(evt){
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (evt.clientX - rect.left) * (w / rect.width),
+        y: (evt.clientY - rect.top) * (h / rect.height)
+      };
+    }
+
+    function scratchAt(x, y){
+      ctx.beginPath();
+      if(lastX !== null){
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.arc(x, y, 14, 0, Math.PI * 2);
+      ctx.fill();
+      lastX = x; lastY = y;
+    }
+
+    function checkScratched(){
+      if(won) return;
+      const data = ctx.getImageData(0, 0, w, h).data;
+      const step = 4;
+      let cleared = 0, total = 0;
+      for(let i = 3; i < data.length; i += 4 * step){
+        total++;
+        if(data[i] < 40) cleared++;
+      }
+      if(cleared / total > 0.35){
+        won = true;
+        triggerWin(15 + Math.floor(Math.random()*10), "FREIGERUBBELT!");
+      }
+    }
+
+    canvas.addEventListener("pointerdown", function(e){
+      canvas.setPointerCapture(e.pointerId);
+      drawing = true;
+      lastX = null; lastY = null;
+      const p = getPos(e);
+      scratchAt(p.x, p.y);
+      checkScratched();
+    });
+    canvas.addEventListener("pointermove", function(e){
+      if(!drawing) return;
+      const p = getPos(e);
+      scratchAt(p.x, p.y);
+      checkScratched();
+    });
+    canvas.addEventListener("pointerup", function(){ drawing = false; lastX = null; lastY = null; });
+    canvas.addEventListener("pointercancel", function(){ drawing = false; lastX = null; lastY = null; });
+  }
+
+  /* --- Game 12: Dart-Wurf (immer Bullseye) --- */
+  function renderDart(){
+    cardArea.innerHTML =
+      '<div class="game-title">🎯 Dart-Wurf</div>' +
+      '<div class="game-instr">Tippe irgendwo auf die Scheibe!</div>' +
+      '<div class="dartboard" id="dartboard"><div class="dart-center">🎯</div></div>';
+
+    document.getElementById("dartboard").addEventListener("click", () => triggerWin(15 + Math.floor(Math.random()*10), "BULLSEYE!"));
+  }
+
+  /* ---------------- INIT ---------------- */
+  updateHUD();
+  buildSidebar();
+  updateSidebarActive();
+  renderStart();
+})();
+</script>
+</body>
+</html>

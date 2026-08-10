@@ -95,6 +95,7 @@ const THEME_PULSE_COLORS = {
   gaming: "#33E7FF",
   cycling: "#D45A22",
   raya: "#C98572",
+  unbesiegbar: "#ffc94a",
 };
 
 function triggerThemePulse(theme) {
@@ -247,6 +248,7 @@ const TRAIL_ICONS = {
   gaming: "⚡",
   cycling: "🚲",
   raya: "🐾",
+  unbesiegbar: "👑",
 };
 
 function setupCursorTrails() {
