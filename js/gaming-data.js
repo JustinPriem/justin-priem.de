@@ -223,5 +223,18 @@ const GAMES = [
     "accent": "#4c00ff",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "9fa37015-09cb-4bbe-a35a-457deff5b621",
+    "title": "Garrys Mod",
+    "genre": "Coop",
+    "status": "retired",
+    "hours": 37,
+    "since": "2025",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#ff8585",
+    "highlight": "",
+    "cover": ""
   }
 ];
