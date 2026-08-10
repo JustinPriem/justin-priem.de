@@ -145,5 +145,18 @@ const GAMES = [
     "accent": "#7dc733",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "75b7cabd-8b37-4e9d-803b-a3caf6107ea6",
+    "title": "Battlefield 6",
+    "genre": "Shooter",
+    "status": "retired",
+    "hours": 137,
+    "since": "2025",
+    "rank": "100",
+    "rankPct": 100,
+    "accent": "#b30000",
+    "highlight": "",
+    "cover": ""
   }
 ];
