@@ -171,5 +171,18 @@ const GAMES = [
     "accent": "#878787",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "55e61829-88be-451f-a4b1-d3f23982893b",
+    "title": "THE FINALS",
+    "genre": "Shooter",
+    "status": "retired",
+    "hours": 77,
+    "since": "2024",
+    "rank": "Diamond",
+    "rankPct": 80,
+    "accent": "#ff0000",
+    "highlight": "",
+    "cover": ""
   }
 ];
