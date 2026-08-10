@@ -197,5 +197,18 @@ const GAMES = [
     "accent": "#7300ff",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "97deb5ee-6435-4502-9a70-35f220a7122f",
+    "title": "Starbound",
+    "genre": "Coop",
+    "status": "retired",
+    "hours": 49,
+    "since": "2018",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#832525",
+    "highlight": "",
+    "cover": ""
   }
 ];
