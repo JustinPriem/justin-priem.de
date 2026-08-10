@@ -119,5 +119,18 @@ const GAMES = [
     "accent": "#ffffff",
     "highlight": "Wunderschönes Spiel, Nächte langer Grind, viel Spaß in einer wunderschönen Fantasie-Welt.",
     "cover": ""
+  },
+  {
+    "id": "e9b2525b-4a5e-45b6-9bf6-028d589918f0",
+    "title": "COD-BO2",
+    "genre": "Shooter",
+    "status": "active",
+    "hours": 419,
+    "since": "2014",
+    "rank": "Nuklear",
+    "rankPct": 100,
+    "accent": "#ff6600",
+    "highlight": "",
+    "cover": ""
   }
 ];
