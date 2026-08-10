@@ -98,7 +98,7 @@ const GAMES = [
     "id": "20762b66-727a-46dc-902f-a86810b5815d",
     "title": "CSGO",
     "genre": "Tactic Shooter",
-    "status": "active",
+    "status": "retired",
     "hours": 1078,
     "since": "2014",
     "rank": "LEM",
