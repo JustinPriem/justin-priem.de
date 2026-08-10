@@ -275,5 +275,18 @@ const GAMES = [
     "accent": "#33e7ff",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "043ef372-9b20-421f-bcb0-2abb8336293b",
+    "title": "Fortnite",
+    "genre": "Battle Royal",
+    "status": "retired",
+    "hours": 260,
+    "since": "2018",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#d3ff33",
+    "highlight": "",
+    "cover": ""
   }
 ];
