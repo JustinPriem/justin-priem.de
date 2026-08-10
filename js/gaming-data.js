@@ -26,7 +26,7 @@ const GAMES = [
     "rank": "MR 25",
     "rankPct": 100,
     "accent": "#0049a3",
-    "highlight": "Die schönste Fantasie Welt die man erschaffen konnte. Es war schön sich darin zu vertiefen und die komplexen Systeme zu erkunden.",
+    "highlight": "Die schönste Fantasie Welt die man erschaffen konnte. Es war schön sich darin zu vertiefen und die komplexen Systeme zu erkunden. Warframe war eine ganze Zeit mein absolutes Top-Game. Ich habe ca. 1400h Spielzeit und bin Mastery Rank 25 (damaliges maximum). Es hat mich in der Zeit von 2014 bis 2018 begleitet.",
     "cover": "assets/games/1785961240376-warframe-rank.jpg"
   },
   {
