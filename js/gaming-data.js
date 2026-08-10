@@ -124,7 +124,7 @@ const GAMES = [
     "id": "e9b2525b-4a5e-45b6-9bf6-028d589918f0",
     "title": "COD-BO2",
     "genre": "Shooter",
-    "status": "active",
+    "status": "retired",
     "hours": 419,
     "since": "2014",
     "rank": "Nuklear",
