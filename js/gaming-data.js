@@ -93,5 +93,18 @@ const GAMES = [
     "accent": "#0b5c00",
     "highlight": "Mein erstes Speil in welchem ich wahrscheinlich mehrere hundert Spielstunden habe. Es müssten ca. 350 Spielstunden auf dem Laptop gewesen sein. Keine Ahnung wie ich damals das Top Leaderboard mit Mousepad erreicht habe^^",
     "cover": ""
+  },
+  {
+    "id": "20762b66-727a-46dc-902f-a86810b5815d",
+    "title": "CSGO",
+    "genre": "Tactic Shooter",
+    "status": "active",
+    "hours": 1078,
+    "since": "2014",
+    "rank": "LEM",
+    "rankPct": 75,
+    "accent": "#fbff00",
+    "highlight": "",
+    "cover": ""
   }
 ];
