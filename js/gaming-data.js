@@ -184,5 +184,18 @@ const GAMES = [
     "accent": "#ff0000",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "60efe423-a47f-4abc-9730-0644160582a8",
+    "title": "Saints Row IV",
+    "genre": "Coop",
+    "status": "retired",
+    "hours": 53,
+    "since": "2016",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#7300ff",
+    "highlight": "",
+    "cover": ""
   }
 ];
