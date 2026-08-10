@@ -210,5 +210,18 @@ const GAMES = [
     "accent": "#832525",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "ad930cfc-5c62-45e6-b0b0-83df30d77df6",
+    "title": "Saints Row The Third",
+    "genre": "Coop",
+    "status": "retired",
+    "hours": 42,
+    "since": "2015",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#4c00ff",
+    "highlight": "",
+    "cover": ""
   }
 ];
