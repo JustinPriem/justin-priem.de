@@ -249,5 +249,18 @@ const GAMES = [
     "accent": "#33ff5c",
     "highlight": "",
     "cover": ""
+  },
+  {
+    "id": "130d2315-fad3-4228-8037-9bf4bad95882",
+    "title": "Battlefield 1",
+    "genre": "Shooter",
+    "status": "retired",
+    "hours": 56,
+    "since": "2016",
+    "rank": "",
+    "rankPct": 0,
+    "accent": "#949494",
+    "highlight": "",
+    "cover": ""
   }
 ];
