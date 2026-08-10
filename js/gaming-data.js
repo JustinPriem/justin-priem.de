@@ -162,7 +162,7 @@ const GAMES = [
   {
     "id": "3f23ca4a-59e3-4e0e-b526-1382dd07a40d",
     "title": "DC Universe Online",
-    "genre": "",
+    "genre": "MMORPG",
     "status": "active",
     "hours": 60,
     "since": "2014",
