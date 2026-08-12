@@ -18,6 +18,63 @@ function getAggregateStats(games) {
   };
 }
 
+function monogram(title) {
+  return title.split(" ").map((w) => w[0]).join("").slice(0, 3).toUpperCase();
+}
+
+function depthCardTemplate(game) {
+  return `
+    <p class="gi-card-eyebrow">// SIGNAL ERFASST — ${monogram(game.title)}</p>
+    <h2>${game.title}</h2>
+    <div class="gi-card-stats">
+      <div>
+        <span class="gi-card-label">Spielzeit</span>
+        <span class="gi-card-value">${game.hours.toLocaleString("de-DE")} h</span>
+      </div>
+      <div>
+        <span class="gi-card-label">Rang</span>
+        <span class="gi-card-value">${game.rank}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderDepthCards(topGames) {
+  topGames.forEach((game, i) => {
+    const mount = document.getElementById(`depth-card-${i + 1}`);
+    if (mount) mount.innerHTML = depthCardTemplate(game);
+  });
+}
+
+function renderCoreStats(stats) {
+  const mount = document.getElementById("core-stats");
+  if (!mount) return;
+  mount.innerHTML = `
+    <div class="gi-core-stat">
+      <span class="gi-core-value">${stats.count}</span>
+      <span class="gi-core-label">Spiele erfasst</span>
+    </div>
+    <div class="gi-core-stat">
+      <span class="gi-core-value">${stats.totalHours.toLocaleString("de-DE")}</span>
+      <span class="gi-core-label">Stunden gesamt</span>
+    </div>
+  `;
+}
+
+function hideUnusedDepthActs(topGamesCount) {
+  for (let i = topGamesCount + 1; i <= 3; i++) {
+    const act = document.getElementById(`act-depth-${i}`);
+    if (act) act.remove();
+  }
+}
+
+function renderApp() {
+  const topGames = getTopGames(GAMES, 3);
+  hideUnusedDepthActs(topGames.length);
+  renderDepthCards(topGames);
+  renderCoreStats(getAggregateStats(GAMES));
+}
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { getTopGames, getAggregateStats };
 }
