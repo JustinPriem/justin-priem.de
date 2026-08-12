@@ -50,11 +50,11 @@ body {
    background-image (kommasepariert) — lädt das Bild nicht/verzögert,
    bleibt sofort ein passend eingefärbter Void-Hintergrund sichtbar,
    kein Warten, kein blankes Feld. */
-#act-surface .gi-bg { background-image: url("assets/gaming-intro/surface.jpg"), radial-gradient(60% 60% at 30% 40%, rgba(51,231,255,.12), var(--gi-bg) 70%); }
-#act-depth-1 .gi-bg { background-image: url("assets/gaming-intro/depth-1-cyan.jpg"), radial-gradient(60% 60% at 70% 50%, rgba(51,231,255,.16), var(--gi-bg) 70%); }
-#act-depth-2 .gi-bg { background-image: url("assets/gaming-intro/depth-2-magenta.jpg"), radial-gradient(60% 60% at 30% 50%, rgba(194,100,255,.16), var(--gi-bg) 70%); }
-#act-depth-3 .gi-bg { background-image: url("assets/gaming-intro/depth-3-violet.jpg"), radial-gradient(60% 60% at 70% 50%, rgba(108,43,217,.2), var(--gi-bg) 70%); }
-#act-core .gi-bg { background-image: url("assets/gaming-intro/depth-3-violet.jpg"), radial-gradient(50% 50% at 50% 50%, rgba(108,43,217,.22), var(--gi-bg) 70%); filter: brightness(.55) saturate(1.2); }
+#act-surface .gi-bg { background-image: url("../assets/gaming-intro/surface.jpg"), radial-gradient(60% 60% at 30% 40%, rgba(51,231,255,.12), var(--gi-bg) 70%); }
+#act-depth-1 .gi-bg { background-image: url("../assets/gaming-intro/depth-1-cyan.jpg"), radial-gradient(60% 60% at 70% 50%, rgba(51,231,255,.16), var(--gi-bg) 70%); }
+#act-depth-2 .gi-bg { background-image: url("../assets/gaming-intro/depth-2-magenta.jpg"), radial-gradient(60% 60% at 30% 50%, rgba(194,100,255,.16), var(--gi-bg) 70%); }
+#act-depth-3 .gi-bg { background-image: url("../assets/gaming-intro/depth-3-violet.jpg"), radial-gradient(60% 60% at 70% 50%, rgba(108,43,217,.2), var(--gi-bg) 70%); }
+#act-core .gi-bg { background-image: url("../assets/gaming-intro/depth-3-violet.jpg"), radial-gradient(50% 50% at 50% 50%, rgba(108,43,217,.22), var(--gi-bg) 70%); filter: brightness(.55) saturate(1.2); }
 #act-portal .gi-bg { background: radial-gradient(circle at 50% 50%, rgba(51,231,255,.16), transparent 70%), var(--gi-bg); }
 #act-portal .gi-bg::after { display: none; }
 
