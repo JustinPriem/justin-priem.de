@@ -1,0 +1,175 @@
+:root {
+  --gi-bg: #05060c;
+  --gi-cyan: #33E7FF;
+  --gi-magenta: #C264FF;
+  --gi-violet: #6C2BD9;
+  --gi-amber: #FFB020;
+  --gi-text: #E8F6FF;
+  --gi-text-dim: #8895A8;
+  --footer-line: rgba(51, 231, 255, .14);
+}
+
+body {
+  background: var(--gi-bg);
+  color: var(--gi-text);
+  font-family: "Chakra Petch", sans-serif;
+}
+
+.gi-back {
+  position: fixed; top: 1.6rem; left: 1.6rem; z-index: 20;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .78rem;
+  color: var(--gi-text-dim);
+  letter-spacing: .03em;
+  transition: color .2s ease;
+}
+.gi-back:hover { color: var(--gi-cyan); }
+
+.gi-act {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--gi-bg);
+}
+
+.gi-bg {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1.05);
+}
+.gi-bg::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(5,6,12,.5), rgba(5,6,12,.78));
+}
+
+/* Jede Regel listet das Foto UND einen Void-Gradient-Fallback in einem
+   background-image (kommasepariert) — lädt das Bild nicht/verzögert,
+   bleibt sofort ein passend eingefärbter Void-Hintergrund sichtbar,
+   kein Warten, kein blankes Feld. */
+#act-surface .gi-bg { background-image: url("assets/gaming-intro/surface.jpg"), radial-gradient(60% 60% at 30% 40%, rgba(51,231,255,.12), var(--gi-bg) 70%); }
+#act-depth-1 .gi-bg { background-image: url("assets/gaming-intro/depth-1-cyan.jpg"), radial-gradient(60% 60% at 70% 50%, rgba(51,231,255,.16), var(--gi-bg) 70%); }
+#act-depth-2 .gi-bg { background-image: url("assets/gaming-intro/depth-2-magenta.jpg"), radial-gradient(60% 60% at 30% 50%, rgba(194,100,255,.16), var(--gi-bg) 70%); }
+#act-depth-3 .gi-bg { background-image: url("assets/gaming-intro/depth-3-violet.jpg"), radial-gradient(60% 60% at 70% 50%, rgba(108,43,217,.2), var(--gi-bg) 70%); }
+#act-core .gi-bg { background-image: url("assets/gaming-intro/depth-3-violet.jpg"), radial-gradient(50% 50% at 50% 50%, rgba(108,43,217,.22), var(--gi-bg) 70%); filter: brightness(.55) saturate(1.2); }
+#act-portal .gi-bg { background: radial-gradient(circle at 50% 50%, rgba(51,231,255,.16), transparent 70%), var(--gi-bg); }
+#act-portal .gi-bg::after { display: none; }
+
+.gi-content {
+  position: relative; z-index: 2;
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 1.6rem;
+}
+
+.gi-eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .78rem;
+  color: var(--gi-cyan);
+  letter-spacing: .1em;
+  margin: 0 0 1rem;
+}
+
+.gi-act--surface h1 {
+  font-size: clamp(2.2rem, 7vw, 4.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 1.4rem;
+  text-shadow: 0 0 30px rgba(51,231,255,.3);
+}
+.gi-word { display: inline-block; }
+
+.gi-scroll-cue {
+  display: inline-block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .75rem;
+  color: var(--gi-text-dim);
+  letter-spacing: .06em;
+}
+
+.gi-hud-card {
+  position: relative; z-index: 2;
+  max-width: 400px;
+  padding: 1.6rem 1.8rem;
+  background: rgba(6,8,16,.6);
+  border: 1px solid rgba(51,231,255,.25);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+}
+.gi-act--side-right .gi-hud-card { margin-left: auto; margin-right: 8vw; }
+.gi-act--side-left .gi-hud-card { margin-right: auto; margin-left: 8vw; }
+
+.gi-card-eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .68rem;
+  color: var(--gi-cyan);
+  letter-spacing: .08em;
+  margin: 0 0 .6rem;
+}
+.gi-hud-card h2 { margin: 0 0 1rem; font-size: 1.5rem; }
+.gi-card-stats { display: flex; gap: 1.6rem; }
+.gi-card-label {
+  display: block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .68rem;
+  color: var(--gi-text-dim);
+}
+.gi-card-value {
+  display: block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--gi-amber);
+}
+
+.gi-core-stats { display: flex; gap: 3rem; justify-content: center; }
+.gi-core-stat { display: flex; flex-direction: column; align-items: center; }
+.gi-core-value {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 2.6rem;
+  font-weight: 600;
+  color: var(--gi-cyan);
+}
+.gi-core-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .72rem;
+  color: var(--gi-text-dim);
+  letter-spacing: .05em;
+}
+
+.gi-portal-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: 1.1rem 2.2rem;
+  border-radius: 999px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--gi-bg);
+  background: linear-gradient(90deg, var(--gi-cyan), var(--gi-magenta));
+  box-shadow: 0 0 40px rgba(51,231,255,.35);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.gi-portal-btn:hover { transform: translateY(-2px); box-shadow: 0 0 55px rgba(51,231,255,.5); }
+
+/* Reduced-motion / GSAP-unavailable fallback: acts stack normally, nothing stays pinned or hidden */
+.gi-static .gi-act { min-height: auto; padding: 6rem 1.6rem; }
+.gi-static .gi-content,
+.gi-static .gi-hud-card { opacity: 1 !important; transform: none !important; }
+
+/* Footer im Dark-HUD-Look, wie gaming.css */
+.footer-name { color: var(--gi-text); font-family: "Chakra Petch", sans-serif; }
+.footer-tag, .social-link { color: var(--gi-text-dim); font-family: "JetBrains Mono", monospace; }
+.social-link:hover { color: var(--gi-cyan); border-color: var(--gi-cyan); }
+
+@media (max-width: 720px) {
+  .gi-act--side-right .gi-hud-card,
+  .gi-act--side-left .gi-hud-card { margin-left: auto; margin-right: auto; }
+  .gi-core-stats { gap: 1.6rem; }
+}
