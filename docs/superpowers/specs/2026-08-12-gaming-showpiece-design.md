@@ -24,12 +24,19 @@ wurden:
 
 Vom Nutzer in der Konzeptphase entschieden: Kino-Opening plus dichte Kapitel ·
 Bildwelt als Reise durch alle drei Stilproben (Chrome → Korridor → Kern) ·
-**kein Ton** · Umfang ~10 Sek. Film plus 2 Kapitel-Videos.
+**kein Ton** · Umfang ~10 Sek. Film.
 
 Nachträglich vom Nutzer verschärft, nachdem eine erste Fassung dieser Spec ein
 ~35 MB großes Repository ergeben hätte: **Ladezeit im Frontend und Repo-Größe sind
 harte Kriterien.** Die Zahlen unten (10 statt 15 Sek. Film, WebP statt JPEG,
 960 statt 1280 px) sind das Ergebnis dieser Vorgabe.
+
+Danach ein zweites Mal nachgeschärft: **exakt ein Video auf der gesamten Seite,
+dafür deutlich mehr Effekte und Animation.** Die ursprünglich geplanten zwei
+Kapitel-Videos entfallen ersatzlos; die Kapitel entstehen jetzt vollständig aus
+Code und wurden von fünf auf sechs erweitert. Das senkt Gewicht und Kosten und
+macht die Seite gleichzeitig reaktiver, weil Code auf Scrollgeschwindigkeit und
+Mauszeiger reagieren kann und ein abgespieltes Video nicht.
 
 ## Der Film
 
@@ -95,49 +102,63 @@ ist stumm, und Audio würde die Kosten vervielfachen ohne jeden Nutzen.
 
 ## Die Kapitel
 
-Nach dem Film, jedes Kapitel mit einem eigenen visuellen Prinzip; kein Prinzip
-wiederholt sich.
+**Ausdrückliche Vorgabe des Nutzers: exakt ein Video auf der ganzen Seite.** Der
+Scroll-Film ist dieses eine Video. Alle Kapitel danach werden vollständig aus
+Code erzeugt — keine weiteren Videodateien, keine weiteren Bilddateien. Die
+Begründung ist nicht nur Gewicht: Effekte aus Code laden in Nullzeit, lassen sich
+beliebig dicht stapeln und reagieren auf Scrollgeschwindigkeit und Mauszeiger,
+was ein abgespieltes Video prinzipiell nicht kann.
+
+Sechs Kapitel, jedes mit einem eigenen Bewegungsprinzip; kein Prinzip wiederholt
+sich.
 
 1. **DIE ZAHL** — Die Gesamtstundenzahl aus `GAMES` füllt bildschirmfüllend das
-   Bild und zählt beim Scrollen hoch. Der letzte Filmframe (Kern) steht als
-   langsam driftendes Standbild dahinter — er ist ohnehin schon dekodiert, kostet
-   also kein zusätzliches Byte. Darunter klein: Anzahl der Spiele.
-2. **SCHRIFT MIT VIDEO DARIN** — Das Wort `GAMING` in maximaler Größe; innerhalb
-   der Buchstabenformen läuft Kapitel-Video 1. Umsetzung über
-   `background-clip: text` mit dem Video als Hintergrundebene (Fallback: SVG-Maske).
+   Bild. Beim Scrollen zählt sie hoch, wobei die noch nicht erreichten Stellen als
+   zufällige Ziffern flackern und sich von links nach rechts festsetzen
+   (Scramble-Auflösung). Darunter klein: Anzahl der Spiele.
+2. **DER NAME** — Das Wort `GAMING` in maximaler Größe, und **innerhalb der
+   Buchstabenformen läuft der Film selbst**. Technisch: ein Canvas zeichnet
+   Frames aus der bereits geladenen Sequenz, darüber liegt ein schwarzer Block
+   mit weißer Schrift und `mix-blend-mode: multiply` — Schwarz deckt ab, Weiß
+   lässt durch. **Das kostet kein einziges zusätzliches Byte**, weil die Frames
+   ohnehin im Speicher liegen, und es bindet die Seite an ihre eigene Bildwelt
+   zurück. Rückfallebene ohne Frames (Reduced Motion): ein animierter
+   Chrom-Verlauf aus reinem CSS.
 3. **QUERLAUF** — Die Sektion wird gepinnt und horizontal durchgescrollt. Die
-   **acht** Spiele mit den meisten Stunden fliegen als große Platten mit
-   Cover-Art vorbei, Ebenen mit unterschiedlicher Geschwindigkeit
-   (`containerAnimation`-Parallax), Neigung abhängig von der
-   Scroll-Geschwindigkeit (`ScrollTrigger.getVelocity()`, geklammert). Acht ist
-   genug für einen Lauf, der Tempo aufbaut, ohne dass die Sektion zur Liste wird;
-   hat `GAMES` weniger Einträge, werden entsprechend weniger Platten gerendert.
-4. **DIE VERZERRUNG** — Kapitel-Video 2 mit scroll-abhängiger Verzerrung:
-   Farbkanal-Spreizung und Versatz, die mit der Scroll-Geschwindigkeit wachsen
-   und im Stillstand auf null zurückgehen. Umsetzung als WebGL-Displacement-Shader;
-   **verbindlicher Fallback**, wenn kein WebGL-Kontext verfügbar ist: dieselbe
-   Sektion mit CSS-`filter`-Verschiebung statt Shader.
-5. **DAS PORTAL** — Der Kern kehrt als pulsierender Hintergrund zurück. Davor der
-   CTA ins vollständige Archiv (`gaming.html`): Lichtstreif wandert bei Hover
-   darüber, der Button zieht den Mauszeiger magnetisch an. Dies muss das
+   **acht** Spiele mit den meisten Stunden fliegen als große Platten vorbei, in
+   Ebenen unterschiedlicher Geschwindigkeit (`containerAnimation`-Parallax),
+   Neigung abhängig von der Scroll-Geschwindigkeit (`ScrollTrigger.getVelocity()`,
+   geklammert), Kippung in 3D beim Überfahren mit der Maus. Acht ist genug für
+   einen Lauf, der Tempo aufbaut, ohne dass die Sektion zur Liste wird; hat
+   `GAMES` weniger Einträge, werden entsprechend weniger Platten gerendert.
+   **Wichtig für das Design: nur 3 von 25 Spielen haben überhaupt ein
+   Cover-Bild.** Die Platten dürfen sich deshalb nicht auf Bildmaterial stützen —
+   sie tragen über Typografie und die `accent`-Farbe des jeweiligen Spiels, mit
+   dem Cover als Zugabe, wo es existiert.
+4. **DAS FELD** — Ein bildschirmfüllendes Canvas-Partikelfeld: Punkte driften,
+   benachbarte werden durch dünne Linien verbunden, der Mauszeiger stößt sie ab,
+   und die Scrollgeschwindigkeit dehnt das ganze Feld. Darüber ein Satz, dessen
+   Buchstaben aus zufälligen Zeichen einrasten.
+5. **DER TICKER** — Drei endlose Laufbänder mit den Titeln **aller** Spiele,
+   unterschiedliche Geschwindigkeit und Richtung pro Zeile, das ganze Band nach
+   der Scrollgeschwindigkeit geschert. Dies ist das einzige Kapitel, das den
+   vollen Bestand zeigt statt einer Auswahl — Masse ist hier der Effekt.
+6. **DAS PORTAL** — Ein langsam rotierender Chrom-Verlauf aus CSS als Hintergrund.
+   Davor der CTA ins vollständige Archiv (`gaming.html`): Lichtstreif wandert bei
+   Hover darüber, der Button zieht den Mauszeiger magnetisch an. Dies muss das
    selbstbewussteste Element der Seite sein (`finishing.md` §3).
 
-### Kapitel-Videos
+### Effekt-Inventar
 
-Zwei Clips, je 4 Sek., 720p, Seedance 2.0 Pro, als `<video autoplay loop muted
-playsinline>` eingebunden — **nicht** gescrubbt, deshalb kleine Dateien und keine
-Frame-Extraktion nötig.
-
-- **Video 1** (für Kapitel 2, läuft in der Schrift): Nahaufnahme fließenden
-  Chroms, hoher Kontrast, deutliche Bewegung — durch Buchstabenformen muss auf
-  kleiner Fläche sofort Bewegung lesbar sein.
-- **Video 2** (für Kapitel 4, wird verzerrt): Plasma-/Energieoberfläche, gleichmäßig
-  gefüllt, ohne dominantes Einzelmotiv.
-
-**Nahtlose Schleife:** Beide Clips werden mit `keyframes.start` *und*
-`keyframes.end` auf **dasselbe Bild** gepinnt. Der Clip kehrt damit
-konstruktionsbedingt zu seinem Anfang zurück und läuft ohne sichtbaren Sprung in
-der Schleife.
+Damit die Dichte nachprüfbar ist statt behauptet — diese Effekte müssen am Ende
+tatsächlich auf der Seite laufen: Scroll-Scrubbing des Films · Beat-Einblendungen
+über dem Film · Hochzähler · Scramble-Auflösung von Ziffern und Buchstaben ·
+Film-in-Schrift · gepinnter Querlauf · Parallax in Ebenen ·
+Scherung nach Scrollgeschwindigkeit · 3D-Kippung bei Hover · Partikelfeld mit
+Verbindungslinien · Mauszeiger-Abstoßung · Endlos-Laufbänder ·
+magnetischer Button · Lichtstreif · rotierender Chrom-Verlauf · Filmkorn ·
+Vignette · eigener Mauszeiger · Fortschrittslinie mit Kapitelanzeige ·
+Kopfzeile mit umschlagender Farbe.
 
 ## Dauerhafte Ebenen
 
@@ -164,9 +185,11 @@ js/gaming-intro-chapters.js  Kapitel-Choreografie
 js/gaming-intro.js           Boot: Datenrendering, Reduced-Motion-Weiche, Reihenfolge
 assets/gaming-intro/frames/      Desktop-Framesatz
 assets/gaming-intro/frames-sm/   Mobile-Framesatz
-assets/gaming-intro/chapter-1.mp4, chapter-2.mp4
 assets/gaming-intro/poster.jpg   erster Filmframe, für sofortiges Bild und als Fallback
 ```
+
+Das sind **alle** Mediendateien der Seite. Es gibt keine weiteren Videos und keine
+weiteren Bilder; jedes Kapitel unterhalb des Films entsteht vollständig aus Code.
 
 Vier JS-Dateien mit je einer klaren Aufgabe statt einer großen — die
 Scrub-Engine und die Kapitel-Choreografie sind unabhängig voneinander verständlich
@@ -245,8 +268,8 @@ zusätzlich.
 Nebenaspekt.** Ladezeit im Frontend und Repo-Größe wurden explizit begrenzt.
 Damit liegen rund 480 Einzelbilder (~8 MB) dauerhaft im Repository; bei GitHub
 Pages führt daran kein Weg vorbei, weil ausgeliefert wird, was im Repo liegt. Das
-Repository wächst von derzeit ~5 MB auf **~13 MB**. Ein Desktop-Besucher lädt über
-den gesamten Scrollweg ~7 MB, ein Handy-Besucher ~1,7 MB — und beides
+Repository wächst von derzeit ~5 MB auf **~11 MB**. Ein Desktop-Besucher lädt über
+den gesamten Scrollweg ~6 MB, ein Handy-Besucher ~1,7 MB — und beides
 **progressiv**: nach den ersten ~40 Frames (~0,8 MB) ist die Seite bedienbar, der
 Rest strömt beim Scrollen nach. Wer nach wenigen Sekunden abspringt, hat nie mehr
 als ~1 MB geladen.
@@ -294,13 +317,17 @@ sitzt still und falsch (`engine.md`, „Ordering law").
 
 ## Randfälle und Rückfallebenen
 
-- **`prefers-reduced-motion: reduce`** — kein Pinning, kein Scrub, keine
-  Verzerrung. Das Poster-Standbild steht, alle Kapitel liegen im normalen
-  Dokumentfluss, sämtliche Inhalte und der CTA sind sichtbar und erreichbar.
+- **`prefers-reduced-motion: reduce`** — kein Pinning, kein Scrub, kein
+  Partikelfeld, keine Laufbänder. Das Poster-Standbild steht, alle Kapitel liegen
+  im normalen Dokumentfluss, sämtliche Inhalte und der CTA sind sichtbar und
+  erreichbar. Kapitel 2 zeigt statt des Films den CSS-Chromverlauf in der Schrift.
 - **GSAP/Lenis laden nicht** (CDN blockiert oder offline) — dieselbe statische
   Fassung wie bei Reduced Motion. Geprüft wird auf das tatsächliche Vorhandensein
   der Globals, nicht auf ein Ladeereignis.
-- **Kein WebGL** — Kapitel 4 nutzt die CSS-Filter-Variante.
+- **Kein Canvas-2D-Kontext** (extrem selten, aber möglich) — Kapitel 4 blendet sein
+  Partikelfeld aus und zeigt nur Text auf dem Grundschwarz. Kein Kapitel darf leer
+  wirken, wenn seine Effektebene ausfällt. **WebGL wird nirgends verwendet**, damit
+  es auch nirgends ausfallen kann.
 - **Frames laden langsam** — Poster-Standbild steht sofort, Ladebalken zeigt den
   Fortschritt, die Seite wartet nie auf den vollständigen Satz.
 - **`GAMES` hat weniger Einträge als erwartet** — Kapitel 3 rendert so viele
@@ -339,9 +366,8 @@ Zu prüfen:
 | 3 Keyframes (Seedream 5 Pro, 2k) | 300 |
 | Probelauf beider Clips, 720p Mini | 1.400 |
 | Film: 2 × 5 s, 1080p Pro | 7.000 |
-| 2 Kapitel-Videos, 4 s, 720p Pro | 2.240 |
 | Puffer für eine Neugenerierung | 1.500 |
-| **Summe** | **~12.500** |
+| **Summe** | **~10.200** |
 
 Guthaben zum Zeitpunkt der Planung: 137.514 Credits. Vor jeder kostenpflichtigen
 Generierung wird der Stand geprüft; nach dem Film wird der tatsächliche Verbrauch
