@@ -1,7 +1,6 @@
-// js/gaming-intro.test.js
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { getTopGames, getAggregateStats } = require("./gaming-intro.js");
+const { getTopGames, getAggregateStats } = require("./gaming-intro-data.js");
 
 const FIXTURE = [
   { title: "Warframe", hours: 1425 },
