@@ -86,6 +86,7 @@ function initScrollChoreography() {
   const acts = gsap.utils.toArray(".gi-act");
 
   acts.forEach((act, i) => {
+    const isFirst = i === 0;
     const isLast = i === acts.length - 1;
     const bg = act.querySelector(".gi-bg");
     const reveal = act.querySelector(".gi-content, .gi-hud-card");
@@ -103,12 +104,14 @@ function initScrollChoreography() {
     if (bg) tl.fromTo(bg, { scale: 1.1 }, { scale: 1, ease: "none" }, 0);
 
     if (reveal) {
-      tl.fromTo(
-        reveal,
-        { autoAlpha: 0, y: 40 },
-        { autoAlpha: 1, y: 0, ease: "power2.out", duration: 0.35 },
-        0
-      );
+      if (!isFirst) {
+        tl.fromTo(
+          reveal,
+          { autoAlpha: 0, y: 40 },
+          { autoAlpha: 1, y: 0, ease: "power2.out", duration: 0.35 },
+          0
+        );
+      }
       if (!isLast) {
         tl.to(reveal, { autoAlpha: 0, y: -30, ease: "power2.in", duration: 0.25 }, 0.75);
       }
