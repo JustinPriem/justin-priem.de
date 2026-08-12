@@ -24,7 +24,12 @@ wurden:
 
 Vom Nutzer in der Konzeptphase entschieden: Kino-Opening plus dichte Kapitel ·
 Bildwelt als Reise durch alle drei Stilproben (Chrome → Korridor → Kern) ·
-**kein Ton** · Umfang ~15 Sek. Film plus 2 Kapitel-Videos.
+**kein Ton** · Umfang ~10 Sek. Film plus 2 Kapitel-Videos.
+
+Nachträglich vom Nutzer verschärft, nachdem eine erste Fassung dieser Spec ein
+~35 MB großes Repository ergeben hätte: **Ladezeit im Frontend und Repo-Größe sind
+harte Kriterien.** Die Zahlen unten (10 statt 15 Sek. Film, WebP statt JPEG,
+960 statt 1280 px) sind das Ergebnis dieser Vorgabe.
 
 ## Der Film
 
@@ -36,48 +41,52 @@ Clip-Prompt muss diese Bewegung fortsetzen, nicht nur seinen Inhalt beschreiben
 (playbook §2b: der Prompt beschreibt die *Reise* vom Start-Pin zum End-Pin, nie
 den Zustand eines Endes).
 
-| Akt | Inhalt | Kamera | Dauer |
+**Zwei Clips à 5 Sek., drei Welten.** Die Weltwechsel liegen bewusst *innerhalb*
+der Clips, nicht an der Nahtstelle — so gibt es nur eine einzige Verkettungsstelle,
+die sichtbar werden könnte, statt zweier.
+
+| Clip | Inhalt | Kamera | Dauer |
 |---|---|---|---|
-| 1 — CHROME | Schwarzer Void, kolossale Masse flüssigen Chroms wälzt sich; die Kamera schiebt darauf zu, das Chrom öffnet sich blendenartig | `superDollyIn` | 5 s |
-| 2 — KORRIDOR | Dieselbe Vorwärtsbewegung, jetzt innerhalb: aus der Blende ist ein regennasser Neon-Korridor geworden, Neonstreifen rasen vorbei | `pushIn` | 5 s |
-| 3 — KERN | Der Korridor öffnet sich ins Weite, das Glühen am Ende wird zum geschmolzenen Plasmakern, die Kamera schiebt darauf zu | `pushIn` | 5 s |
+| 1 — CHROME → SCHWELLE | Schwarzer Void, kolossale Masse flüssigen Chroms wälzt sich; die Kamera schiebt darauf zu, das Chrom öffnet sich blendenartig zu einem Korridor-Maul | `superDollyIn` | 5 s |
+| 2 — KORRIDOR → KERN | Dieselbe Vorwärtsbewegung, jetzt innerhalb: ein regennasser Neon-Korridor, Neonstreifen rasen vorbei, am Ende öffnet er sich ins Weite auf den geschmolzenen Plasmakern | `pushIn` | 5 s |
 
 Farb- und Temperaturbogen: kalt/monochrom → elektrisch/neon → heiß/glühend.
 Raumbogen: geschlossen → gerichtet → weit.
 
 ### Das Schwellenbild (die riskanteste Stelle)
 
-Der Übergang Akt 1 → Akt 2 ändert Material *und* Raum gleichzeitig — genau die
+Der Wechsel Chrome → Korridor ändert Material *und* Raum gleichzeitig — genau die
 Konstellation, bei der ein i2v-Modell laut playbook mitten im Clip schneidet
-statt zu reisen. Gegenmaßnahme: **Keyframe 2 wird gezielt als Schwellenbild
-generiert, das beide Welten bereits enthält** — Chromwände, die sich zu einem
-Korridor-Maul formen. Damit muss kein Clip die Verwandlung erfinden; Akt 1 fährt
-auf das Schwellenbild zu, Akt 2 fährt von ihm weg.
+statt zu reisen. Gegenmaßnahme: **Das Schwellenbild wird gezielt als Keyframe
+generiert und enthält beide Welten bereits** — Chromwände, die sich zu einem
+Korridor-Maul formen. Damit muss kein Clip die Verwandlung erfinden: Clip 1 fährt
+auf das Schwellenbild zu, Clip 2 fährt von ihm weg. Genau deshalb liegt die
+Nahtstelle an dieser Stelle — sie ist durch das Schwellenbild an beiden Seiten
+festgenagelt.
 
 ### Keyframes und Verkettung
 
-Vier Keyframes (Seedream 5 Pro, 2k, 16:9):
+Drei Keyframes (Seedream 5 Pro, 2k, 16:9):
 
 - **KF1** — Chrom-Masse im schwarzen Void (Eröffnung; Stil bereits validiert durch
   die Stilprobe `A-chrome`)
-- **KF2** — Schwellenbild: Chrom formt ein Korridor-Maul
-- **KF3** — Korridor-Ende, Glühen baut sich auf (Stil validiert durch `B-neon`)
-- **KF4** — Plasmakern füllt das Bild (Stil validiert durch `C-plasma`)
+- **KF2** — Schwellenbild: Chrom formt ein Korridor-Maul, Neon schimmert schon
+  dahinter (verbindet die Stilproben `A-chrome` und `B-neon`)
+- **KF3** — Plasmakern füllt das Bild (Stil validiert durch `C-plasma`)
 
-Verkettung nach playbook §2 — **Clip N startet auf dem per ffmpeg extrahierten
-echten letzten Frame von Clip N−1, nicht auf dem Keyframe:**
+Verkettung nach playbook §2 — **Clip 2 startet auf dem per ffmpeg extrahierten
+echten letzten Frame von Clip 1, nicht auf dem Keyframe:**
 
 | Clip | `keyframes.start` | `keyframes.end` |
 |---|---|---|
 | 1 | KF1 | KF2 |
 | 2 | letzter Frame Clip 1 (hochgeladen) | KF3 |
-| 3 | letzter Frame Clip 2 (hochgeladen) | KF4 |
 
 Die Extraktion erzeugt eine lokale PNG-Datei; Magnific braucht eine
-Creation-Referenz, deshalb wird jeder extrahierte Frame vor Verwendung über
+Creation-Referenz, deshalb wird der extrahierte Frame vor Verwendung über
 `creations_upload_image` hochgeladen. Die Kette ist damit **zwingend sequenziell**
-— Clip N muss fertig gerendert sein, bevor Clip N+1 startet. Clips niemals
-parallel generieren.
+— Clip 1 muss fertig gerendert sein, bevor Clip 2 startet. Die beiden Clips
+niemals parallel generieren.
 
 ### Ausgabeformat
 
@@ -91,7 +100,8 @@ wiederholt sich.
 
 1. **DIE ZAHL** — Die Gesamtstundenzahl aus `GAMES` füllt bildschirmfüllend das
    Bild und zählt beim Scrollen hoch. Der letzte Filmframe (Kern) steht als
-   langsam driftendes Standbild dahinter. Darunter klein: Anzahl der Spiele.
+   langsam driftendes Standbild dahinter — er ist ohnehin schon dekodiert, kostet
+   also kein zusätzliches Byte. Darunter klein: Anzahl der Spiele.
 2. **SCHRIFT MIT VIDEO DARIN** — Das Wort `GAMING` in maximaler Größe; innerhalb
    der Buchstabenformen läuft Kapitel-Video 1. Umsetzung über
    `background-clip: text` mit dem Video als Hintergrundebene (Fallback: SVG-Maske).
@@ -190,27 +200,34 @@ Umbau nichts verlorengegangen ist.
 
 ## Asset-Pipeline
 
-1. Vier Keyframes generieren (Seedream 5 Pro, 2k, 16:9).
-2. **Probelauf:** Clip 1 und Clip 2 in 720p mit Seedance 2.0 Mini erzeugen und die
+1. Drei Keyframes generieren (Seedream 5 Pro, 2k, 16:9).
+2. **Probelauf:** Beide Clips in 720p mit Seedance 2.0 Mini erzeugen und die
    Nahtstelle prüfen — hält das Modell den Start-Pin? Erst wenn ja, wird gemastert
-   (playbook §2b: die Verkettung auf der *ersten* Nahtstelle verifizieren, bevor
-   das Budget des ganzen Films darauf gesetzt wird).
-3. Master: drei Clips sequenziell in 1080p, jeweils mit dem extrahierten letzten
-   Frame des Vorgängers als Start-Pin.
+   (playbook §2b: die Verkettung verifizieren, bevor das Budget des ganzen Films
+   darauf gesetzt wird).
+3. Master: zwei Clips sequenziell in 1080p; Clip 2 mit dem extrahierten letzten
+   Frame von Clip 1 als Start-Pin.
 4. Zusammenfügen zu `master.mp4`.
 5. **Kopf beschneiden:** Die ersten ~2 Sek. Frame für Frame ansehen und so weit
    kürzen, bis der erste Frame bereits *innerhalb* der Bewegung liegt
    (`finishing.md` §1 — generierte Filme öffnen sehr häufig auf einem noch
    stehenden Bild, was wie ein Schnitt in den eigenen Film wirkt). Danach die
    Framezahl im Code auf den beschnittenen Wert setzen.
-6. Frames extrahieren, **bei nativen 24 fps, ohne jede Dezimierung.**
+6. Frames extrahieren, **bei nativen 24 fps, ohne jede Dezimierung** — 10 Sek.
+   ergeben ~240 Frames, nach Kopfbeschnitt entsprechend weniger.
 
 ### Payload-Budget (verbindlich)
 
+Ausgabeformat der Frames ist **WebP, nicht JPEG** (`-c:v libwebp`). WebP ist bei
+gleicher wahrgenommener Qualität rund 35 % kleiner, wird von allen Zielbrowsern
+unterstützt, und `createImageBitmap` dekodiert es genauso schnell — für eine
+Engine, die im Sekundentakt Bilder dekodiert, ist das die entscheidende
+Eigenschaft.
+
 | Satz | Breite | Qualität | Frames | Ziel |
 |---|---|---|---|---|
-| Desktop | 1280 px | `-q:v 6` | alle (~360) | ≤ 20 MB |
-| Mobile | 640 px | `-q:v 7` | alle (~360) | ≤ 8 MB |
+| Desktop | 960 px | `-quality 72` | alle (~240) | ≤ 6 MB |
+| Mobile | 480 px | `-quality 65` | alle (~240) | ≤ 2 MB |
 
 **Wird ein Budget überschritten, wird die Breite reduziert — niemals die
 Framezahl.** Zeitliche Glätte ist auf einem bewegten Bild deutlich sichtbarer als
@@ -219,12 +236,25 @@ deshalb die volle Framezahl bei kleinerer Auflösung, statt jeden zweiten Frame
 wegzuwerfen — ein halbierter Framesatz halbiert die Scrub-Bildrate und ist der
 schnellste Weg, einen sauber gedrehten Film billig aussehen zu lassen.
 
-**Bewusst in Kauf genommen:** Damit liegen rund 720 Einzelbilder (~28 MB) dauerhaft
-im Repository. Bei GitHub Pages führt daran kein Weg vorbei — ausgeliefert wird,
-was im Repo liegt. Das Repository wächst dadurch von derzeit ~5 MB auf ~35 MB, und
-da Git-Historie nichts vergisst, bleibt eine später ersetzte Framesequenz für immer
-im Verlauf. Deshalb wird der Framesatz **erst nach dem Kopfbeschnitt und erst nach
-bestandener Sichtprüfung des Films** committet, nicht schon als Zwischenstand.
+Die 960 px sind bewusst niedriger als die typische Canvas-Breite. Bei einem
+dunklen, körnigen, permanent bewegten Bild ist die Hochskalierung praktisch
+unsichtbar — die Filmkorn-Ebene, die ohnehin darüberliegt, kaschiert sie
+zusätzlich.
+
+**Ausdrückliche Vorgabe des Nutzers: Gewicht ist ein hartes Kriterium, kein
+Nebenaspekt.** Ladezeit im Frontend und Repo-Größe wurden explizit begrenzt.
+Damit liegen rund 480 Einzelbilder (~8 MB) dauerhaft im Repository; bei GitHub
+Pages führt daran kein Weg vorbei, weil ausgeliefert wird, was im Repo liegt. Das
+Repository wächst von derzeit ~5 MB auf **~13 MB**. Ein Desktop-Besucher lädt über
+den gesamten Scrollweg ~7 MB, ein Handy-Besucher ~1,7 MB — und beides
+**progressiv**: nach den ersten ~40 Frames (~0,8 MB) ist die Seite bedienbar, der
+Rest strömt beim Scrollen nach. Wer nach wenigen Sekunden abspringt, hat nie mehr
+als ~1 MB geladen.
+
+Da Git-Historie nichts vergisst, bleibt eine später ersetzte Framesequenz für
+immer im Verlauf. Deshalb wird der Framesatz **erst nach dem Kopfbeschnitt und
+erst nach bestandener Sichtprüfung des Films** committet, nicht schon als
+Zwischenstand.
 
 ## Scrub-Engine
 
@@ -237,7 +267,7 @@ Nach `engine.md` §Scrub-engine:
 - **ImageBitmap-Schiebefenster** als Kern gegen Ruckeln: `createImageBitmap`
   dekodiert außerhalb des Hauptthreads, ein Fenster dekodierter Bitmaps wandert
   mit dem Playhead mit, ältere werden geschlossen. `drawImage` auf ein
-  `HTMLImageElement` erzwingt dagegen eine synchrone JPEG-Dekodierung im
+  `HTMLImageElement` erzwingt dagegen eine synchrone Bild-Dekodierung im
   Hauptthread — genau das erzeugt das ruckelige Gefühl.
 - Fenstergröße **in Sekunden Film** bemessen, nicht in Frames: ~2 s voraus, ~1,3 s
   zurück.
@@ -246,9 +276,11 @@ Nach `engine.md` §Scrub-engine:
 - **Nicht blind `cover`:** Überschreitet der Beschnitt 22 %, wird auf `contain`
   umgeschaltet und mit Letterbox gezeichnet. Ein 16:9-Film in einem
   Hochkant-Viewport behielte sonst nur die mittleren ~26 % jedes Frames.
-- DPR auf 1.0 begrenzt und die Canvas-Breite an der Quellbreite orientiert;
-  ein 1280-px-Frame in ein 2268-px-Canvas gezeichnet wirkt pixelig, und mehr
-  Gerätepixel machen es schlimmer, nicht besser.
+- **DPR auf 1.0 begrenzt.** Ein 960-px-Frame in ein 2268-px-Canvas gezeichnet
+  (1512 CSS-px × 1.5 DPR) wäre eine 2,4-fache Hochskalierung und liest sich als
+  pixelig — woraufhin der Reflex wäre, die DPR zu *erhöhen*, was es verschlimmert.
+  Schärfe beim Scrubben kommt daher, dass Quelle und Canvas nahe beieinander
+  liegen, nicht von mehr Gerätepixeln.
 - Umschaltung Desktop/Mobile über `matchMedia`; beim Wechsel **werden die alten
   ImageBitmaps geschlossen**, sonst leckt bei jeder Drehung GPU-Speicher
   (`finishing.md` §5).
@@ -304,12 +336,12 @@ Zu prüfen:
 
 | Posten | Credits |
 |---|---|
-| 4 Keyframes (Seedream 5 Pro, 2k) | 400 |
-| Probelauf Clip 1+2, 720p Mini | 1.400 |
-| Film: 3 × 5 s, 1080p Pro | 10.500 |
+| 3 Keyframes (Seedream 5 Pro, 2k) | 300 |
+| Probelauf beider Clips, 720p Mini | 1.400 |
+| Film: 2 × 5 s, 1080p Pro | 7.000 |
 | 2 Kapitel-Videos, 4 s, 720p Pro | 2.240 |
 | Puffer für eine Neugenerierung | 1.500 |
-| **Summe** | **~16.000** |
+| **Summe** | **~12.500** |
 
 Guthaben zum Zeitpunkt der Planung: 137.514 Credits. Vor jeder kostenpflichtigen
 Generierung wird der Stand geprüft; nach dem Film wird der tatsächliche Verbrauch
