@@ -75,6 +75,67 @@ function renderApp() {
   renderCoreStats(getAggregateStats(GAMES));
 }
 
+function initScrollChoreography() {
+  gsap.registerPlugin(ScrollTrigger);
+
+  const lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+  lenis.on("scroll", ScrollTrigger.update);
+  gsap.ticker.add((t) => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+
+  const acts = gsap.utils.toArray(".gi-act");
+
+  acts.forEach((act, i) => {
+    const isLast = i === acts.length - 1;
+    const bg = act.querySelector(".gi-bg");
+    const reveal = act.querySelector(".gi-content, .gi-hud-card");
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: act,
+        start: "top top",
+        end: "+=100%",
+        scrub: true,
+        pin: true,
+      },
+    });
+
+    if (bg) tl.fromTo(bg, { scale: 1.1 }, { scale: 1, ease: "none" }, 0);
+
+    if (reveal) {
+      tl.fromTo(
+        reveal,
+        { autoAlpha: 0, y: 40 },
+        { autoAlpha: 1, y: 0, ease: "power2.out", duration: 0.35 },
+        0
+      );
+      if (!isLast) {
+        tl.to(reveal, { autoAlpha: 0, y: -30, ease: "power2.in", duration: 0.25 }, 0.75);
+      }
+    }
+  });
+}
+
+function initStaticFallback() {
+  document.body.classList.add("gi-static");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderApp();
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const gsapAvailable =
+    typeof gsap !== "undefined" &&
+    typeof ScrollTrigger !== "undefined" &&
+    typeof Lenis !== "undefined";
+
+  if (reduceMotion || !gsapAvailable) {
+    initStaticFallback();
+  } else {
+    initScrollChoreography();
+  }
+});
+
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { getTopGames, getAggregateStats };
 }
