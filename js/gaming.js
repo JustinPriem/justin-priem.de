@@ -12,7 +12,9 @@ function cardTemplate(game) {
   // Titel-Slug in GAME_ART (js/games-art.js) nach Steam-Artwork gesucht.
   const artKey = slugifyTitle(game.title);
   const art = !game.cover && typeof GAME_ART !== "undefined" ? GAME_ART[artKey] : null;
-  const firstSrc = game.cover || (art && (art.hero || art.capsule || art.header));
+  // capsule zuerst: Steams eigenes Grid-Vorschaubild passt vom Seiten-
+  // verhältnis am ehesten zur Card-Cover-Box (wenig Beschnitt bei object-fit: cover).
+  const firstSrc = game.cover || (art && (art.capsule || art.header || art.hero));
 
   const coverInner = firstSrc
     ? `<img src="${firstSrc}" alt="${game.title} Cover"${art ? ` data-art-key="${artKey}"` : ""}>`
@@ -61,14 +63,14 @@ function render(games) {
 }
 
 // Steam-Artwork existiert nicht für jede App-ID in jeder Größe. Schlägt das
-// aktuelle <img> fehl, wird die nächste Variante (hero -> capsule -> header)
+// aktuelle <img> fehl, wird die nächste Variante (capsule -> header -> hero)
 // versucht; scheitern alle, springt die Karte auf das Monogramm zurück.
 function wireArtFallback(grid) {
   if (typeof GAME_ART === "undefined") return;
   grid.querySelectorAll("img[data-art-key]").forEach((img) => {
     const art = GAME_ART[img.dataset.artKey];
     if (!art) return;
-    const candidates = [art.hero, art.capsule, art.header].filter(Boolean);
+    const candidates = [art.capsule, art.header, art.hero].filter(Boolean);
     let i = candidates.indexOf(img.getAttribute("src")) + 1;
 
     img.onerror = () => {
