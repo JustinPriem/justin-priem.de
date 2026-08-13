@@ -324,6 +324,16 @@ sitzt still und falsch (`engine.md`, „Ordering law").
 - **GSAP/Lenis laden nicht** (CDN blockiert oder offline) — dieselbe statische
   Fassung wie bei Reduced Motion. Geprüft wird auf das tatsächliche Vorhandensein
   der Globals, nicht auf ein Ladeereignis.
+- **JavaScript vollständig deaktiviert** — hier gibt die Seite bewusst **keine**
+  Garantie ab, und das ist eine Architekturentscheidung, keine Lücke. Die gesamte
+  Website rendert ihre Inhalte aus den Daten-Dateien heraus: `gaming.html` baut
+  sein Spiele-Raster per JS aus `gaming-data.js`, `index.html` seine Kapitel
+  ebenso. Diese Seite ohne JS lesbar zu machen hieße, Spieltitel und Stundenwerte
+  fest ins HTML zu schreiben — und damit gegen die höherrangige Regel zu
+  verstoßen, dass der Admin-Bereich die einzige Quelle der Wahrheit für Inhalte
+  bleibt. Von zwei unvereinbaren Anforderungen gewinnt die Admin-Regel.
+  Die belastbare Zusage lautet deshalb: **die Seite funktioniert ohne GSAP, ohne
+  Lenis und unter Reduced Motion** — nicht ohne JavaScript überhaupt.
 - **Kein Canvas-2D-Kontext** (extrem selten, aber möglich) — Kapitel 4 blendet sein
   Partikelfeld aus und zeigt nur Text auf dem Grundschwarz. Kein Kapitel darf leer
   wirken, wenn seine Effektebene ausfällt. **WebGL wird nirgends verwendet**, damit
