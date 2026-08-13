@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaming — Deep Dive — Justin Priem</title>
-<meta name="description" content="Ein filmischer Sinkflug durch Justin Priems Gaming-Geschichte, bevor es ins vollständige Archiv geht.">
+<title>Gaming — Justin Priem</title>
+<meta name="description" content="Ein filmischer Sinkflug durch Justin Priems Gaming-Geschichte.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
@@ -12,56 +12,80 @@
 <link rel="shortcut icon" href="assets/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/gaming-intro.css">
 </head>
 <body>
 
-<a class="gi-back" href="index.html">← justin-priem.de</a>
+<div class="gs-loader" id="loader" aria-hidden="true"><i id="loader-bar"></i></div>
+<div class="gs-cursor" id="cursor" aria-hidden="true"></div>
+<div class="gs-grain" aria-hidden="true"></div>
 
-<div class="gi-track" id="gi-track">
+<header class="gs-head">
+  <a class="gs-back" href="index.html">justin-priem.de</a>
+  <div class="gs-readout" aria-hidden="true">
+    <span id="chapter-name">CHROME</span>
+    <span class="gs-progress"><i id="chapter-bar"></i></span>
+  </div>
+</header>
 
-  <section class="gi-act gi-act--surface" id="act-surface">
-    <div class="gi-bg" aria-hidden="true"></div>
-    <div class="gi-content">
-      <p class="gi-eyebrow">// TIEFENSCAN GESTARTET</p>
-      <h1><span class="gi-word">JUSTIN PRIEM</span><br><span class="gi-word">GAMING LOG</span></h1>
-      <span class="gi-scroll-cue" aria-hidden="true">scrollen zum Sinkflug</span>
+<main>
+
+  <section class="gs-film" id="film">
+    <div class="gs-stage">
+      <canvas id="film-canvas" aria-hidden="true"></canvas>
+      <img class="gs-poster" id="poster" src="assets/gaming-intro/poster.jpg" alt="">
+      <div class="gs-beat" data-in="-0.1" data-peak="0" data-out="0.22">
+        <h1>JUSTIN<br>PRIEM</h1>
+        <p class="gs-kicker">Gaming Log</p>
+        <span class="gs-cue">scrollen</span>
+      </div>
+      <div class="gs-beat gs-beat--mid" data-in="0.55" data-peak="0.68" data-out="0.82">
+        <p class="gs-line">Alles, was einen Save-State hinterlassen hat.</p>
+      </div>
+      <div class="gs-stage-fade" aria-hidden="true"></div>
     </div>
   </section>
 
-  <section class="gi-act gi-act--depth gi-act--side-right" id="act-depth-1">
-    <div class="gi-bg" aria-hidden="true"></div>
-    <div class="gi-hud-card" id="depth-card-1"></div>
-  </section>
-
-  <section class="gi-act gi-act--depth gi-act--side-left" id="act-depth-2">
-    <div class="gi-bg" aria-hidden="true"></div>
-    <div class="gi-hud-card" id="depth-card-2"></div>
-  </section>
-
-  <section class="gi-act gi-act--depth gi-act--side-right" id="act-depth-3">
-    <div class="gi-bg" aria-hidden="true"></div>
-    <div class="gi-hud-card" id="depth-card-3"></div>
-  </section>
-
-  <section class="gi-act gi-act--core" id="act-core">
-    <div class="gi-bg" aria-hidden="true"></div>
-    <div class="gi-content">
-      <p class="gi-eyebrow">// KERN ERREICHT</p>
-      <div class="gi-core-stats" id="core-stats"></div>
+  <section class="gs-ch gs-ch--number" id="ch-number" data-chapter="BILANZ">
+    <div class="gs-wrap">
+      <p class="gs-eyebrow">Bilanz</p>
+      <div class="gs-huge" id="total-hours">0</div>
+      <p class="gs-under">Stunden. In <span id="total-games">0</span> Welten.</p>
     </div>
   </section>
 
-  <section class="gi-act gi-act--portal" id="act-portal">
-    <div class="gi-bg" aria-hidden="true"></div>
-    <div class="gi-content">
-      <a class="gi-portal-btn" href="gaming.html">Vollständiges Archiv betreten <i aria-hidden="true">→</i></a>
+  <section class="gs-ch gs-ch--type" id="ch-type" data-chapter="GAMING">
+    <canvas class="gs-type-canvas" id="type-canvas" aria-hidden="true"></canvas>
+    <div class="gs-type-knock"><span>GAMING</span></div>
+  </section>
+
+  <section class="gs-ch gs-ch--run" id="ch-run" data-chapter="ARCHIV">
+    <div class="gs-run-track" id="run-track"></div>
+  </section>
+
+  <section class="gs-ch gs-ch--field" id="ch-field" data-chapter="SIGNAL">
+    <canvas class="gs-field-canvas" id="field-canvas" aria-hidden="true"></canvas>
+    <div class="gs-wrap">
+      <h2 class="gs-field-text" id="field-text" data-text="Kein Ende. Nur der nächste Start.">Kein Ende. Nur der nächste Start.</h2>
     </div>
   </section>
 
-</div>
+  <section class="gs-ch gs-ch--ticker" id="ch-ticker" data-chapter="BESTAND">
+    <div class="gs-ticker-row"><div class="gs-ticker-inner" id="ticker-1"></div></div>
+    <div class="gs-ticker-row gs-ticker-row--alt"><div class="gs-ticker-inner" id="ticker-2"></div></div>
+    <div class="gs-ticker-row"><div class="gs-ticker-inner" id="ticker-3"></div></div>
+  </section>
+
+  <section class="gs-ch gs-ch--portal" id="ch-portal" data-chapter="PORTAL">
+    <div class="gs-wrap">
+      <p class="gs-eyebrow">Vollständige Historie</p>
+      <a class="gs-portal" href="gaming.html" id="portal-btn"><span>Archiv betreten</span></a>
+    </div>
+  </section>
+
+</main>
 
 <footer id="site-footer"></footer>
 
@@ -70,6 +94,10 @@
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="js/socials.js"></script>
 <script src="js/gaming-data.js"></script>
+<script src="js/gaming-intro-data.js"></script>
+<script src="js/gaming-intro-frames.js"></script>
+<script src="js/gaming-intro-film.js"></script>
+<script src="js/gaming-intro-chapters.js"></script>
 <script src="js/gaming-intro.js"></script>
 </body>
 </html>

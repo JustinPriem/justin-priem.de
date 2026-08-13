@@ -1,175 +1,240 @@
 :root {
-  --gi-bg: #05060c;
-  --gi-cyan: #33E7FF;
-  --gi-magenta: #C264FF;
-  --gi-violet: #6C2BD9;
-  --gi-amber: #FFB020;
-  --gi-text: #E8F6FF;
-  --gi-text-dim: #8895A8;
-  --footer-line: rgba(51, 231, 255, .14);
+  --void: #05060A;
+  --chrome: #EAEEF5;
+  --cyan: #22E0D6;
+  --magenta: #FF3DAF;
+  --amber: #FFA43D;
+  --dim: #7A8697;
+  --footer-line: rgba(234,238,245,.14);
+  --ease: cubic-bezier(.16,1,.3,1);
 }
 
 body {
-  background: var(--gi-bg);
-  color: var(--gi-text);
-  font-family: "Chakra Petch", sans-serif;
-}
-
-.gi-back {
-  position: fixed; top: 1.6rem; left: 1.6rem; z-index: 20;
+  background: var(--void);
+  color: var(--chrome);
   font-family: "JetBrains Mono", monospace;
-  font-size: .78rem;
-  color: var(--gi-text-dim);
-  letter-spacing: .03em;
-  transition: color .2s ease;
-}
-.gi-back:hover { color: var(--gi-cyan); }
-
-.gi-act {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  background: var(--gi-bg);
+  overflow-x: hidden;
 }
 
-.gi-bg {
-  position: absolute; inset: 0;
-  background-size: cover;
-  background-position: center;
-  filter: saturate(1.05);
+/* ---------- Dauerhafte Ebenen ---------- */
+
+.gs-loader {
+  position: fixed; left: 0; top: 0; right: 0; height: 2px; z-index: 90;
+  background: rgba(234,238,245,.08); opacity: 1; transition: opacity .6s ease;
 }
-.gi-bg::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(5,6,12,.5), rgba(5,6,12,.78));
+.gs-loader.is-done { opacity: 0; }
+.gs-loader i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--magenta)); }
+
+.gs-cursor {
+  position: fixed; left: 0; top: 0; z-index: 95;
+  width: 26px; height: 26px; margin: -13px 0 0 -13px;
+  border: 1px solid rgba(234,238,245,.5); border-radius: 50%;
+  pointer-events: none; opacity: 0;
+  transition: opacity .3s ease, transform .18s var(--ease), background-color .18s ease;
+}
+.gs-cursor.is-live { opacity: 1; }
+.gs-cursor.is-hot { transform: scale(1.9); background: rgba(34,224,214,.14); }
+@media (hover: none) { .gs-cursor { display: none; } }
+
+.gs-grain {
+  position: fixed; inset: 0; z-index: 80; pointer-events: none;
+  opacity: .16; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+.gs-grain::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0,0,0,.6));
 }
 
-/* Jede Regel listet das Foto UND einen Void-Gradient-Fallback in einem
-   background-image (kommasepariert) — lädt das Bild nicht/verzögert,
-   bleibt sofort ein passend eingefärbter Void-Hintergrund sichtbar,
-   kein Warten, kein blankes Feld. */
-#act-surface .gi-bg { background-image: url("../assets/gaming-intro/surface.jpg"), radial-gradient(60% 60% at 30% 40%, rgba(51,231,255,.12), var(--gi-bg) 70%); }
-#act-depth-1 .gi-bg { background-image: url("../assets/gaming-intro/depth-1-cyan.jpg"), radial-gradient(60% 60% at 70% 50%, rgba(51,231,255,.16), var(--gi-bg) 70%); }
-#act-depth-2 .gi-bg { background-image: url("../assets/gaming-intro/depth-2-magenta.jpg"), radial-gradient(60% 60% at 30% 50%, rgba(194,100,255,.16), var(--gi-bg) 70%); }
-#act-depth-3 .gi-bg { background-image: url("../assets/gaming-intro/depth-3-violet.jpg"), radial-gradient(60% 60% at 70% 50%, rgba(108,43,217,.2), var(--gi-bg) 70%); }
-#act-core .gi-bg { background-image: url("../assets/gaming-intro/depth-3-violet.jpg"), radial-gradient(50% 50% at 50% 50%, rgba(108,43,217,.22), var(--gi-bg) 70%); filter: brightness(.55) saturate(1.2); }
-#act-portal .gi-bg { background: radial-gradient(circle at 50% 50%, rgba(51,231,255,.16), transparent 70%), var(--gi-bg); }
-#act-portal .gi-bg::after { display: none; }
+.gs-head {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 85;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.4rem 1.6rem; font-size: .72rem; letter-spacing: .08em;
+  color: #fff; text-shadow: 0 1px 18px rgba(0,0,0,.6); pointer-events: none;
+}
+.gs-head::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 320%; z-index: -1;
+  background: linear-gradient(to bottom, rgba(5,6,10,.7), rgba(5,6,10,0));
+}
+.gs-back { pointer-events: auto; color: currentColor; }
+.gs-back:hover { color: var(--cyan); }
+.gs-readout { display: flex; align-items: center; gap: .7rem; }
+.gs-progress { display: block; width: 84px; height: 1px; background: rgba(234,238,245,.25); }
+.gs-progress i { display: block; height: 100%; width: 0%; background: var(--cyan); }
+body.on-light .gs-head { color: #05060A; text-shadow: 0 1px 18px rgba(255,255,255,.5); }
+body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 
-.gi-content {
-  position: relative; z-index: 2;
-  max-width: 720px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 0 1.6rem;
+/* ---------- Der Film ---------- */
+
+.gs-film { position: relative; height: 420vh; }
+.gs-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: var(--void); }
+#film-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.gs-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity .8s ease; }
+.gs-poster.is-hidden { opacity: 0; }
+.gs-stage-fade { position: absolute; inset: auto 0 0 0; height: 30vh; opacity: 0; background: linear-gradient(to bottom, transparent, var(--void)); }
+
+.gs-beat { position: absolute; z-index: 3; left: 8vw; top: 50%; transform: translateY(-50%); max-width: 44rem; }
+.gs-beat::before {
+  content: ""; position: absolute; z-index: -1; inset: -70% -24% -70% -14%;
+  background: radial-gradient(60% 58% at 24% 50%, rgba(5,6,10,.78), rgba(5,6,10,.4) 45%, transparent 78%);
+}
+.gs-beat h1 {
+  font-family: "Anton", sans-serif; font-weight: 400;
+  font-size: clamp(3rem, 11vw, 9rem); line-height: .88;
+  margin: 0 0 1.2rem; letter-spacing: .01em; color: #fff;
+  text-shadow: 0 2px 40px rgba(0,0,0,.5);
+}
+.gs-kicker { margin: 0 0 2rem; font-size: .8rem; letter-spacing: .3em; color: var(--cyan); }
+.gs-cue { font-size: .72rem; letter-spacing: .2em; color: var(--dim); }
+.gs-beat--mid { left: auto; right: 8vw; text-align: right; max-width: 30rem; }
+.gs-beat--mid::before { inset: -70% -14% -70% -24%; background: radial-gradient(60% 58% at 76% 50%, rgba(5,6,10,.78), rgba(5,6,10,.4) 45%, transparent 78%); }
+.gs-line { font-size: clamp(1.1rem, 2.4vw, 1.9rem); line-height: 1.4; margin: 0; }
+
+/* ---------- Kapitel, gemeinsam ---------- */
+
+.gs-ch { position: relative; min-height: min(96vh, 940px); display: flex; align-items: center; overflow: hidden; }
+.gs-wrap { position: relative; z-index: 3; width: 100%; max-width: 1100px; margin: 0 auto; padding: 5rem 1.6rem; }
+.gs-eyebrow { font-size: .72rem; letter-spacing: .3em; color: var(--cyan); margin: 0 0 1.4rem; }
+
+/* Kapitel 1 — Die Zahl */
+.gs-ch--number { background: var(--void); text-align: center; }
+.gs-huge {
+  font-family: "Anton", sans-serif;
+  font-size: clamp(5rem, 24vw, 22rem); line-height: .82;
+  color: #fff; letter-spacing: -.02em;
+  text-shadow: 0 0 90px rgba(255,164,61,.28);
+  font-variant-numeric: tabular-nums;
+}
+.gs-under { font-size: clamp(.9rem, 1.6vw, 1.2rem); color: var(--dim); margin: 1.6rem 0 0; }
+.gs-under span { color: var(--amber); }
+
+/* Kapitel 2 — Der Name.
+   Der schwarze Block liegt über dem Canvas und wird per multiply gemischt:
+   Schwarz bleibt schwarz und deckt ab, Weiß lässt den Film durch. Dadurch
+   läuft der Film exakt in den Buchstaben. */
+.gs-ch--type { background: #000; isolation: isolate; padding: 0; }
+.gs-type-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.gs-ch--type::before {
+  /* Rückfallebene, wenn kein Filmframe gezeichnet werden kann: animiertes Chrom */
+  content: ""; position: absolute; inset: 0;
+  background: conic-gradient(from 0deg, #0b0d14, #6a7488, #EAEEF5, #6a7488, #0b0d14, #2a3040, #EAEEF5, #0b0d14);
+  animation: gs-spin 14s linear infinite;
+}
+/* WICHTIG: hier NICHT display:none verwenden. Das Canvas muss von Anfang an
+   eine Größe haben, sonst ist clientWidth 0, es kann nichts gezeichnet werden,
+   die Klasse gs-filmtext wird nie gesetzt — und das Canvas bliebe für immer
+   versteckt. Ein klassischer Verklemmungsfehler. */
+body:not(.gs-filmtext) .gs-type-canvas { opacity: 0; }
+body.gs-filmtext .gs-type-canvas { opacity: 1; transition: opacity .5s ease; }
+body.gs-filmtext .gs-ch--type::before { display: none; }
+@keyframes gs-spin { to { transform: rotate(1turn) scale(1.6); } }
+
+.gs-type-knock {
+  position: absolute; inset: 0; z-index: 3;
+  display: grid; place-items: center;
+  background: #000; mix-blend-mode: multiply;
+}
+.gs-type-knock span {
+  font-family: "Anton", sans-serif; color: #fff;
+  font-size: clamp(4rem, 21vw, 20rem); line-height: 1; letter-spacing: .02em;
 }
 
-.gi-eyebrow {
-  font-family: "JetBrains Mono", monospace;
-  font-size: .78rem;
-  color: var(--gi-cyan);
-  letter-spacing: .1em;
-  margin: 0 0 1rem;
+/* Kapitel 3 — Querlauf */
+.gs-ch--run { background: var(--void); }
+.gs-run-track { display: flex; gap: 2.4rem; align-items: center; padding: 0 8vw; width: max-content; }
+.gs-plate {
+  position: relative; flex: 0 0 auto;
+  width: clamp(220px, 26vw, 380px); aspect-ratio: 3 / 4;
+  border: 1px solid rgba(234,238,245,.14); border-radius: 6px;
+  overflow: hidden; background: #0A0C12;
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 1.4rem;
+  transform-style: preserve-3d; will-change: transform;
+}
+.gs-plate::before {
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  background: radial-gradient(90% 70% at 50% 12%, var(--accent), transparent 70%);
+  opacity: .34;
+}
+.gs-plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+.gs-plate-mono {
+  position: absolute; left: 0; right: 0; top: 15%; z-index: 1; text-align: center;
+  font-family: "Anton", sans-serif; font-size: clamp(3rem, 7vw, 5.6rem);
+  color: var(--accent); opacity: .9; line-height: 1;
+}
+.gs-plate-body { position: relative; z-index: 2; }
+.gs-plate h3 { margin: 0 0 .4rem; font-size: 1.05rem; font-weight: 600; }
+.gs-plate p { margin: 0; font-size: .74rem; color: var(--dim); }
+.gs-plate b { color: var(--accent); font-weight: 600; }
+
+/* Kapitel 4 — Das Feld */
+.gs-ch--field { background: var(--void); }
+.gs-field-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.gs-field-text {
+  font-family: "Anton", sans-serif; font-weight: 400;
+  font-size: clamp(2rem, 6.5vw, 5.4rem); line-height: 1.02; margin: 0;
+  max-width: 18ch; text-shadow: 0 2px 50px rgba(5,6,10,.9);
 }
 
-.gi-act--surface h1 {
-  font-size: clamp(2.2rem, 7vw, 4.2rem);
-  font-weight: 700;
-  line-height: 1.15;
-  margin: 0 0 1.4rem;
-  text-shadow: 0 0 30px rgba(51,231,255,.3);
+/* Kapitel 5 — Der Ticker */
+.gs-ch--ticker { background: var(--void); flex-direction: column; justify-content: center; gap: 1.2rem; padding: 6rem 0; }
+.gs-ticker-row { width: 100%; overflow: hidden; will-change: transform; }
+.gs-ticker-inner { display: flex; width: max-content; gap: 3rem; }
+.gs-ticker-inner span {
+  font-family: "Anton", sans-serif; font-size: clamp(2rem, 6vw, 5rem);
+  line-height: 1.1; color: transparent;
+  -webkit-text-stroke: 1px rgba(234,238,245,.34);
+  white-space: nowrap;
 }
-.gi-word { display: inline-block; }
+.gs-ticker-row--alt .gs-ticker-inner span { color: rgba(234,238,245,.1); -webkit-text-stroke: 0; }
 
-.gi-scroll-cue {
-  display: inline-block;
-  font-family: "JetBrains Mono", monospace;
-  font-size: .75rem;
-  color: var(--gi-text-dim);
-  letter-spacing: .06em;
+/* Kapitel 6 — Das Portal */
+.gs-ch--portal { background: var(--void); text-align: center; }
+.gs-ch--portal::before {
+  content: ""; position: absolute; inset: -40%;
+  background: conic-gradient(from 0deg, transparent, rgba(34,224,214,.16), transparent 40%, rgba(255,164,61,.16), transparent 70%);
+  animation: gs-spin 22s linear infinite;
 }
+.gs-portal {
+  position: relative; display: inline-block; overflow: hidden;
+  padding: 1.3rem 3rem; border-radius: 999px;
+  font-size: 1rem; font-weight: 600; letter-spacing: .06em; color: var(--void);
+  background: linear-gradient(90deg, var(--cyan), var(--amber));
+  box-shadow: 0 0 60px rgba(34,224,214,.3);
+  transition: box-shadow .25s ease; will-change: transform;
+}
+.gs-portal span { position: relative; z-index: 2; }
+.gs-portal::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.75), transparent);
+  transform: skewX(-18deg); transition: left .7s var(--ease);
+}
+.gs-portal:hover::after { left: 120%; }
+.gs-portal:hover { box-shadow: 0 0 80px rgba(255,164,61,.45); }
 
-.gi-hud-card {
-  position: relative; z-index: 2;
-  max-width: 400px;
-  padding: 1.6rem 1.8rem;
-  background: rgba(6,8,16,.6);
-  border: 1px solid rgba(51,231,255,.25);
-  border-radius: 14px;
-  backdrop-filter: blur(6px);
-}
-.gi-act--side-right .gi-hud-card { margin-left: auto; margin-right: 8vw; }
-.gi-act--side-left .gi-hud-card { margin-right: auto; margin-left: 8vw; }
+.footer-name { color: var(--chrome); }
+.footer-tag, .social-link { color: var(--dim); }
+.social-link:hover { color: var(--cyan); border-color: var(--cyan); }
 
-.gi-card-eyebrow {
-  font-family: "JetBrains Mono", monospace;
-  font-size: .68rem;
-  color: var(--gi-cyan);
-  letter-spacing: .08em;
-  margin: 0 0 .6rem;
+/* ---------- Ruhezustand ----------
+   Greift bei prefers-reduced-motion und wenn GSAP fehlt (Klasse gs-still). */
+@media (prefers-reduced-motion: reduce) {
+  .gs-film { height: auto; }
+  .gs-stage { position: relative; height: auto; min-height: 80vh; }
+  .gs-beat { position: relative; left: auto; right: auto; top: auto; transform: none; padding: 4rem 8vw; max-width: none; text-align: left; }
+  .gs-beat--mid { text-align: left; }
+  #film-canvas, .gs-grain, .gs-field-canvas { display: none; }
+  .gs-ch--type::before, .gs-ch--portal::before { animation: none; }
 }
-.gi-hud-card h2 { margin: 0 0 1rem; font-size: 1.5rem; }
-.gi-card-stats { display: flex; gap: 1.6rem; }
-.gi-card-label {
-  display: block;
-  font-family: "JetBrains Mono", monospace;
-  font-size: .68rem;
-  color: var(--gi-text-dim);
-}
-.gi-card-value {
-  display: block;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--gi-amber);
-}
+body.gs-still .gs-film { height: auto; }
+body.gs-still .gs-stage { position: relative; height: auto; min-height: 80vh; }
+body.gs-still .gs-beat { position: relative; left: auto; right: auto; top: auto; transform: none; opacity: 1 !important; visibility: visible !important; padding: 4rem 8vw; max-width: none; text-align: left; }
+body.gs-still #film-canvas, body.gs-still .gs-field-canvas { display: none; }
+body.gs-still .gs-run-track { flex-wrap: wrap; width: auto; justify-content: center; }
+body.gs-still .gs-ticker-inner { flex-wrap: wrap; width: auto; justify-content: center; }
+body.gs-still .gs-loader { display: none; }
 
-.gi-core-stats { display: flex; gap: 3rem; justify-content: center; }
-.gi-core-stat { display: flex; flex-direction: column; align-items: center; }
-.gi-core-value {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 2.6rem;
-  font-weight: 600;
-  color: var(--gi-cyan);
-}
-.gi-core-label {
-  font-family: "JetBrains Mono", monospace;
-  font-size: .72rem;
-  color: var(--gi-text-dim);
-  letter-spacing: .05em;
-}
-
-.gi-portal-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: .6rem;
-  padding: 1.1rem 2.2rem;
-  border-radius: 999px;
-  font-family: "JetBrains Mono", monospace;
-  font-size: .95rem;
-  font-weight: 600;
-  color: var(--gi-bg);
-  background: linear-gradient(90deg, var(--gi-cyan), var(--gi-magenta));
-  box-shadow: 0 0 40px rgba(51,231,255,.35);
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-.gi-portal-btn:hover { transform: translateY(-2px); box-shadow: 0 0 55px rgba(51,231,255,.5); }
-
-/* Reduced-motion / GSAP-unavailable fallback: acts stack normally, nothing stays pinned or hidden */
-.gi-static .gi-act { min-height: auto; padding: 6rem 1.6rem; }
-.gi-static .gi-content,
-.gi-static .gi-hud-card { opacity: 1 !important; transform: none !important; }
-
-/* Footer im Dark-HUD-Look, wie gaming.css */
-.footer-name { color: var(--gi-text); font-family: "Chakra Petch", sans-serif; }
-.footer-tag, .social-link { color: var(--gi-text-dim); font-family: "JetBrains Mono", monospace; }
-.social-link:hover { color: var(--gi-cyan); border-color: var(--gi-cyan); }
-
-@media (max-width: 720px) {
-  .gi-act--side-right .gi-hud-card,
-  .gi-act--side-left .gi-hud-card { margin-left: auto; margin-right: auto; }
-  .gi-core-stats { gap: 1.6rem; }
+@media (max-width: 760px) {
+  .gs-beat { left: 6vw; right: 6vw; max-width: none; }
+  .gs-beat--mid { text-align: left; }
+  .gs-run-track { padding: 0 6vw; }
 }
