@@ -35,7 +35,10 @@
   <section class="gs-film" id="film">
     <div class="gs-stage">
       <canvas id="film-canvas" aria-hidden="true"></canvas>
-      <img class="gs-poster" id="poster" src="assets/gaming-intro/poster.jpg" alt="">
+      <picture>
+        <source media="(max-width: 760px) and (orientation: portrait)" srcset="assets/gaming-intro/poster-sm.jpg">
+        <img class="gs-poster" id="poster" src="assets/gaming-intro/poster.jpg" alt="">
+      </picture>
       <div class="gs-beat" data-in="-0.1" data-peak="0" data-out="0.22">
         <h1>JUSTIN<br>PRIEM</h1>
         <p class="gs-kicker">Gaming Log</p>

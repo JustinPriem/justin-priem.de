@@ -15,7 +15,7 @@
 
   var DIR_LG = "assets/gaming-intro/frames/";
   var DIR_SM = "assets/gaming-intro/frames-sm/";
-  var MQ_SM = "(max-width: 760px)";
+  var MQ_SM = "(max-width: 760px) and (orientation: portrait)";
   var FPS = 24;
   // Speicherbudget fuer dekodierte Bitmaps im Schiebefenster. Das Fenster darf
   // NICHT fest sein: Speicher pro Bild (w * h * 4 Byte) mal Fenstergroesse muss
