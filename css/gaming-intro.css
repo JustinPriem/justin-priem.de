@@ -98,6 +98,24 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 
 /* Kapitel 1 — Die Zahl */
 .gs-ch--number { background: var(--void); text-align: center; }
+/* Der letzte Filmframe steht hier als ruhiges, abgedunkeltes Standbild hinter
+   der Zahl — gemalt von paintTo(), kein zusätzliches Bild. z-index unter
+   .gs-wrap (3), damit die Zahl darüber bleibt. Die Drift ist bewusst sehr
+   langsam (~30s), damit sie nicht mit dem Zähler konkurriert. */
+.gs-still-canvas {
+  position: absolute; inset: 0; z-index: 1;
+  width: 100%; height: 100%; display: block;
+  opacity: .34; transform: scale(1);
+  animation: gs-still-drift 30s ease-in-out infinite alternate;
+}
+@keyframes gs-still-drift {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gs-still-canvas { animation: none; }
+}
+body.gs-still .gs-still-canvas { animation: none; }
 .gs-huge {
   font-family: "Anton", sans-serif;
   font-size: clamp(5rem, 24vw, 22rem); line-height: .82;

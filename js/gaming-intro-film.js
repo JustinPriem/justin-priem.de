@@ -17,8 +17,16 @@
   var DIR_SM = "assets/gaming-intro/frames-sm/";
   var MQ_SM = "(max-width: 760px)";
   var FPS = 24;
+  // Speicherbudget fuer dekodierte Bitmaps im Schiebefenster. Das Fenster darf
+  // NICHT fest sein: Speicher pro Bild (w * h * 4 Byte) mal Fenstergroesse muss
+  // unter diesem Budget bleiben, sonst haelt die Engine bei grossen Framesaetzen
+  // (z.B. 1920 px nativ) hunderte Megabyte Bitmaps gleichzeitig im Speicher und
+  // bringt schwache Rechner zum Absturz. Also: Fenstergroesse aus Budget und
+  // tatsaechlicher Bildgroesse errechnen, nicht als Konstante eintragen.
+  var MEM_BUDGET = 180 * 1024 * 1024;
   var AHEAD = Math.round(FPS * 2.0);
   var BEHIND = Math.round(FPS * 1.3);
+  var windowSized = false;
   var MAX_CROP = 0.22;
   var PUMP = 10;
   var LERP = 0.14;
@@ -27,7 +35,7 @@
   var count = 0, dir = DIR_LG;
   var images = [], loaded = 0, queue = [], inFlight = 0;
   var bitmaps = new Map(), decoding = new Set(), bmpCenter = -9999;
-  var canvas, ctx, film, poster, loaderEl, loaderBar, fadeEl, beats;
+  var canvas, ctx, film, poster, loaderEl, loaderBar, beats;
   var current = 0, target = 0, displayed = -1, lastLuma = null, started = false;
 
   function pad(n) { return ("0000" + n).slice(-4); }
@@ -74,6 +82,20 @@
 
   /* ---- Dekodier-Schiebefenster ---- */
 
+  // Errechnet AHEAD/BEHIND aus dem tatsächlichen Speicherbudget, sobald die
+  // erste Bitmap-Größe bekannt ist. Läuft nur einmal pro Framesatz (Flag
+  // windowSized) — switchSet() setzt das Flag zurück, weil sich die
+  // Bildgröße dort gerade ändert.
+  function sizeWindow(b) {
+    if (windowSized) return;
+    windowSized = true;
+    var bytesProBild = (b.width || 1) * (b.height || 1) * 4;
+    var total = Math.floor(MEM_BUDGET / bytesProBild);
+    total = clamp(total, 18, 79);
+    AHEAD = Math.round(total * 0.6);
+    BEHIND = total - AHEAD;
+  }
+
   function ensureBitmaps(center) {
     if (Math.abs(center - bmpCenter) < 3) return;
     bmpCenter = center;
@@ -84,14 +106,18 @@
       (function (idx) {
         createImageBitmap(images[idx]).then(function (b) {
           decoding.delete(idx);
+          sizeWindow(b);
           if (Math.abs(idx - bmpCenter) > AHEAD + BEHIND) { b.close(); return; }
           bitmaps.set(idx, b);
           if (idx === displayed) draw(idx, true);
         }).catch(function () { decoding.delete(idx); });
       })(i);
     }
+    // Räumung strenger als das Fenster selbst (Faktor 1.5 statt 2), damit der
+    // tatsächlich gehaltene Bitmap-Satz das Speicherbudget nicht durch
+    // Nachzügler am Fensterrand überschreiten kann.
     bitmaps.forEach(function (b, k) {
-      if (k < center - BEHIND * 2 || k > center + AHEAD * 2) { b.close(); bitmaps.delete(k); }
+      if (k < center - BEHIND * 1.5 || k > center + AHEAD * 1.5) { b.close(); bitmaps.delete(k); }
     });
   }
 
@@ -148,7 +174,11 @@
   function progress() {
     if (!film) return 0;
     var r = film.getBoundingClientRect();
-    var span = r.height - window.innerHeight;
+    // Die letzte halbe Bildschirmhoehe ist Haltezone: Der Film steht dort bereits
+    // auf 100 %, damit der Kern einen Moment wirken kann, bevor das erste Kapitel
+    // nachrueckt.
+    var hold = window.innerHeight * 0.5;
+    var span = r.height - window.innerHeight - hold;
     if (span <= 0) return 0;
     return clamp(-r.top / span, 0, 1);
   }
@@ -175,7 +205,6 @@
       beats[i].style.opacity = a;
       beats[i].style.transform = "translateY(" + (-50 + (1 - a) * 4) + "%)";
     }
-    if (fadeEl) fadeEl.style.opacity = clamp((p - 0.9) / 0.1, 0, 1);
 
     requestAnimationFrame(tick);
   }
@@ -220,6 +249,8 @@
     bitmaps.forEach(function (b) { b.close(); });
     bitmaps.clear(); decoding.clear();
     bmpCenter = -9999; images = []; loaded = 0; displayed = -1;
+    // Bildgröße ändert sich mit dem Framesatz — Fenster muss neu berechnet werden.
+    windowSized = false;
     enqueueAll();
   }
 
@@ -229,7 +260,6 @@
     poster = document.getElementById("poster");
     loaderEl = document.getElementById("loader");
     loaderBar = document.getElementById("loader-bar");
-    fadeEl = document.querySelector(".gs-stage-fade");
     beats = document.querySelectorAll(".gs-beat");
     if (!film || !canvas) return;
 

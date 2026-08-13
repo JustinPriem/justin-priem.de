@@ -21,22 +21,71 @@
     var target = parseInt(el.getAttribute("data-target"), 10) || 0;
     var full = target.toLocaleString("de-DE");
     var obj = { v: 0 };
+    var lastRoll = 0, rolled = full;
     gsap.to(obj, {
       v: target, ease: "none",
       scrollTrigger: { trigger: "#ch-number", start: "top 80%", end: "center 55%", scrub: 0.6 },
       onUpdate: function () {
         // Ziffern rasten von links nach rechts ein; alles rechts davon flackert.
+        // Gewürfelt wird nur etwa alle 125 ms neu — sonst wechseln bei Scroll-Ticks
+        // bis zu 60 mal pro Sekunde alle Stellen und es sieht nach Flackern statt
+        // Einrasten aus. Das Einrasten selbst bleibt sofort, nur das Würfeln wird
+        // gedrosselt.
         var p = target ? obj.v / target : 1;
         var settled = Math.floor(p * full.length);
+        var now = performance.now();
+        if (now - lastRoll >= 125) {
+          lastRoll = now;
+          var next = "";
+          for (var i = 0; i < full.length; i++) {
+            if (full[i] === "." || full[i] === " ") next += full[i];
+            else next += String(Math.floor(Math.random() * 10));
+          }
+          rolled = next;
+        }
         var out = "";
-        for (var i = 0; i < full.length; i++) {
-          if (i < settled || full[i] === "." || full[i] === " ") out += full[i];
-          else out += String(Math.floor(Math.random() * 10));
+        for (var j = 0; j < full.length; j++) {
+          out += (j < settled || full[j] === "." || full[j] === " ") ? full[j] : rolled[j];
         }
         el.textContent = out;
       },
       onComplete: function () { el.textContent = full; }
     });
+  }
+
+  /* --- Kapitel 1: Standbild hinter der Bilanz --- */
+  function stillNumber() {
+    var c = document.getElementById("number-canvas");
+    if (!c || !window.GS_FILM || !window.GS_FILM.paintTo) return;
+    var ctx = c.getContext("2d");
+    if (!ctx) return;
+
+    function resize() {
+      c.width = c.clientWidth; c.height = c.clientHeight;
+      paint();
+    }
+
+    var done = false, last = 0;
+    // Beim Start sind die Frames noch nicht geladen — paintTo() liefert dann
+    // false. Also im selben gedrosselten Takt wie Kapitel 2 (~80ms) erneut
+    // versuchen, bis ein echter Frame gemalt ist, und danach aufhören: kein
+    // Dauerlauf für ein Bild, das sich nie wieder ändert.
+    function paint() {
+      if (!c.width || !c.height) return false;
+      var drawn = window.GS_FILM.paintTo(ctx, c.width, c.height, window.GS_FRAME_COUNT - 1);
+      if (drawn) done = true;
+      return drawn;
+    }
+
+    function tick(t) {
+      if (done) return;
+      if (t - last > 80) { last = t; paint(); }
+      if (!done) requestAnimationFrame(tick);
+    }
+
+    resize();
+    window.addEventListener("resize", resize);
+    requestAnimationFrame(tick);
   }
 
   /* --- Kapitel 2: Der Film läuft in den Buchstaben --- */
@@ -316,6 +365,7 @@
   function init() {
     horizontalRun();   // gepinnt: zuerst
     counter();
+    stillNumber();
     filmInType();
     field();
     scrambleText();

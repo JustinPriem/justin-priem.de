@@ -107,18 +107,25 @@
     var nameEl = document.getElementById("chapter-name");
     var barEl = document.getElementById("chapter-bar");
     var sections = Array.prototype.slice.call(document.querySelectorAll(".gs-ch[data-chapter]"));
+    var filmEl = document.getElementById("film");
     if (!nameEl || !barEl) return;
+
+    var name = "CHROME";
 
     function frame() {
       var doc = document.documentElement;
       var max = doc.scrollHeight - window.innerHeight;
       barEl.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0).toFixed(1) + "%";
 
-      var name = "CHROME";
-      if (window.GS_FILM) {
+      // Die Film-Namen gelten nur, solange die Film-Sektion noch im Bild ist.
+      // progress() bleibt nach dem Durchscrollen dauerhaft bei 1 — ohne diese
+      // Prüfung stünde in jeder Lücke zwischen zwei Kapiteln faelschlich "KERN".
+      var filmVisible = !filmEl || filmEl.getBoundingClientRect().bottom > window.innerHeight * 0.5;
+      if (filmVisible && window.GS_FILM) {
         var p = window.GS_FILM.progress();
         if (p > 0.66) name = "KERN";
         else if (p > 0.33) name = "KORRIDOR";
+        else name = "CHROME";
       }
       for (var i = 0; i < sections.length; i++) {
         var r = sections[i].getBoundingClientRect();
