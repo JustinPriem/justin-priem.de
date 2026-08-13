@@ -94,6 +94,14 @@
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
     }
+    // Spaet ladende Bilder und Schriftarten verschieben das Layout nach dem ersten
+    // Auffrischen; ohne einen dritten Auffrisch wird die gepinnte Laufdistanz falsch
+    // berechnet.
+    if (document.readyState === "complete") {
+      ScrollTrigger.refresh();
+    } else {
+      window.addEventListener("load", function () { ScrollTrigger.refresh(); });
+    }
     initCursor();
     initReadout();
     initAdaptiveHead();
