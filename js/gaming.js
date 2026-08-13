@@ -8,8 +8,14 @@ function monogram(title) {
 }
 
 function cardTemplate(game) {
-  const coverInner = game.cover
-    ? `<img src="${game.cover}" alt="${game.title} Cover">`
+  // Eigene Uploads (game.cover) haben Vorrang. Fehlt einer, wird per
+  // Titel-Slug in GAME_ART (js/games-art.js) nach Steam-Artwork gesucht.
+  const artKey = slugifyTitle(game.title);
+  const art = !game.cover && typeof GAME_ART !== "undefined" ? GAME_ART[artKey] : null;
+  const firstSrc = game.cover || (art && (art.hero || art.capsule || art.header));
+
+  const coverInner = firstSrc
+    ? `<img src="${firstSrc}" alt="${game.title} Cover"${art ? ` data-art-key="${artKey}"` : ""}>`
     : `<span class="mono">${monogram(game.title)}</span>`;
 
   return `
@@ -51,6 +57,31 @@ function cardTemplate(game) {
 function render(games) {
   const grid = document.getElementById("game-grid");
   grid.innerHTML = games.map(cardTemplate).join("");
+  wireArtFallback(grid);
+}
+
+// Steam-Artwork existiert nicht für jede App-ID in jeder Größe. Schlägt das
+// aktuelle <img> fehl, wird die nächste Variante (hero -> capsule -> header)
+// versucht; scheitern alle, springt die Karte auf das Monogramm zurück.
+function wireArtFallback(grid) {
+  if (typeof GAME_ART === "undefined") return;
+  grid.querySelectorAll("img[data-art-key]").forEach((img) => {
+    const art = GAME_ART[img.dataset.artKey];
+    if (!art) return;
+    const candidates = [art.hero, art.capsule, art.header].filter(Boolean);
+    let i = candidates.indexOf(img.getAttribute("src")) + 1;
+
+    img.onerror = () => {
+      if (i < candidates.length) {
+        img.src = candidates[i++];
+        return;
+      }
+      const mono = document.createElement("span");
+      mono.className = "mono";
+      mono.textContent = monogram(img.alt.replace(/ Cover$/, ""));
+      img.replaceWith(mono);
+    };
+  });
 }
 
 function setupControls() {
