@@ -96,6 +96,11 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 .gs-wrap { position: relative; z-index: 3; width: 100%; max-width: 1100px; margin: 0 auto; padding: 5rem 1.6rem; }
 .gs-eyebrow { font-size: .72rem; letter-spacing: .3em; color: var(--cyan); margin: 0 0 1.4rem; }
 
+/* Signal, Bestand, Portal rücken enger zusammen — gut halbe Bildschirmhöhe
+   statt fast voller Höhe wie die übrigen Kapitel. */
+#ch-field, #ch-ticker, #ch-portal { min-height: min(62vh, 620px); }
+#ch-field .gs-wrap, #ch-portal .gs-wrap { padding: 2.6rem 1.6rem; }
+
 /* Kapitel 1 — Die Zahl */
 .gs-ch--number { background: var(--void); text-align: center; }
 /* Der letzte Filmframe steht hier als ruhiges, abgedunkeltes Standbild hinter
@@ -125,6 +130,14 @@ body.gs-still .gs-still-canvas { animation: none; }
 }
 .gs-under { font-size: clamp(.9rem, 1.6vw, 1.2rem); color: var(--dim); margin: 1.6rem 0 0; }
 .gs-under span { color: var(--amber); }
+
+/* Walzenzähler: jede Ziffer ist ein 1em hohes Sichtfenster über einem
+   Streifen aus Ziffern 0–9; verschoben per translateY auf dem <i>. Bleibt
+   ohne Skript unangetastet — der fertige Zahlentext steht dann einfach da. */
+.gs-od { display: inline-block; overflow: hidden; height: 1em; vertical-align: bottom; }
+.gs-od i { display: block; font-style: normal; }
+.gs-od i b { display: block; height: 1em; line-height: 1; font-weight: inherit; font-style: normal; }
+.gs-od-sep { display: inline-block; }
 
 /* Kapitel 2 — Der Name.
    Der schwarze Block liegt über dem Canvas und wird per multiply gemischt:
@@ -162,7 +175,7 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
 .gs-run-track { display: flex; gap: 2.4rem; align-items: center; padding: 0 8vw; width: max-content; }
 .gs-plate {
   position: relative; flex: 0 0 auto;
-  width: clamp(220px, 26vw, 380px); aspect-ratio: 3 / 4;
+  width: clamp(280px, 30vw, 430px); aspect-ratio: 3 / 4;
   border: 1px solid rgba(234,238,245,.14); border-radius: 6px;
   overflow: hidden; background: #0A0C12;
   display: flex; flex-direction: column; justify-content: flex-end; padding: 1.4rem;
@@ -173,16 +186,26 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
   background: radial-gradient(90% 70% at 50% 12%, var(--accent), transparent 70%);
   opacity: .34;
 }
-.gs-plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5; }
-.gs-plate-mono {
-  position: absolute; left: 0; right: 0; top: 15%; z-index: 1; text-align: center;
-  font-family: "Anton", sans-serif; font-size: clamp(3rem, 7vw, 5.6rem);
-  color: var(--accent); opacity: .9; line-height: 1;
+.gs-plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+/* Monogramm ist nur noch ein schwaches Wasserzeichen hinter der Typografie,
+   nicht mehr das Hauptmotiv der Karte. */
+.gs-plate-mark {
+  position: absolute; top: -4%; right: -3%; z-index: 0; text-align: right;
+  font-family: "Anton", sans-serif; font-size: clamp(5rem, 15vw, 11rem);
+  color: var(--accent); opacity: .12; line-height: 1; pointer-events: none;
 }
 .gs-plate-body { position: relative; z-index: 2; }
-.gs-plate h3 { margin: 0 0 .4rem; font-size: 1.05rem; font-weight: 600; }
-.gs-plate p { margin: 0; font-size: .74rem; color: var(--dim); }
-.gs-plate b { color: var(--accent); font-weight: 600; }
+.gs-plate h3 {
+  margin: 0 0 1rem; font-family: "Anton", sans-serif; font-weight: 400;
+  font-size: clamp(1.5rem, 2.6vw, 2.3rem); line-height: 1.05; color: #fff;
+}
+.gs-plate-stats { display: flex; gap: 1.6rem; }
+.gs-plate-stats > div { display: flex; flex-direction: column; gap: .3rem; }
+.gs-plate-label { font-size: .68rem; letter-spacing: .18em; color: var(--dim); }
+.gs-plate-value {
+  font-family: "JetBrains Mono", monospace; font-weight: 600;
+  font-size: clamp(1.15rem, 1.9vw, 1.6rem); color: var(--accent);
+}
 
 /* Kapitel 4 — Das Feld */
 .gs-ch--field { background: var(--void); }
@@ -194,16 +217,19 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
 }
 
 /* Kapitel 5 — Der Ticker */
-.gs-ch--ticker { background: var(--void); flex-direction: column; justify-content: center; gap: 1.2rem; padding: 6rem 0; }
+.gs-ch--ticker { background: var(--void); flex-direction: column; justify-content: center; gap: .8rem; padding: 2.6rem 0; }
 .gs-ticker-row { width: 100%; overflow: hidden; will-change: transform; }
 .gs-ticker-inner { display: flex; width: max-content; gap: 3rem; }
 .gs-ticker-inner span {
-  font-family: "Anton", sans-serif; font-size: clamp(2rem, 6vw, 5rem);
+  font-family: "Anton", sans-serif; font-size: clamp(2.6rem, 8vw, 7rem);
   line-height: 1.1; color: transparent;
   -webkit-text-stroke: 1px rgba(234,238,245,.34);
   white-space: nowrap;
 }
-.gs-ticker-row--alt .gs-ticker-inner span { color: rgba(234,238,245,.1); -webkit-text-stroke: 0; }
+/* Farbe rein: Zeile 1 in Cyan, Zeile 2 gefüllt in Magenta, Zeile 3 in Bernstein. */
+#ticker-1 span { -webkit-text-stroke: 1px var(--cyan); }
+#ticker-2 span { color: rgba(255,61,175,.5); -webkit-text-stroke: 0; }
+#ticker-3 span { -webkit-text-stroke: 1px var(--amber); }
 
 /* Kapitel 6 — Das Portal */
 .gs-ch--portal { background: var(--void); text-align: center; }
@@ -212,13 +238,30 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
   background: conic-gradient(from 0deg, transparent, rgba(34,224,214,.16), transparent 40%, rgba(255,164,61,.16), transparent 70%);
   animation: gs-spin 22s linear infinite;
 }
+/* Zweite Ebene, die den rotierenden Verlauf zusätzlich pulsieren lässt —
+   eigenes Pseudo-Element, weil eine zweite Animation auf derselben Ebene
+   deren transform (die Rotation) sonst ersetzen statt ergänzen würde. */
+.gs-ch--portal::after {
+  content: ""; position: absolute; inset: -40%;
+  background: conic-gradient(from 0deg, transparent, rgba(34,224,214,.16), transparent 40%, rgba(255,164,61,.16), transparent 70%);
+  animation: gs-portal-pulse 4s ease-in-out infinite alternate;
+}
+@keyframes gs-portal-pulse {
+  from { opacity: .5; transform: scale(1); }
+  to   { opacity: 1; transform: scale(1.12); }
+}
 .gs-portal {
   position: relative; display: inline-block; overflow: hidden;
   padding: 1.3rem 3rem; border-radius: 999px;
   font-size: 1rem; font-weight: 600; letter-spacing: .06em; color: var(--void);
   background: linear-gradient(90deg, var(--cyan), var(--amber));
-  box-shadow: 0 0 60px rgba(34,224,214,.3);
+  box-shadow: 0 0 90px rgba(34,224,214,.45);
   transition: box-shadow .25s ease; will-change: transform;
+  animation: gs-portal-btn-pulse 3s ease-in-out infinite alternate;
+}
+@keyframes gs-portal-btn-pulse {
+  from { box-shadow: 0 0 90px rgba(34,224,214,.45); }
+  to   { box-shadow: 0 0 120px rgba(34,224,214,.65); }
 }
 .gs-portal span { position: relative; z-index: 2; }
 .gs-portal::after {
@@ -242,11 +285,13 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
   .gs-beat--mid { text-align: left; }
   #film-canvas, .gs-grain, .gs-field-canvas { display: none; }
   .gs-ch--type::before, .gs-ch--portal::before { animation: none; }
+  .gs-ch--portal::after, .gs-portal { animation: none; }
 }
 body.gs-still .gs-film { height: auto; }
 body.gs-still .gs-stage { position: relative; height: auto; min-height: 80vh; }
 body.gs-still .gs-beat { position: relative; left: auto; right: auto; top: auto; transform: none; opacity: 1 !important; visibility: visible !important; padding: 4rem 8vw; max-width: none; text-align: left; }
 body.gs-still #film-canvas, body.gs-still .gs-field-canvas { display: none; }
+body.gs-still .gs-ch--portal::after, body.gs-still .gs-portal { animation: none; }
 body.gs-still .gs-run-track { flex-wrap: wrap; width: auto; justify-content: center; }
 body.gs-still .gs-ticker-inner { flex-wrap: wrap; width: auto; justify-content: center; }
 body.gs-still .gs-loader { display: none; }

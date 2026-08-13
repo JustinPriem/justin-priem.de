@@ -15,14 +15,18 @@
   }
 
   function plateHtml(game) {
-    var cover = game.cover
-      ? '<img src="' + game.cover + '" alt="">'
-      : '<div class="gs-plate-mono">' + monogram(game.title) + "</div>";
+    var cover = game.cover ? '<img src="' + game.cover + '" alt="">' : "";
+    var rankValue = game.rank || "—";
     return (
       '<article class="gs-plate" style="--accent:' + game.accent + '">' + cover +
+      '<span class="gs-plate-mark">' + monogram(game.title) + "</span>" +
       '<div class="gs-plate-body"><h3>' + game.title + "</h3>" +
-      "<p><b>" + game.hours.toLocaleString("de-DE") + " h</b> · " + game.genre + "</p>" +
-      "</div></article>"
+      '<div class="gs-plate-stats">' +
+      '<div><span class="gs-plate-label">Spielzeit</span><span class="gs-plate-value">' +
+      game.hours.toLocaleString("de-DE") + ' h</span></div>' +
+      '<div><span class="gs-plate-label">Rang</span><span class="gs-plate-value">' +
+      rankValue + "</span></div>" +
+      "</div></div></article>"
     );
   }
 

@@ -14,42 +14,81 @@
 
   var GLYPHS = "0123456789#%&@*+=<>/\\";
 
-  /* --- Kapitel 1: Zähler mit Scramble-Auflösung --- */
+  /* --- Kapitel 1: Zähler als Walzen-Kilometerzähler ---
+     Jede Ziffer wird zu einer eigenen Walze (.gs-od > i mit den Ziffern
+     0-9 untereinander, zuletzt die Zielziffer); jedes andere Zeichen (der
+     Tausenderpunkt) bleibt als .gs-od-sep stehen. Der fertige Zahlentext
+     im Element wird erst beim Aufbau der Walzen ersetzt — läuft kein
+     Skript, steht weiterhin die reine, formatierte Zahl da. */
+  function buildOdometer(el, full) {
+    var frag = document.createDocumentFragment();
+    var wheels = [];
+    var digitIndex = 0;
+    for (var c = 0; c < full.length; c++) {
+      var ch = full[c];
+      if (ch >= "0" && ch <= "9") {
+        var i = digitIndex++;
+        var reps = 2 + i;
+        var wrap = document.createElement("span");
+        wrap.className = "gs-od";
+        var strip = document.createElement("i");
+        for (var r = 0; r < reps; r++) {
+          for (var d = 0; d < 10; d++) {
+            var b = document.createElement("b");
+            b.textContent = String(d);
+            strip.appendChild(b);
+          }
+        }
+        var last = document.createElement("b");
+        last.textContent = ch;
+        strip.appendChild(last);
+        wrap.appendChild(strip);
+        frag.appendChild(wrap);
+        wheels.push({ strip: strip, L: reps * 10 + 1 });
+      } else {
+        var sep = document.createElement("span");
+        sep.className = "gs-od-sep";
+        sep.textContent = ch;
+        frag.appendChild(sep);
+      }
+    }
+    el.textContent = "";
+    el.appendChild(frag);
+    return wheels;
+  }
+
   function counter() {
     var el = document.getElementById("total-hours");
     if (!el) return;
     var target = parseInt(el.getAttribute("data-target"), 10) || 0;
     var full = target.toLocaleString("de-DE");
-    var obj = { v: 0 };
-    var lastRoll = 0, rolled = full;
+    var wheels = buildOdometer(el, full);
+    if (!wheels.length) return;
+    var n = wheels.length;
+
+    function place(p) {
+      for (var i = 0; i < n; i++) {
+        // Die linkeste Walze rastet bei 70% des Scrollwegs ein, die
+        // rechteste erst bei 100% — daraus entsteht der gestaffelte
+        // Kilometerzähler-Eindruck statt fünf Walzen, die gleichzeitig stoppen.
+        var settleAt = 0.70 + 0.30 * (i / Math.max(1, n - 1));
+        var pi = gsap.utils.clamp(0, 1, p / settleAt);
+        var eased = 1 - Math.pow(1 - pi, 3); // power3.out
+        var k = eased * (wheels[i].L - 1);
+        wheels[i].strip.style.transform = "translateY(" + (-k) + "em)";
+      }
+    }
+
+    var obj = { p: 0 };
     gsap.to(obj, {
-      v: target, ease: "none",
+      p: 1, ease: "none",
       scrollTrigger: { trigger: "#ch-number", start: "top 80%", end: "center 55%", scrub: 0.6 },
-      onUpdate: function () {
-        // Ziffern rasten von links nach rechts ein; alles rechts davon flackert.
-        // Gewürfelt wird nur etwa alle 125 ms neu — sonst wechseln bei Scroll-Ticks
-        // bis zu 60 mal pro Sekunde alle Stellen und es sieht nach Flackern statt
-        // Einrasten aus. Das Einrasten selbst bleibt sofort, nur das Würfeln wird
-        // gedrosselt.
-        var p = target ? obj.v / target : 1;
-        var settled = Math.floor(p * full.length);
-        var now = performance.now();
-        if (now - lastRoll >= 125) {
-          lastRoll = now;
-          var next = "";
-          for (var i = 0; i < full.length; i++) {
-            if (full[i] === "." || full[i] === " ") next += full[i];
-            else next += String(Math.floor(Math.random() * 10));
-          }
-          rolled = next;
+      onUpdate: function () { place(obj.p); },
+      onComplete: function () {
+        for (var i = 0; i < n; i++) {
+          wheels[i].strip.style.transform = "translateY(" + (-(wheels[i].L - 1)) + "em)";
         }
-        var out = "";
-        for (var j = 0; j < full.length; j++) {
-          out += (j < settled || full[j] === "." || full[j] === " ") ? full[j] : rolled[j];
-        }
-        el.textContent = out;
-      },
-      onComplete: function () { el.textContent = full; }
+      }
     });
   }
 
@@ -193,10 +232,18 @@
     var ctx = c.getContext("2d");
     if (!ctx) return;
 
-    var pts = [], N = 90, LINK = 130;
+    var pts = [], N = 140, LINK = 165;
+    var CYAN_RGB = [34, 224, 214], MAGENTA_RGB = [255, 61, 175];
     var mouse = { x: -9999, y: -9999 };
     var stretch = { v: 0 };
     var running = false;
+
+    function mixRgb(t) {
+      var r = Math.round(CYAN_RGB[0] + (MAGENTA_RGB[0] - CYAN_RGB[0]) * t);
+      var g = Math.round(CYAN_RGB[1] + (MAGENTA_RGB[1] - CYAN_RGB[1]) * t);
+      var b = Math.round(CYAN_RGB[2] + (MAGENTA_RGB[2] - CYAN_RGB[2]) * t);
+      return r + "," + g + "," + b;
+    }
 
     function resize() {
       c.width = c.clientWidth; c.height = c.clientHeight;
@@ -229,17 +276,18 @@
         if (a.y < 0) a.y = c.height; if (a.y > c.height) a.y = 0;
 
         dx = a.x - mouse.x; dy = a.y - mouse.y; d = Math.hypot(dx, dy);
-        if (d < 120 && d > 0.01) { a.x += (dx / d) * 1.6; a.y += (dy / d) * 1.6; }
+        if (d < 170 && d > 0.01) { a.x += (dx / d) * 3.2; a.y += (dy / d) * 3.2; }
       }
 
-      ctx.strokeStyle = "rgba(34,224,214,.5)";
+      // Farbe nach Länge gemischt: kurze Linien in Cyan, lange in Magenta.
       for (i = 0; i < pts.length; i++) {
         a = pts[i];
         for (j = i + 1; j < pts.length; j++) {
           b = pts[j];
           dx = a.x - b.x; dy = a.y - b.y; d = Math.hypot(dx, dy);
           if (d < LINK) {
-            ctx.globalAlpha = (1 - d / LINK) * 0.34;
+            var t = d / LINK;
+            ctx.strokeStyle = "rgba(" + mixRgb(t) + "," + ((1 - t) * 0.55) + ")";
             ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
           }
         }
@@ -247,7 +295,7 @@
       ctx.globalAlpha = 1;
       ctx.fillStyle = "rgba(234,238,245,.7)";
       for (i = 0; i < pts.length; i++) {
-        ctx.beginPath(); ctx.arc(pts[i].x, pts[i].y, 1.4, 0, 6.284); ctx.fill();
+        ctx.beginPath(); ctx.arc(pts[i].x, pts[i].y, 1.9, 0, 6.284); ctx.fill();
       }
       requestAnimationFrame(frame);
     }
@@ -302,9 +350,9 @@
   /* --- Kapitel 5: Laufbänder --- */
   function tickers() {
     var rows = [
-      { id: "ticker-1", dur: 26, dir: -1 },
-      { id: "ticker-2", dur: 34, dir: 1 },
-      { id: "ticker-3", dur: 30, dir: -1 }
+      { id: "ticker-1", dur: 17, dir: -1 },
+      { id: "ticker-2", dur: 23, dir: 1 },
+      { id: "ticker-3", dur: 20, dir: -1 }
     ];
     rows.forEach(function (r) {
       var el = document.getElementById(r.id);
