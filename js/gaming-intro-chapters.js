@@ -92,41 +92,6 @@
     });
   }
 
-  /* --- Kapitel 1: Standbild hinter der Bilanz --- */
-  function stillNumber() {
-    var c = document.getElementById("number-canvas");
-    if (!c || !window.GS_FILM || !window.GS_FILM.paintTo) return;
-    var ctx = c.getContext("2d");
-    if (!ctx) return;
-
-    function resize() {
-      c.width = c.clientWidth; c.height = c.clientHeight;
-      paint();
-    }
-
-    var done = false, last = 0;
-    // Beim Start sind die Frames noch nicht geladen — paintTo() liefert dann
-    // false. Also im selben gedrosselten Takt wie Kapitel 2 (~80ms) erneut
-    // versuchen, bis ein echter Frame gemalt ist, und danach aufhören: kein
-    // Dauerlauf für ein Bild, das sich nie wieder ändert.
-    function paint() {
-      if (!c.width || !c.height) return false;
-      var drawn = window.GS_FILM.paintTo(ctx, c.width, c.height, window.GS_FRAME_COUNT - 1);
-      if (drawn) done = true;
-      return drawn;
-    }
-
-    function tick(t) {
-      if (done) return;
-      if (t - last > 80) { last = t; paint(); }
-      if (!done) requestAnimationFrame(tick);
-    }
-
-    resize();
-    window.addEventListener("resize", resize);
-    requestAnimationFrame(tick);
-  }
-
   /* --- Kapitel 2: Der Film läuft in den Buchstaben --- */
   function filmInType() {
     var c = document.getElementById("type-canvas");
@@ -167,6 +132,19 @@
     ScrollTrigger.create({
       trigger: "#ch-type", start: "top bottom", end: "bottom top",
       onToggle: function (self) { if (self.isActive) start(); else stop(); }
+    });
+  }
+
+  /* --- Kapitel 2: Der Schriftzug wächst beim Hineinscrollen an ---
+     Die Skalierung liegt auf dem <span>, nicht auf .gs-type-knock selbst:
+     der schwarze Block muss die volle Fläche decken, damit die
+     Knockout-Mischung (mix-blend-mode: multiply) nicht gestört wird. */
+  function typeGrowIn() {
+    var span = document.querySelector(".gs-type-knock span");
+    if (!span) return;
+    gsap.fromTo(span, { scale: 0.86 }, {
+      scale: 1, ease: "none",
+      scrollTrigger: { trigger: "#ch-type", start: "top bottom", end: "center center", scrub: true }
     });
   }
 
@@ -413,8 +391,8 @@
   function init() {
     horizontalRun();   // gepinnt: zuerst
     counter();
-    stillNumber();
     filmInType();
+    typeGrowIn();
     field();
     scrambleText();
     tickers();

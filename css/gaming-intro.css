@@ -103,30 +103,45 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 
 /* Kapitel 1 — Die Zahl */
 .gs-ch--number { background: var(--void); text-align: center; }
-/* Der letzte Filmframe steht hier als ruhiges, abgedunkeltes Standbild hinter
-   der Zahl — gemalt von paintTo(), kein zusätzliches Bild. z-index unter
-   .gs-wrap (3), damit die Zahl darüber bleibt. Die Drift ist bewusst sehr
-   langsam (~30s), damit sie nicht mit dem Zähler konkurriert. */
-.gs-still-canvas {
-  position: absolute; inset: 0; z-index: 1;
-  width: 100%; height: 100%; display: block;
-  opacity: .34; transform: scale(1);
-  animation: gs-still-drift 30s ease-in-out infinite alternate;
+/* Reiner CSS-Lichtnebel statt Standbild: kein Bild, also keine Kante und
+   kein Seitenverhältnis, die abgeschnitten wirken könnten. Zwei sehr weiche,
+   grosse Schwaden, die langsam gegeneinander wandern. z-index unter .gs-wrap
+   (3), damit die Zahl darüber bleibt. */
+.gs-ch--number::before, .gs-ch--number::after {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  border-radius: 50%;
 }
-@keyframes gs-still-drift {
-  from { transform: scale(1); }
-  to { transform: scale(1.08); }
+.gs-ch--number::before {
+  width: 85vmax; height: 85vmax; left: -22vmax; top: -32vmax;
+  background: radial-gradient(circle, rgba(255,164,61,.17), transparent 62%);
+  animation: gs-haze-a 26s ease-in-out infinite alternate;
 }
+.gs-ch--number::after {
+  width: 75vmax; height: 75vmax; right: -26vmax; bottom: -34vmax;
+  background: radial-gradient(circle, rgba(34,224,214,.14), transparent 62%);
+  animation: gs-haze-b 34s ease-in-out infinite alternate;
+}
+@keyframes gs-haze-a { to { transform: translate3d(6vmax, 4vmax, 0); } }
+@keyframes gs-haze-b { to { transform: translate3d(-5vmax, -6vmax, 0); } }
 @media (prefers-reduced-motion: reduce) {
-  .gs-still-canvas { animation: none; }
+  .gs-ch--number::before, .gs-ch--number::after { animation: none; }
 }
-body.gs-still .gs-still-canvas { animation: none; }
+body.gs-still .gs-ch--number::before, body.gs-still .gs-ch--number::after { animation: none; }
 .gs-huge {
+  position: relative;
   font-family: "Anton", sans-serif;
   font-size: clamp(5rem, 24vw, 22rem); line-height: .82;
   color: #fff; letter-spacing: -.02em;
-  text-shadow: 0 0 90px rgba(255,164,61,.28);
   font-variant-numeric: tabular-nums;
+}
+/* Der warme Schein lag früher als text-shadow direkt auf den Ziffern —
+   seit die Zahl aus Walzen mit overflow:hidden besteht, schnitt das den
+   Schein an jeder Walzenkante ab. Jetzt liegt er als eigenes Element
+   hinter der gesamten Zahl, ausserhalb der beschneidenden Walzen. */
+.gs-huge::before {
+  content: ""; position: absolute; inset: -35% -12%; z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(52% 52% at 50% 50%, rgba(255,164,61,.30), transparent 70%);
 }
 .gs-under { font-size: clamp(.9rem, 1.6vw, 1.2rem); color: var(--dim); margin: 1.6rem 0 0; }
 .gs-under span { color: var(--amber); }
@@ -145,11 +160,12 @@ body.gs-still .gs-still-canvas { animation: none; }
    läuft der Film exakt in den Buchstaben. */
 .gs-ch--type { background: #000; isolation: isolate; padding: 0; }
 .gs-type-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* Rückfallebene, wenn kein Filmframe gezeichnet werden kann: animiertes Chrom.
+   Muss als zentriertes Quadrat gesetzt werden (nicht per inset auf ein
+   Rechteck): ein rotierendes Rechteck deckt seine Fläche in jeder Drehlage
+   nicht ab. 150vmax ist mindestens die Diagonale jeder Sektion. */
 .gs-ch--type::before {
-  /* Rückfallebene, wenn kein Filmframe gezeichnet werden kann: animiertes Chrom */
-  content: ""; position: absolute; inset: 0;
   background: conic-gradient(from 0deg, #0b0d14, #6a7488, #EAEEF5, #6a7488, #0b0d14, #2a3040, #EAEEF5, #0b0d14);
-  animation: gs-spin 14s linear infinite;
 }
 /* WICHTIG: hier NICHT display:none verwenden. Das Canvas muss von Anfang an
    eine Größe haben, sonst ist clientWidth 0, es kann nichts gezeichnet werden,
@@ -158,7 +174,6 @@ body.gs-still .gs-still-canvas { animation: none; }
 body:not(.gs-filmtext) .gs-type-canvas { opacity: 0; }
 body.gs-filmtext .gs-type-canvas { opacity: 1; transition: opacity .5s ease; }
 body.gs-filmtext .gs-ch--type::before { display: none; }
-@keyframes gs-spin { to { transform: rotate(1turn) scale(1.6); } }
 
 .gs-type-knock {
   position: absolute; inset: 0; z-index: 3;
@@ -167,7 +182,19 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
 }
 .gs-type-knock span {
   font-family: "Anton", sans-serif; color: #fff;
-  font-size: clamp(4rem, 21vw, 20rem); line-height: 1; letter-spacing: .02em;
+  font-size: clamp(3.4rem, 17vw, 16rem); line-height: .84; letter-spacing: .02em;
+  text-align: center;
+}
+/* Weiche Ränder: die Sektion läuft ins Schwarz der Nachbarn aus statt hart
+   anzusetzen. Muss über der Knockout-Ebene (z-index 3) liegen, sonst hat der
+   Verlauf keine sichtbare Wirkung — daher z-index 5. ::after ist damit
+   belegt, ::before trägt bereits den Chrom-Verlauf: keine weiteren
+   Pseudo-Elemente auf dieser Sektion einplanen. */
+.gs-ch--type::after {
+  content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  background: linear-gradient(to bottom,
+    var(--void) 0%, rgba(5,6,10,0) 17%,
+    rgba(5,6,10,0) 83%, var(--void) 100%);
 }
 
 /* Kapitel 3 — Querlauf */
@@ -234,10 +261,20 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
 /* Kapitel 6 — Das Portal */
 .gs-ch--portal { background: var(--void); text-align: center; }
 .gs-ch--portal::before {
-  content: ""; position: absolute; inset: -40%;
   background: conic-gradient(from 0deg, transparent, rgba(34,224,214,.16), transparent 40%, rgba(255,164,61,.16), transparent 70%);
-  animation: gs-spin 22s linear infinite;
 }
+/* Beide rotierenden Rückfallebenen (Portal + Chrom hinter dem Schriftzug):
+   zentriertes Quadrat statt inset-Rechteck, Rotation von der Skalierung
+   getrennt. Siehe Kommentar bei .gs-ch--type::before. */
+.gs-ch--portal::before,
+.gs-ch--type::before {
+  content: ""; position: absolute; z-index: 0; pointer-events: none;
+  left: 50%; top: 50%;
+  width: 150vmax; height: 150vmax;
+  margin: -75vmax 0 0 -75vmax;
+  animation: gs-rotate 22s linear infinite;
+}
+@keyframes gs-rotate { to { transform: rotate(1turn); } }
 /* Zweite Ebene, die den rotierenden Verlauf zusätzlich pulsieren lässt —
    eigenes Pseudo-Element, weil eine zweite Animation auf derselben Ebene
    deren transform (die Rotation) sonst ersetzen statt ergänzen würde. */
@@ -291,6 +328,7 @@ body.gs-still .gs-film { height: auto; }
 body.gs-still .gs-stage { position: relative; height: auto; min-height: 80vh; }
 body.gs-still .gs-beat { position: relative; left: auto; right: auto; top: auto; transform: none; opacity: 1 !important; visibility: visible !important; padding: 4rem 8vw; max-width: none; text-align: left; }
 body.gs-still #film-canvas, body.gs-still .gs-field-canvas { display: none; }
+body.gs-still .gs-ch--type::before, body.gs-still .gs-ch--portal::before { animation: none; }
 body.gs-still .gs-ch--portal::after, body.gs-still .gs-portal { animation: none; }
 body.gs-still .gs-run-track { flex-wrap: wrap; width: auto; justify-content: center; }
 body.gs-still .gs-ticker-inner { flex-wrap: wrap; width: auto; justify-content: center; }
