@@ -66,8 +66,8 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 
 /* ---------- Der Film ---------- */
 
-.gs-film { position: relative; height: 420vh; }
-.gs-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: var(--void); }
+.gs-film { position: relative; height: 420vh; height: 420svh; }
+.gs-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--void); }
 #film-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .gs-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity .8s ease; }
 .gs-poster.is-hidden { opacity: 0; }
@@ -92,13 +92,13 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 
 /* ---------- Kapitel, gemeinsam ---------- */
 
-.gs-ch { position: relative; min-height: min(96vh, 940px); display: flex; align-items: center; overflow: hidden; }
+.gs-ch { position: relative; min-height: min(96vh, 940px); min-height: min(96svh, 940px); display: flex; align-items: center; overflow: hidden; }
 .gs-wrap { position: relative; z-index: 3; width: 100%; max-width: 1100px; margin: 0 auto; padding: 5rem 1.6rem; }
 .gs-eyebrow { font-size: .72rem; letter-spacing: .3em; color: var(--cyan); margin: 0 0 1.4rem; }
 
 /* Signal, Bestand, Portal rücken enger zusammen — gut halbe Bildschirmhöhe
    statt fast voller Höhe wie die übrigen Kapitel. */
-#ch-field, #ch-ticker, #ch-portal { min-height: min(62vh, 620px); }
+#ch-field, #ch-ticker, #ch-portal { min-height: min(62vh, 620px); min-height: min(62svh, 620px); }
 #ch-field .gs-wrap, #ch-portal .gs-wrap { padding: 2.6rem 1.6rem; }
 
 /* Kapitel 1 — Die Zahl */
@@ -317,7 +317,7 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
    Greift bei prefers-reduced-motion und wenn GSAP fehlt (Klasse gs-still). */
 @media (prefers-reduced-motion: reduce) {
   .gs-film { height: auto; }
-  .gs-stage { position: relative; height: auto; min-height: 80vh; }
+  .gs-stage { position: relative; height: auto; min-height: 80vh; min-height: 80svh; }
   .gs-beat { position: relative; left: auto; right: auto; top: auto; transform: none; padding: 4rem 8vw; max-width: none; text-align: left; }
   .gs-beat--mid { text-align: left; }
   #film-canvas, .gs-grain, .gs-field-canvas { display: none; }
@@ -325,7 +325,7 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
   .gs-ch--portal::after, .gs-portal { animation: none; }
 }
 body.gs-still .gs-film { height: auto; }
-body.gs-still .gs-stage { position: relative; height: auto; min-height: 80vh; }
+body.gs-still .gs-stage { position: relative; height: auto; min-height: 80vh; min-height: 80svh; }
 body.gs-still .gs-beat { position: relative; left: auto; right: auto; top: auto; transform: none; opacity: 1 !important; visibility: visible !important; padding: 4rem 8vw; max-width: none; text-align: left; }
 body.gs-still #film-canvas, body.gs-still .gs-field-canvas { display: none; }
 body.gs-still .gs-ch--type::before, body.gs-still .gs-ch--portal::before { animation: none; }
@@ -338,4 +338,18 @@ body.gs-still .gs-loader { display: none; }
   .gs-beat { left: 6vw; right: 6vw; max-width: none; }
   .gs-beat--mid { text-align: left; }
   .gs-run-track { padding: 0 6vw; }
+
+  /* Kopfzeile: rechnete sich auf 11,5px herunter, jetzt lesbar. */
+  .gs-head { font-size: .78rem; padding: 1.1rem 1.1rem; }
+
+  /* 420svh sind auf dem Handy rund 3400px Scrollweg fuer 10 Sekunden Film —
+     das verlangt sehr viel Daumen. Die Haltezone am Ende bleibt unveraendert,
+     weil sie in der Engine aus innerHeight berechnet wird. */
+  .gs-film { height: 320vh; height: 320svh; }
+
+  /* Acht Karten a 280px ergeben einen zaehen gepinnten Querlauf auf dem
+     Handy. Schmalere Karten verkuerzen den Lauf, ohne die Schriftgroessen
+     auf der Karte zu veraendern (die haengen an vw des Viewports, nicht an
+     der Kartenbreite). */
+  .gs-plate { width: 240px; }
 }

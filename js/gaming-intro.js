@@ -72,6 +72,12 @@
 
     gsap.registerPlugin(ScrollTrigger);
 
+    // Auf Handys aendert das Ein- und Ausblenden der Adressleiste die Fensterhoehe
+    // mitten im Scrollen. Ohne diese Zeile rechnet ScrollTrigger daraufhin alle
+    // Positionen neu, und der gepinnte Querlauf springt sichtbar an eine andere
+    // Stelle.
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
     var lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
@@ -83,6 +89,11 @@
     if (window.GS_CHAPTERS && window.GS_CHAPTERS.init) window.GS_CHAPTERS.init();
 
     ScrollTrigger.refresh();
+    // Die Kartenbreiten haengen an der Display-Schrift. Laedt sie erst nach dem
+    // ersten Auffrischen, waere die Laufdistanz des Querlaufs zu kurz berechnet.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    }
     initCursor();
     initReadout();
     initAdaptiveHead();
