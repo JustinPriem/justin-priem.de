@@ -51,7 +51,9 @@
     window.addEventListener("resize", resize);
 
     var i = 0, last = 0, ok = false;
+    var running = false;
     function loop(t) {
+      if (!running) return;
       // ~12 Bilder/Sek. reichen: Die Schrift zeigt nur Ausschnitte, und ein
       // langsamerer Takt hält die Dekodierlast neben dem Film selbst klein.
       if (t - last > 80) {
@@ -62,7 +64,22 @@
       }
       requestAnimationFrame(loop);
     }
-    requestAnimationFrame(loop);
+
+    function start() { if (running) return; running = true; requestAnimationFrame(loop); }
+    function stop() { running = false; }
+
+    // Nur rendern, solange die Sektion sichtbar ist — sonst blittet paintTo()
+    // auch dann noch alle ~80ms, wenn längst Kapitel 3-6 gelesen werden.
+    // onToggle statt onEnter/onLeave: Es deckt auch den Fall ab, dass die Seite
+    // bereits mitten in dieser Sektion geladen wird, und die Sperre in start()
+    // verhindert, dass mehrere rAF-Schleifen parallel laufen. Die Klasse
+    // gs-filmtext bleibt nach dem ersten Treffer gesetzt, auch wenn die
+    // Schleife später pausiert — sonst würde die CSS-Fallback-Gradiente
+    // wieder sichtbar.
+    ScrollTrigger.create({
+      trigger: "#ch-type", start: "top bottom", end: "bottom top",
+      onToggle: function (self) { if (self.isActive) start(); else stop(); }
+    });
   }
 
   /* --- Kapitel 3: Querlauf --- */
