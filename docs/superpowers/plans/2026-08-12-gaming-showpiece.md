@@ -159,13 +159,22 @@ git rm js/gaming-intro.js js/gaming-intro.test.js
 git rm assets/gaming-intro/surface.jpg assets/gaming-intro/depth-1-cyan.jpg assets/gaming-intro/depth-2-magenta.jpg assets/gaming-intro/depth-3-violet.jpg
 ```
 
-- [ ] **Step 9: Build-Ordner ignorieren**
+- [ ] **Step 9: Build- und Werkzeugordner ignorieren**
 
-`.gitignore` um eine Zeile ergänzen (bestehende Zeilen behalten):
+`.gitignore` um zwei Zeilen ergänzen (bestehende Zeilen behalten):
 
 ```
+.claude/
 .build/
 ```
+
+`.build/` hält Keyframes und Rohclips als Build-Zwischenstände aus dem
+Repository heraus.
+
+`.claude/` ist **nicht optional**: Der Arbeits-Worktree liegt selbst unter
+`.claude/worktrees/`, und Schritt 10 dieses Tasks führt `git add -A` aus. Ohne
+diesen Eintrag würde genau dieser Befehl beginnen, den Arbeitsordner und die
+lokale `launch.json` in ihr eigenes Repository aufzunehmen.
 
 - [ ] **Step 10: Commit**
 
