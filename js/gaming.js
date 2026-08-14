@@ -7,17 +7,15 @@ function monogram(title) {
     .toUpperCase();
 }
 
-function cardTemplate(game) {
-  // Eigene Uploads (game.cover) haben Vorrang. Fehlt einer, wird per
-  // Titel-Slug in GAME_ART (js/games-art.js) nach Steam-Artwork gesucht.
-  const artKey = slugifyTitle(game.title);
-  const art = !game.cover && typeof GAME_ART !== "undefined" ? GAME_ART[artKey] : null;
-  // capsule zuerst: Steams eigenes Grid-Vorschaubild passt vom Seiten-
-  // verhältnis am ehesten zur Card-Cover-Box (wenig Beschnitt bei object-fit: cover).
-  const firstSrc = game.cover || (art && (art.capsule || art.header || art.hero));
+function hasArt(game) {
+  return typeof gameArtSources === "function" && gameArtSources(game).length > 0;
+}
 
-  const coverInner = firstSrc
-    ? `<img src="${firstSrc}" alt="${game.title} Cover"${art ? ` data-art-key="${artKey}"` : ""}>`
+function cardTemplate(game, index) {
+  // Das eigentliche Bild setzt wireArtFallback() nach dem Rendern — dort läuft
+  // die Kette cover -> Steam -> artwork (siehe js/games-art.js) mit Fallback.
+  const coverInner = hasArt(game)
+    ? `<img alt="${game.title} Cover" data-art-index="${index}">`
     : `<span class="mono">${monogram(game.title)}</span>`;
 
   return `
@@ -59,30 +57,22 @@ function cardTemplate(game) {
 function render(games) {
   const grid = document.getElementById("game-grid");
   grid.innerHTML = games.map(cardTemplate).join("");
-  wireArtFallback(grid);
+  wireArtFallback(grid, games);
 }
 
-// Steam-Artwork existiert nicht für jede App-ID in jeder Größe. Schlägt das
-// aktuelle <img> fehl, wird die nächste Variante (capsule -> header -> hero)
-// versucht; scheitern alle, springt die Karte auf das Monogramm zurück.
-function wireArtFallback(grid) {
-  if (typeof GAME_ART === "undefined") return;
-  grid.querySelectorAll("img[data-art-key]").forEach((img) => {
-    const art = GAME_ART[img.dataset.artKey];
-    if (!art) return;
-    const candidates = [art.capsule, art.header, art.hero].filter(Boolean);
-    let i = candidates.indexOf(img.getAttribute("src")) + 1;
-
-    img.onerror = () => {
-      if (i < candidates.length) {
-        img.src = candidates[i++];
-        return;
-      }
+// Nicht jede Bildquelle liefert für jedes Spiel ein Ergebnis — Steam hat z.B.
+// nicht zu jeder App-ID eine capsule. setGameImage() arbeitet die Kandidaten
+// der Reihe nach ab; bleibt keiner übrig, springt die Karte aufs Monogramm.
+function wireArtFallback(grid, games) {
+  if (typeof setGameImage !== "function") return;
+  grid.querySelectorAll("img[data-art-index]").forEach((img) => {
+    const game = games[Number(img.dataset.artIndex)];
+    setGameImage(img, gameArtSources(game), () => {
       const mono = document.createElement("span");
       mono.className = "mono";
-      mono.textContent = monogram(img.alt.replace(/ Cover$/, ""));
+      mono.textContent = monogram(game.title);
       img.replaceWith(mono);
-    };
+    });
   });
 }
 

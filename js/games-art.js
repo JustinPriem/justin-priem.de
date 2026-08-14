@@ -1,120 +1,81 @@
 /* ===========================================================================
-   games-art.js  –  Artwork-Quellen für die Game Cards
+   games-art.js  –  Bildquellen für die Game Cards
    ---------------------------------------------------------------------------
-   Alle Bilder kommen vom offiziellen Steam-CDN (Publisher-Assets).
-   Verfügbare Varianten pro Spiel:
-     hero    1920x620  – breites Card-Background, erste Wahl
-     capsule  616x353  – kompakter, gutes Fallback
-     header   460x215  – existiert IMMER, letzter Fallback
-     poster   600x900  – hochkant, falls du irgendwo Portrait-Cards willst
+   Wird von der Gaming-Seite UND vom Admin-Bereich eingebunden, damit die
+   Vorschau im Backend exakt dasselbe Bild zeigt wie später die Website.
 
-   Wird nur verwendet, wenn ein Spiel in gaming-data.js KEIN eigenes "cover"
-   gesetzt hat — eigene Screenshots/Uploads haben immer Vorrang.
+   Reihenfolge, in der ein Bild gesucht wird:
+     1. game.cover     eigener Upload (Rang-Screenshot o.ä.) — hat Vorrang,
+                       lässt sich im Admin-Bereich wieder entfernen
+     2. game.steamAppId  Artwork vom offiziellen Steam-CDN, in drei Varianten:
+                       capsule 616x353  – Steams Grid-Vorschaubild, passt vom
+                                          Seitenverhältnis am besten
+                       header  460x215  – existiert praktisch immer
+                       hero   1920x620  – sehr breites Banner als letzte Reserve
+     3. game.artwork   hinterlegtes Standardbild für Spiele OHNE Steam-Release
+                       (liegt unter assets/games/)
+     4. sonst          Monogramm (macht die aufrufende Seite selbst)
+
+   Warum eine feste AppID statt einer Suche? Die Seite läuft rein statisch auf
+   GitHub Pages. Weder Steam (store/appdetails/SearchApps) noch SteamGridDB
+   oder RAWG senden CORS-Header, es lässt sich also aus dem Browser heraus
+   nichts nachschlagen. Bild-URLs vom Steam-CDN funktionieren dagegen als
+   ganz normales <img> — die AppID wird deshalb als Datenfeld gepflegt.
    =========================================================================== */
 
 const STEAM_CDN = "https://cdn.cloudflare.steamstatic.com/steam/apps";
 
-function steamArt(appid) {
+function steamArt(appId) {
   return {
-    appid,
-    hero:    `${STEAM_CDN}/${appid}/library_hero.jpg`,
-    capsule: `${STEAM_CDN}/${appid}/capsule_616x353.jpg`,
-    header:  `${STEAM_CDN}/${appid}/header.jpg`,
-    poster:  `${STEAM_CDN}/${appid}/library_600x900.jpg`,
-    store:   `https://store.steampowered.com/app/${appid}/`,
+    appId,
+    capsule: `${STEAM_CDN}/${appId}/capsule_616x353.jpg`,
+    header: `${STEAM_CDN}/${appId}/header.jpg`,
+    hero: `${STEAM_CDN}/${appId}/library_hero.jpg`,
+    poster: `${STEAM_CDN}/${appId}/library_600x900.jpg`,
+    store: `https://store.steampowered.com/app/${appId}/`,
   };
 }
 
-/* ---------------------------------------------------------------------------
-   Schlüssel = Spieltitel aus gaming-data.js, kleingeschrieben und
-   geschlagen auf [a-z0-9]+ getrennt durch "-" (siehe slugifyTitle()).
-   --------------------------------------------------------------------------- */
-
-const GAME_ART = {
-  "warframe":              steamArt(230410),
-  "delta-force":           steamArt(2507950),
-  "deadlock":              steamArt(1422450),
-  "apex-legends":          steamArt(1172470),
-  "planetside-2":          steamArt(218230),
-  "csgo":                  steamArt(730),      // Achtung: App 730 zeigt heute CS2-Artwork
-  "destiny-2":             steamArt(1085660),
-  "cod-bo2":               steamArt(202970),
-  "brawlhalla":            steamArt(291550),
-  "battlefield-6":         steamArt(2807960),
-  "dc-universe-online":    steamArt(24200),
-  "the-finals":            steamArt(2073850),
-  "saints-row-iv":         steamArt(206420),
-  "starbound":             steamArt(211820),
-  "saints-row-the-third":  steamArt(55230),
-  "garrys-mod":            steamArt(4000),
-  "battlefield-1":         steamArt(1238840),
-  "battlefield-2042":      steamArt(1517290),
-  "paladins":              steamArt(444090),
-  "overwatch-2":           steamArt(2357570),
-
-  /* -------------------------------------------------------------------------
-     Spiele OHNE Steam-Release – hier musst du das Bild selbst hinterlegen.
-     Leg die Datei unter assets/games/ ab, der Pfad ist schon vorbereitet.
-     ------------------------------------------------------------------------- */
-  "battlefield-heroes":    { hero: "assets/games/battlefield-heroes.jpg" },
-  "minecraft":             { hero: "assets/games/minecraft.jpg" },
-  "fortnite":              { hero: "assets/games/fortnite.jpg" },
-  "starcraft-ii":          { hero: "assets/games/starcraft-ii.jpg" },
-  "heroes-of-the-storm":   { hero: "assets/games/heroes-of-the-storm.jpg" },
-};
-
-/* Titel -> Schlüssel, z.B. "StarCraft II" -> "starcraft-ii" ---------------- */
-
-function slugifyTitle(title) {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+/* Steam-Bildvarianten zu einer AppID, beste zuerst. Leere/ungültige Eingaben
+   liefern eine leere Liste — nicht jedes Spiel ist auf Steam. */
+function steamArtCandidates(appId) {
+  const id = String(appId ?? "").trim();
+  if (!/^\d+$/.test(id)) return [];
+  const art = steamArt(id);
+  return [art.capsule, art.header, art.hero];
 }
 
-/* ---------------------------------------------------------------------------
-   Helper: setzt das Bild mit automatischem Fallback,
-   falls library_hero.jpg für einen Titel nicht existiert.
-   Verwendung:  setGameImage(imgElement, GAME_ART["warframe"]);
-   --------------------------------------------------------------------------- */
+/* Alle Bildkandidaten eines Spiels in Prioritätsreihenfolge.
+   kind unterscheidet den eigenen Upload vom automatisch geladenen Artwork —
+   danach richtet sich die Darstellung (contain mit Rand vs. randfüllend). */
+function gameArtSources(game) {
+  if (!game) return [];
+  const sources = [];
+  if (game.cover) sources.push({ url: String(game.cover), kind: "cover" });
+  steamArtCandidates(game.steamAppId).forEach((url) => sources.push({ url, kind: "auto" }));
+  if (game.artwork) sources.push({ url: String(game.artwork), kind: "auto" });
+  return sources;
+}
 
-function setGameImage(el, art) {
-  if (!el || !art) return;
-  const candidates = [art.hero, art.capsule, art.header].filter(Boolean);
+/* Hängt die Fallback-Kette an ein <img>: schlägt eine Quelle fehl, wird die
+   nächste versucht. Sind alle durch, läuft onExhausted() — dort entscheidet
+   die aufrufende Seite, was stattdessen passiert (Monogramm, Hinweistext …). */
+function setGameImage(img, sources, onExhausted) {
+  if (!img) return;
+  const list = Array.isArray(sources) ? sources.filter(Boolean) : [];
   let i = 0;
 
   const tryNext = () => {
-    if (i >= candidates.length) {
-      el.removeAttribute("src");
-      el.closest(".game-card")?.classList.add("game-card--no-art");
+    if (i >= list.length) {
+      img.removeAttribute("src");
+      if (typeof onExhausted === "function") onExhausted();
       return;
     }
-    el.src = candidates[i++];
+    const source = list[i++];
+    img.dataset.artKind = source.kind || "auto";
+    img.src = source.url;
   };
 
-  el.onerror = tryNext;
-  el.onload = () => { el.onerror = null; };
-  tryNext();
-}
-
-/* Variante für CSS-Backgrounds statt <img> ---------------------------------- */
-
-function setGameBackground(node, art) {
-  if (!node || !art) return;
-  const probe = new Image();
-  const candidates = [art.hero, art.capsule, art.header].filter(Boolean);
-  let i = 0;
-
-  const tryNext = () => {
-    if (i >= candidates.length) {
-      node.classList.add("game-card--no-art");
-      return;
-    }
-    const url = candidates[i++];
-    probe.onload = () => { node.style.backgroundImage = `url("${url}")`; };
-    probe.onerror = tryNext;
-    probe.src = url;
-  };
-
+  img.onerror = tryNext;
   tryNext();
 }

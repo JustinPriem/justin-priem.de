@@ -68,11 +68,29 @@
           <label class="field"><span>Akzentfarbe (Kartenglow)</span><input type="color" id="games-accent" value="#33e7ff"></label>
           <label class="field"><span>Highlight-Satz</span><textarea id="games-highlight" rows="2" placeholder="Höchster Rang, Lieblingswaffe, o.ä."></textarea></label>
           <label class="field">
-            <span>Cover-Bild (optional — ohne Bild wird ein Monogramm gezeigt)</span>
+            <span>Steam AppID (optional — lädt das Bild automatisch von Steam)</span>
+            <input type="number" id="games-appid" min="1" step="1" placeholder="z.B. 230410">
+          </label>
+          <div class="field">
+            <span>Steam-Standardbild</span>
+            <img class="admin-preview" id="games-appid-preview" alt="Steam-Artwork-Vorschau" hidden>
+            <p class="field-hint">
+              <span id="games-appid-hint">Noch keine AppID eingetragen.</span>
+              <a id="games-appid-search" href="https://store.steampowered.com/search/" target="_blank" rel="noopener">AppID bei Steam suchen ↗</a>
+            </p>
+          </div>
+
+          <label class="field">
+            <span>Eigenes Cover-Bild (optional — überschreibt das Steam-Bild)</span>
             <input type="file" id="games-cover-file" accept="image/*">
             <img class="admin-preview" id="games-cover-preview" alt="Vorschau" hidden>
           </label>
+          <p class="field-hint" id="games-cover-hint" hidden>
+            <button type="button" class="btn-link" id="games-cover-remove">Bild entfernen</button>
+            — die Karte nutzt danach wieder das Steam-Standardbild.
+          </p>
           <input type="hidden" id="games-cover-url">
+          <input type="hidden" id="games-artwork">
 
           <div class="admin-form-actions">
             <button type="submit" class="btn btn-primary" id="games-submit">Hinzufügen</button>
@@ -176,6 +194,9 @@
 
 <script src="js/admin-config.js"></script>
 <script src="js/github-api.js"></script>
+<!-- gleiche Bildlogik wie die Gaming-Seite, damit die Vorschau hier zeigt,
+     was später auch auf der Karte landet -->
+<script src="../js/games-art.js"></script>
 <script src="js/admin-dashboard.js"></script>
 </body>
 </html>
