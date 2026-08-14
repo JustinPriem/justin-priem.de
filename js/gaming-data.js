@@ -3,21 +3,17 @@
  * -----------------------------------------------------------
  * Wird über den Admin-Bereich (admin/) gepflegt — kann aber auch
  * direkt von Hand angepasst werden. Felder:
- *  id         eindeutiger Schlüssel
- *  title      Spielname
- *  cover      eigener Upload, z.B. "assets/games/apex.jpg" (leer = automatisches Artwork)
- *  steamAppId Steam-App-ID — lädt das Bild vom Steam-CDN (leer = nicht auf Steam)
- *  artwork    hinterlegtes Standardbild für Spiele ohne Steam-Release
- *  accent     Hex-Farbe fürs Kartenglow
- *  genre      kurzer Tag, z.B. "Battle Royale"
- *  status     "active" | "retired"
- *  hours      Spielstunden (Zahl)
- *  rank       Rang als Text
- *  rankPct    0–100, wie weit der Rang-Balken gefüllt ist
- *  since      Jahr, seit dem gespielt wird
- *  highlight  kurzer Highlight-Satz
- *
- * Bildreihenfolge auf der Karte: cover → steamAppId → artwork → Monogramm
+ *  id        eindeutiger Schlüssel
+ *  title     Spielname
+ *  cover     Pfad zu einem Cover-Bild, z.B. "assets/games/apex.jpg" (leer = Monogramm)
+ *  accent    Hex-Farbe fürs Kartenglow
+ *  genre     kurzer Tag, z.B. "Battle Royale"
+ *  status    "active" | "retired"
+ *  hours     Spielstunden (Zahl)
+ *  rank      Rang als Text
+ *  rankPct   0–100, wie weit der Rang-Balken gefüllt ist
+ *  since     Jahr, seit dem gespielt wird
+ *  highlight kurzer Highlight-Satz
  */
 const GAMES = [
   {
@@ -181,9 +177,7 @@ const GAMES = [
     "rankPct": 100,
     "accent": "#b30000",
     "highlight": "",
-    "cover": "",
-    "steamAppId": 2807960,
-    "artwork": ""
+    "cover": ""
   },
   {
     "id": "3f23ca4a-59e3-4e0e-b526-1382dd07a40d",
