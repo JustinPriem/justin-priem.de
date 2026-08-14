@@ -21,8 +21,9 @@ const HEADERS = {
  *  id         eindeutiger Schlüssel
  *  title      Spielname
  *  cover      eigener Upload, z.B. "assets/games/apex.jpg" (leer = automatisches Artwork)
+ *  artwork    hinterlegtes Bild unter assets/games/ — für Spiele ohne Steam-Release
+ *             und für Titel, bei denen Steam nur ein graues Platzhalterbild liefert
  *  steamAppId Steam-App-ID — lädt das Bild vom Steam-CDN (leer = nicht auf Steam)
- *  artwork    hinterlegtes Standardbild für Spiele ohne Steam-Release
  *  accent     Hex-Farbe fürs Kartenglow
  *  genre      kurzer Tag, z.B. "Battle Royale"
  *  status     "active" | "retired"
@@ -32,7 +33,7 @@ const HEADERS = {
  *  since      Jahr, seit dem gespielt wird
  *  highlight  kurzer Highlight-Satz
  *
- * Bildreihenfolge auf der Karte: cover → steamAppId → artwork → Monogramm
+ * Bildreihenfolge auf der Karte: cover → artwork → steamAppId → Monogramm
  */`,
   tours: `/**
  * RADTOUREN — Daten
@@ -255,7 +256,9 @@ function updateAppIdPreview() {
   f.appIdHint.textContent = "Lade Steam-Artwork …";
   f.appIdPreview.onload = () => {
     f.appIdPreview.hidden = false;
-    f.appIdHint.textContent = `Steam-Artwork für AppID ${id}.`;
+    f.appIdHint.textContent = f.artwork.value
+      ? `Steam-Artwork für AppID ${id} — die Karte zeigt aber das hinterlegte Bild, weil Steam hier kein brauchbares Artwork liefert.`
+      : `Steam-Artwork für AppID ${id}.`;
   };
   setGameImage(f.appIdPreview, gameArtSources({ steamAppId: id }), () => {
     f.appIdHint.textContent = `Kein Steam-Artwork für AppID ${id} gefunden.`;
@@ -413,7 +416,13 @@ function setupGames() {
     try {
       const cover = await uploadIfNeeded(f.coverFile, "games", f.coverUrl.value);
       const editingId = f.id.value;
+      // Vorhandenes Objekt als Basis übernehmen: Felder, die dieses Formular
+      // nicht kennt, bleiben so erhalten. Ohne das löscht eine ältere (z.B.
+      // aus dem Browser-Cache geladene) Version des Dashboards beim Speichern
+      // stillschweigend alle Felder, die sie noch nicht kennt.
+      const existing = editingId ? state.games.items.find((g) => g.id === editingId) : null;
       const entry = {
+        ...(existing || {}),
         id: editingId || makeId(),
         title: f.title.value.trim(),
         genre: f.genre.value.trim(),

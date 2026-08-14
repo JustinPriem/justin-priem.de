@@ -7,14 +7,21 @@
    Reihenfolge, in der ein Bild gesucht wird:
      1. game.cover     eigener Upload (Rang-Screenshot o.ä.) — hat Vorrang,
                        lässt sich im Admin-Bereich wieder entfernen
-     2. game.steamAppId  Artwork vom offiziellen Steam-CDN, in drei Varianten:
+     2. game.artwork   bewusst hinterlegtes Bild unter assets/games/, für
+                       Spiele ohne Steam-Release UND für Titel, bei denen
+                       Steam nur einen Platzhalter liefert
+     3. game.steamAppId  Artwork vom offiziellen Steam-CDN, in drei Varianten:
                        capsule 616x353  – Steams Grid-Vorschaubild, passt vom
                                           Seitenverhältnis am besten
                        header  460x215  – existiert praktisch immer
                        hero   1920x620  – sehr breites Banner als letzte Reserve
-     3. game.artwork   hinterlegtes Standardbild für Spiele OHNE Steam-Release
-                       (liegt unter assets/games/)
      4. sonst          Monogramm (macht die aufrufende Seite selbst)
+
+   artwork steht bewusst VOR Steam: Steam liefert für manche (meist neuere)
+   Titel ein einfarbig graues Platzhalterbild mit HTTP 200 aus — das lädt
+   erfolgreich, der Fallback würde also nie greifen. Battlefield 6 ist so ein
+   Fall: das echte Artwork liegt dort nur unter einem gehashten Pfad, den man
+   ohne Store-API nicht kennt.
 
    Warum eine feste AppID statt einer Suche? Die Seite läuft rein statisch auf
    GitHub Pages. Weder Steam (store/appdetails/SearchApps) noch SteamGridDB
@@ -52,8 +59,8 @@ function gameArtSources(game) {
   if (!game) return [];
   const sources = [];
   if (game.cover) sources.push({ url: String(game.cover), kind: "cover" });
-  steamArtCandidates(game.steamAppId).forEach((url) => sources.push({ url, kind: "auto" }));
   if (game.artwork) sources.push({ url: String(game.artwork), kind: "auto" });
+  steamArtCandidates(game.steamAppId).forEach((url) => sources.push({ url, kind: "auto" }));
   return sources;
 }
 
