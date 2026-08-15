@@ -18,17 +18,22 @@ const HEADERS = {
  * -----------------------------------------------------------
  * Wird über den Admin-Bereich (admin/) gepflegt — kann aber auch
  * direkt von Hand angepasst werden. Felder:
- *  id        eindeutiger Schlüssel
- *  title     Spielname
- *  cover     Pfad zu einem Cover-Bild, z.B. "assets/games/apex.jpg" (leer = Monogramm)
- *  accent    Hex-Farbe fürs Kartenglow
- *  genre     kurzer Tag, z.B. "Battle Royale"
- *  status    "active" | "retired"
- *  hours     Spielstunden (Zahl)
- *  rank      Rang als Text
- *  rankPct   0–100, wie weit der Rang-Balken gefüllt ist
- *  since     Jahr, seit dem gespielt wird
- *  highlight kurzer Highlight-Satz
+ *  id         eindeutiger Schlüssel
+ *  title      Spielname
+ *  cover      eigener Upload, z.B. "assets/games/apex.jpg" (leer = automatisches Artwork)
+ *  artwork    hinterlegtes Bild unter assets/games/ — für Spiele ohne Steam-Release
+ *             und für Titel, bei denen Steam nur ein graues Platzhalterbild liefert
+ *  steamAppId Steam-App-ID — lädt das Bild vom Steam-CDN (leer = nicht auf Steam)
+ *  accent     Hex-Farbe fürs Kartenglow
+ *  genre      kurzer Tag, z.B. "Battle Royale"
+ *  status     "active" | "retired"
+ *  hours      Spielstunden (Zahl)
+ *  rank       Rang als Text
+ *  rankPct    0–100, wie weit der Rang-Balken gefüllt ist
+ *  since      Jahr, seit dem gespielt wird
+ *  highlight  kurzer Highlight-Satz
+ *
+ * Bildreihenfolge auf der Karte: cover → artwork → steamAppId → Monogramm
  */`,
   tours: `/**
  * RADTOUREN — Daten
@@ -209,9 +214,16 @@ function gamesForm() {
     rankPct: document.getElementById("games-rankpct"),
     accent: document.getElementById("games-accent"),
     highlight: document.getElementById("games-highlight"),
+    appId: document.getElementById("games-appid"),
+    appIdPreview: document.getElementById("games-appid-preview"),
+    appIdHint: document.getElementById("games-appid-hint"),
+    appIdSearch: document.getElementById("games-appid-search"),
     coverFile: document.getElementById("games-cover-file"),
     coverUrl: document.getElementById("games-cover-url"),
     coverPreview: document.getElementById("games-cover-preview"),
+    coverHint: document.getElementById("games-cover-hint"),
+    coverRemove: document.getElementById("games-cover-remove"),
+    artwork: document.getElementById("games-artwork"),
     submitBtn: document.getElementById("games-submit"),
     cancelBtn: document.getElementById("games-cancel"),
     error: document.getElementById("games-error"),
@@ -220,16 +232,60 @@ function gamesForm() {
   };
 }
 
+// Zeigt das Steam-Artwork zur eingetragenen AppID. Steam lässt sich aus dem
+// Browser nicht durchsuchen (keine CORS-Header), die Bild-URLs vom CDN
+// funktionieren aber — lädt keine davon, ist die AppID falsch.
+function updateAppIdPreview() {
+  const f = gamesForm();
+  const id = f.appId.value.trim();
+  const search = f.appIdSearch;
+  search.href = `https://store.steampowered.com/search/?term=${encodeURIComponent(f.title.value.trim())}`;
+
+  f.appIdPreview.hidden = true;
+  f.appIdPreview.onload = null;
+
+  if (!id) {
+    f.appIdPreview.onerror = null;
+    f.appIdPreview.removeAttribute("src");
+    f.appIdHint.textContent = f.artwork.value
+      ? "Nicht auf Steam — die Karte nutzt das hinterlegte Standardbild."
+      : "Noch keine AppID eingetragen.";
+    return;
+  }
+
+  f.appIdHint.textContent = "Lade Steam-Artwork …";
+  f.appIdPreview.onload = () => {
+    f.appIdPreview.hidden = false;
+    f.appIdHint.textContent = f.artwork.value
+      ? `Steam-Artwork für AppID ${id} — die Karte zeigt aber das hinterlegte Bild, weil Steam hier kein brauchbares Artwork liefert.`
+      : `Steam-Artwork für AppID ${id}.`;
+  };
+  setGameImage(f.appIdPreview, gameArtSources({ steamAppId: id }), () => {
+    f.appIdHint.textContent = `Kein Steam-Artwork für AppID ${id} gefunden.`;
+  });
+}
+
+// Der Entfernen-Schalter erscheint nur, wenn überhaupt ein eigenes Bild
+// gesetzt ist — sonst gibt es nichts zu entfernen.
+function updateCoverControls() {
+  const f = gamesForm();
+  const hasCover = Boolean(f.coverUrl.value) || Boolean(f.coverFile.files[0]);
+  f.coverHint.hidden = !hasCover;
+}
+
 function resetGamesForm() {
   const f = gamesForm();
   f.form.reset();
   f.id.value = "";
   f.coverUrl.value = "";
+  f.artwork.value = "";
   f.coverPreview.hidden = true;
   f.accent.value = "#33e7ff";
   f.submitBtn.textContent = "Hinzufügen";
   f.cancelBtn.hidden = true;
   f.formTitle.textContent = "Neues Spiel hinzufügen";
+  updateCoverControls();
+  updateAppIdPreview();
   setStatus(f.error, "");
 }
 
@@ -245,13 +301,33 @@ function fillGamesForm(game) {
   f.rankPct.value = game.rankPct;
   f.accent.value = game.accent || "#33e7ff";
   f.highlight.value = game.highlight || "";
+  f.appId.value = game.steamAppId || "";
+  f.artwork.value = game.artwork || "";
   f.coverUrl.value = game.cover || "";
+  f.coverFile.value = "";
   f.coverPreview.hidden = !game.cover;
-  if (game.cover) f.coverPreview.src = game.cover;
+  // rawUrl(): die Pfade sind relativ zum Repo-Wurzelverzeichnis, das Dashboard
+  // liegt aber unter /admin/ — direkt eingesetzt liefen sie ins Leere.
+  if (game.cover) f.coverPreview.src = rawUrl(game.cover);
   f.submitBtn.textContent = "Speichern";
   f.cancelBtn.hidden = false;
   f.formTitle.textContent = `„${game.title}" bearbeiten`;
+  updateCoverControls();
+  updateAppIdPreview();
   setStatus(f.error, "");
+}
+
+// Vorschaubild in der Liste — dieselbe Reihenfolge wie auf der Website, damit
+// das Backend zeigt, was der Besucher später sieht. Bilder aus dem Repo
+// brauchen rawUrl(), Steam-URLs sind bereits absolut.
+function gamesThumb(game) {
+  const sources = typeof gameArtSources === "function" ? gameArtSources(game) : [];
+  if (!sources.length) {
+    return `<span>${escapeHtml(game.title.slice(0, 2).toUpperCase())}</span>`;
+  }
+  const first = sources[0].url;
+  const src = /^https?:\/\//.test(first) ? first : rawUrl(first);
+  return `<img src="${escapeHtml(src)}" alt="">`;
 }
 
 function renderGamesList() {
@@ -267,7 +343,7 @@ function renderGamesList() {
       (g) => `
     <div class="admin-item" data-id="${g.id}">
       <div class="admin-item-thumb" style="--accent:${g.accent}">
-        ${g.cover ? `<img src="${rawUrl(g.cover)}" alt="">` : `<span>${escapeHtml(g.title.slice(0, 2).toUpperCase())}</span>`}
+        ${gamesThumb(g)}
       </div>
       <div class="admin-item-body">
         <strong>${escapeHtml(g.title)}</strong>
@@ -286,6 +362,27 @@ function setupGames() {
   const f = gamesForm();
   previewFile(f.coverFile, f.coverPreview);
   f.cancelBtn.addEventListener("click", resetGamesForm);
+
+  let appIdTimer;
+  const scheduleAppIdPreview = () => {
+    clearTimeout(appIdTimer);
+    appIdTimer = setTimeout(updateAppIdPreview, 300);
+  };
+  f.appId.addEventListener("input", scheduleAppIdPreview);
+  // Der Suchlink trägt den Titel als Suchbegriff — mittippen lassen.
+  f.title.addEventListener("input", scheduleAppIdPreview);
+
+  f.coverFile.addEventListener("change", updateCoverControls);
+  f.coverRemove.addEventListener("click", () => {
+    // Nur die Zuordnung lösen: die Datei bleibt im Repo und lässt sich
+    // jederzeit wieder eintragen. Wirksam wird es beim Speichern.
+    f.coverUrl.value = "";
+    f.coverFile.value = "";
+    f.coverPreview.hidden = true;
+    f.coverPreview.removeAttribute("src");
+    updateCoverControls();
+    setStatus(f.error, "Bild entfernt — zum Übernehmen speichern.", "is-pending");
+  });
 
   document.getElementById("games-list").addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-action]");
@@ -319,7 +416,13 @@ function setupGames() {
     try {
       const cover = await uploadIfNeeded(f.coverFile, "games", f.coverUrl.value);
       const editingId = f.id.value;
+      // Vorhandenes Objekt als Basis übernehmen: Felder, die dieses Formular
+      // nicht kennt, bleiben so erhalten. Ohne das löscht eine ältere (z.B.
+      // aus dem Browser-Cache geladene) Version des Dashboards beim Speichern
+      // stillschweigend alle Felder, die sie noch nicht kennt.
+      const existing = editingId ? state.games.items.find((g) => g.id === editingId) : null;
       const entry = {
+        ...(existing || {}),
         id: editingId || makeId(),
         title: f.title.value.trim(),
         genre: f.genre.value.trim(),
@@ -331,6 +434,10 @@ function setupGames() {
         accent: f.accent.value,
         highlight: f.highlight.value.trim(),
         cover,
+        steamAppId: /^\d+$/.test(f.appId.value.trim()) ? Number(f.appId.value.trim()) : "",
+        // artwork hat kein Eingabefeld, muss aber mitwandern — sonst verlöre
+        // ein Spiel ohne Steam-Release beim Bearbeiten sein Standardbild.
+        artwork: f.artwork.value,
       };
 
       if (editingId) {

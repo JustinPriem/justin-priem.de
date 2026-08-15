@@ -7,9 +7,15 @@ function monogram(title) {
     .toUpperCase();
 }
 
-function cardTemplate(game) {
-  const coverInner = game.cover
-    ? `<img src="${game.cover}" alt="${game.title} Cover">`
+function hasArt(game) {
+  return typeof gameArtSources === "function" && gameArtSources(game).length > 0;
+}
+
+function cardTemplate(game, index) {
+  // Das eigentliche Bild setzt wireArtFallback() nach dem Rendern — dort läuft
+  // die Kette cover -> Steam -> artwork (siehe js/games-art.js) mit Fallback.
+  const coverInner = hasArt(game)
+    ? `<img alt="${game.title} Cover" data-art-index="${index}">`
     : `<span class="mono">${monogram(game.title)}</span>`;
 
   return `
@@ -51,6 +57,23 @@ function cardTemplate(game) {
 function render(games) {
   const grid = document.getElementById("game-grid");
   grid.innerHTML = games.map(cardTemplate).join("");
+  wireArtFallback(grid, games);
+}
+
+// Nicht jede Bildquelle liefert für jedes Spiel ein Ergebnis — Steam hat z.B.
+// nicht zu jeder App-ID eine capsule. setGameImage() arbeitet die Kandidaten
+// der Reihe nach ab; bleibt keiner übrig, springt die Karte aufs Monogramm.
+function wireArtFallback(grid, games) {
+  if (typeof setGameImage !== "function") return;
+  grid.querySelectorAll("img[data-art-index]").forEach((img) => {
+    const game = games[Number(img.dataset.artIndex)];
+    setGameImage(img, gameArtSources(game), () => {
+      const mono = document.createElement("span");
+      mono.className = "mono";
+      mono.textContent = monogram(game.title);
+      img.replaceWith(mono);
+    });
+  });
 }
 
 function setupControls() {

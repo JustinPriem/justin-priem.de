@@ -133,6 +133,26 @@ body.admin-body {
   border: 1px solid var(--adm-line);
 }
 
+/* Hinweiszeile unter einem Feld — z.B. Status der Steam-Vorschau oder der
+   „Bild entfernen"-Schalter. */
+.field-hint {
+  margin: 0;
+  font-size: .78rem;
+  line-height: 1.5;
+  color: var(--adm-dim);
+}
+.field-hint a { color: var(--adm-accent); }
+.btn-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--adm-danger);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.btn-link:hover { color: var(--adm-text); }
+
 /* ---------- Topbar / Tabs ---------- */
 .admin-topbar {
   display: flex;
