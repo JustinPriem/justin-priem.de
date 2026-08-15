@@ -14,8 +14,14 @@
     return title.split(" ").map(function (w) { return w[0]; }).join("").slice(0, 3).toUpperCase();
   }
 
-  function plateHtml(game) {
-    var cover = game.cover ? '<img src="' + game.cover + '" alt="">' : "";
+  function hasArt(game) {
+    return typeof gameArtSources === "function" && gameArtSources(game).length > 0;
+  }
+
+  function plateHtml(game, index) {
+    // Das eigentliche Bild setzt wireArtFallback() nach dem Rendern — dort läuft
+    // die Kette artwork -> Steam (siehe js/games-art.js) mit Fallback.
+    var cover = hasArt(game) ? '<img alt="' + game.title + ' Cover" data-art-index="' + index + '">' : "";
     var rankValue = game.rank || "—";
     return (
       '<article class="gs-plate" style="--accent:' + game.accent + '">' + cover +
@@ -41,7 +47,11 @@
     if (games) games.textContent = String(stats.count);
 
     var track = document.getElementById("run-track");
-    if (track) track.innerHTML = getTopGames(GAMES, 8).map(plateHtml).join("");
+    var topGames = getTopGames(GAMES, 8);
+    if (track) {
+      track.innerHTML = topGames.map(plateHtml).join("");
+      wireArtFallback(track, topGames);
+    }
 
     // Ticker: alle Titel, dreimal aufgeteilt, je Zeile verdoppelt,
     // damit das Band nahtlos umlaufen kann.
@@ -54,6 +64,19 @@
       var html = slice.map(function (t) { return "<span>" + t + "</span>"; }).join("");
       row.innerHTML = html + html;
     }
+  }
+
+  // Nicht jede Bildquelle liefert für jedes Spiel ein Ergebnis — Steam hat z.B.
+  // nicht zu jeder App-ID eine capsule. setGameImage() arbeitet die Kandidaten
+  // der Reihe nach ab; bleibt keiner übrig, springt die Karte aufs Monogramm.
+  function wireArtFallback(track, games) {
+    if (typeof setGameImage !== "function") return;
+    track.querySelectorAll("img[data-art-index]").forEach(function (img) {
+      var game = games[Number(img.dataset.artIndex)];
+      setGameImage(img, gameArtSources(game), function () {
+        img.remove();
+      });
+    });
   }
 
   function librariesPresent() {
