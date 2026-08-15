@@ -133,6 +133,17 @@
 
   function sourceAt(i) { return bitmaps.get(i) || images[i] || null; }
 
+  // Sucht ausschliesslich unter bereits dekodierten Bitmaps — kein Fallback auf
+  // rohe <img>-Elemente. Wird im Zeichentakt benutzt, um synchrones Dekodieren
+  // (den eigentlichen Ruckel-Verursacher bei schnellem Scrollen) zu vermeiden.
+  function nearestBitmap(idx) {
+    for (var d = 0; d < count; d++) {
+      if (bitmaps.has(idx - d)) return idx - d;
+      if (bitmaps.has(idx + d)) return idx + d;
+    }
+    return -1;
+  }
+
   /* ---- Zeichnen ---- */
 
   function fit(w, h, cw, ch) {
@@ -146,11 +157,21 @@
 
   function draw(idx, force) {
     if (!ctx || !count) return;
-    var use = bitmaps.has(idx) ? idx : nearest(idx);
-    if (use < 0) return;
+    var use = bitmaps.has(idx) ? idx : nearestBitmap(idx);
+    var src = use >= 0 ? bitmaps.get(use) : null;
+
+    if (!src) {
+      // Keine dekodierte Bitmap in Reichweite. Beim allerersten Zeichnen (force,
+      // noch nie etwas dargestellt) wird notgedrungen ein rohes Bild gezeichnet,
+      // damit die Seite nicht leer bleibt — sonst bleibt einfach das zuletzt
+      // gezeichnete Bild stehen, statt jeden Frame neu synchron zu dekodieren.
+      if (!force && displayed >= 0) return;
+      use = nearest(idx);
+      src = use >= 0 ? sourceAt(use) : null;
+      if (!src) return;
+    }
+
     if (!force && use === displayed) return;
-    var src = sourceAt(use);
-    if (!src) return;
     var w = src.width || src.naturalWidth, h = src.height || src.naturalHeight;
     if (!w || !h) return;
     var box = fit(w, h, canvas.width, canvas.height);

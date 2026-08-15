@@ -111,23 +111,35 @@
     if (window.GS_FILM && window.GS_FILM.init) window.GS_FILM.init();
     if (window.GS_CHAPTERS && window.GS_CHAPTERS.init) window.GS_CHAPTERS.init();
 
+    initCursor();
+    // initReadout() gibt recompute() zurueck, damit der Positions-Cache der
+    // Kapitelanzeige an denselben drei Stellen aufgefrischt wird wie
+    // ScrollTrigger selbst (initial, Schriften bereit, vollstaendig geladen).
+    var recomputeReadout = initReadout();
+    initAdaptiveHead();
+
     ScrollTrigger.refresh();
+    if (recomputeReadout) recomputeReadout();
     // Die Kartenbreiten haengen an der Display-Schrift. Laedt sie erst nach dem
     // ersten Auffrischen, waere die Laufdistanz des Querlaufs zu kurz berechnet.
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+      document.fonts.ready.then(function () {
+        ScrollTrigger.refresh();
+        if (recomputeReadout) recomputeReadout();
+      });
     }
     // Spaet ladende Bilder und Schriftarten verschieben das Layout nach dem ersten
     // Auffrischen; ohne einen dritten Auffrisch wird die gepinnte Laufdistanz falsch
     // berechnet.
     if (document.readyState === "complete") {
       ScrollTrigger.refresh();
+      if (recomputeReadout) recomputeReadout();
     } else {
-      window.addEventListener("load", function () { ScrollTrigger.refresh(); });
+      window.addEventListener("load", function () {
+        ScrollTrigger.refresh();
+        if (recomputeReadout) recomputeReadout();
+      });
     }
-    initCursor();
-    initReadout();
-    initAdaptiveHead();
     window.__ready = true;
   });
 
@@ -157,33 +169,49 @@
     if (!nameEl || !barEl) return;
 
     var name = "CHROME";
+    var filmBottom = 0;
+    var cache = [];
+
+    // Positionen werden hier EINMALIG gelesen, nicht im Takt — der Takt selbst
+    // vergleicht nur noch scrollY gegen zwischengespeicherte Zahlen. Das nimmt
+    // acht getBoundingClientRect()-Aufrufe pro Frame aus der heissen Schleife,
+    // die sich sonst mit den Zeichenschritten der Film-Engine ungluecklich
+    // verzahnen und erzwungenes Layout ausloesen koennen.
+    function recompute() {
+      filmBottom = filmEl ? filmEl.offsetTop + filmEl.offsetHeight : 0;
+      cache = sections.map(function (s) {
+        return { top: s.offsetTop, bottom: s.offsetTop + s.offsetHeight, name: s.getAttribute("data-chapter") };
+      });
+    }
 
     function frame() {
       var doc = document.documentElement;
       var max = doc.scrollHeight - window.innerHeight;
       barEl.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0).toFixed(1) + "%";
 
+      var mid = window.scrollY + window.innerHeight * 0.5;
+
       // Die Film-Namen gelten nur, solange die Film-Sektion noch im Bild ist.
       // progress() bleibt nach dem Durchscrollen dauerhaft bei 1 — ohne diese
       // Prüfung stünde in jeder Lücke zwischen zwei Kapiteln faelschlich "KERN".
-      var filmVisible = !filmEl || filmEl.getBoundingClientRect().bottom > window.innerHeight * 0.5;
+      var filmVisible = !filmEl || filmBottom > mid;
       if (filmVisible && window.GS_FILM) {
         var p = window.GS_FILM.progress();
         if (p > 0.66) name = "KERN";
         else if (p > 0.33) name = "KORRIDOR";
         else name = "CHROME";
       }
-      for (var i = 0; i < sections.length; i++) {
-        var r = sections[i].getBoundingClientRect();
-        if (r.top <= window.innerHeight * 0.5 && r.bottom >= window.innerHeight * 0.5) {
-          name = sections[i].getAttribute("data-chapter");
-          break;
-        }
+      for (var i = 0; i < cache.length; i++) {
+        if (cache[i].top <= mid && cache[i].bottom >= mid) { name = cache[i].name; break; }
       }
       if (nameEl.textContent !== name) nameEl.textContent = name;
       requestAnimationFrame(frame);
     }
+
+    recompute();
+    window.addEventListener("resize", recompute);
     requestAnimationFrame(frame);
+    return recompute;
   }
 
   /* ---- Kopfzeile über wechselndem Bild ---- */
