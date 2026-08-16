@@ -98,6 +98,17 @@ const THEME_PULSE_COLORS = {
   unbesiegbar: "#ffc94a",
 };
 
+// Partikelfarben pro Sektion — helle Töne auf den dunklen Hero-/Gaming-/Unbesiegbar-
+// Hintergründen, dunklere/kontrastreichere Töne auf den hellen Papier-Hintergründen
+// von Radfahren und Raya (sonst kaum sichtbar). Siehe docs/superpowers/specs/2026-08-16-hero-particle-field-design.md
+const THEME_PARTICLE_COLORS = {
+  hero: ["#33E7FF", "#C264FF", "#ECEAE3"],
+  gaming: ["#33E7FF", "#C264FF", "#ECEAE3"],
+  cycling: ["#D45A22", "#5C7A52"],
+  raya: ["#C98572", "#8B8577"],
+  unbesiegbar: ["#ffc94a", "#ff3ea5", "#fff8ec"],
+};
+
 function triggerThemePulse(theme) {
   const pulse = document.getElementById("theme-pulse");
   if (!pulse) return;
@@ -107,9 +118,20 @@ function triggerThemePulse(theme) {
   pulse.classList.add("is-pulsing");
 }
 
+// ---------- Seitenweites Partikelfeld ----------
+
+function setupSiteParticles() {
+  const container = document.getElementById("site-particles");
+  if (!container || typeof createParticleField !== "function") return null;
+  return createParticleField(container, {
+    colors: THEME_PARTICLE_COLORS.hero,
+    interactive: true,
+  });
+}
+
 // ---------- Scroll-Story: Reveal, Zähler, Quicknav-Theme ----------
 
-function setupScrollStory() {
+function setupScrollStory(particleField) {
   const nav = document.getElementById("quicknav");
   const sections = document.querySelectorAll(".story");
   const navLinks = document.querySelectorAll(".qn-links a");
@@ -125,7 +147,10 @@ function setupScrollStory() {
           link.classList.toggle("is-active", link.dataset.section === theme)
         );
         // Nicht beim ersten Laden pulsieren, nur bei einem echten Kapitelwechsel
-        if (lastTheme !== null && theme !== lastTheme) triggerThemePulse(theme);
+        if (lastTheme !== null && theme !== lastTheme) {
+          triggerThemePulse(theme);
+          particleField?.setColors(THEME_PARTICLE_COLORS[theme]);
+        }
         lastTheme = theme;
       });
     },
@@ -289,7 +314,8 @@ document.addEventListener("DOMContentLoaded", () => {
   fillGamingTeaser(GAMES);
   fillCyclingTeaser(TOURS);
   fillRayaTeaser(RAYA_PHOTOS);
-  setupScrollStory();
+  const particleField = setupSiteParticles();
+  setupScrollStory(particleField);
   setupProgressBar();
   setupParallax();
   setupMagnetic(".story-cta", 0.25, 8);

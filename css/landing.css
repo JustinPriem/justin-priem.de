@@ -54,6 +54,18 @@ body { background: var(--hero-bg); }
   100% { opacity: 0; }
 }
 
+/* ---------- Seitenweites Partikelfeld ---------- */
+/* Fixer Layer über der ganzen Startseite: über allen Sektions-Hintergründen/Deko
+   (z-index 0/1), aber unter dem lesbaren Inhalt (.story-inner, z-index 3) und der
+   Quicknav (z-index 100). Wird per js/particles.js mit einem <canvas> befüllt; ohne
+   JS oder bei prefers-reduced-motion bleibt der Container leer und unsichtbar. */
+.site-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
 /* ---------- Quicknav ---------- */
 .quicknav {
   position: fixed;
@@ -138,7 +150,7 @@ body { background: var(--hero-bg); }
   position: relative;
   overflow: hidden;
 }
-.story-inner { max-width: 640px; width: 100%; margin: 0 auto; position: relative; z-index: 2; }
+.story-inner { max-width: 640px; width: 100%; margin: 0 auto; position: relative; z-index: 3; }
 
 /* ---------- Parallax-Hintergrund je Kapitel ---------- */
 .story-bg {
