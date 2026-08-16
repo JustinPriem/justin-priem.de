@@ -1,3 +1,12 @@
+/* base.css setzt html { scroll-behavior: smooth } fuer Anker-Sprungmarken.
+   Auf dieser Seite steuert Lenis das Scrollen selbst (setzt window.scrollTo
+   viele Male pro Sekunde) — mit aktivem scroll-behavior:smooth faengt der
+   Browser jeden einzelnen dieser Aufrufe zusaetzlich ab und glaettet ihn
+   nochmal obendrauf. Zwei Bremsen hintereinander statt einer, spuerbar
+   traeger als beabsichtigt. Deshalb hier gezielt zurueckgesetzt, nur fuer
+   diese Seite. */
+html { scroll-behavior: auto; }
+
 :root {
   --void: #05060A;
   --chrome: #EAEEF5;
