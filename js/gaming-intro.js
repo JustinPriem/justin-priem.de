@@ -50,7 +50,7 @@
     var topGames = getTopGames(GAMES, 8);
     if (track) {
       track.innerHTML = topGames.map(plateHtml).join("");
-      wireArtFallback(track, topGames);
+      deferArtLoading(track, topGames);
     }
 
     // Ticker: alle Titel, dreimal aufgeteilt, je Zeile verdoppelt,
@@ -77,6 +77,26 @@
         img.remove();
       });
     });
+  }
+
+  // Das Artwork der Archiv-Karten wird nicht mehr beim Laden der Seite
+  // angefordert, sondern erst, wenn der Archiv-Abschnitt in Scrollnaehe
+  // kommt. Sofortiges Laden wuerde bis zu 8 Bildketten (je bis zu 3
+  // Anfragen: eigenes Artwork -> Steam capsule -> header -> hero) direkt
+  // beim Start abfeuern -- das konkurriert mit dem Laden der Filmbilder um
+  // Bandbreite und Hauptthread-Zeit, genau waehrend der Film gescrubbt wird.
+  function deferArtLoading(track, games) {
+    var section = document.getElementById("ch-run");
+    if (!section || typeof IntersectionObserver === "undefined") {
+      wireArtFallback(track, games);
+      return;
+    }
+    var obs = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      obs.disconnect();
+      wireArtFallback(track, games);
+    }, { rootMargin: "800px 0px 800px 0px" });
+    obs.observe(section);
   }
 
   function librariesPresent() {
