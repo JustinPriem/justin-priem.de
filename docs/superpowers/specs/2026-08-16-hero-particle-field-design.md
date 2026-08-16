@@ -1,4 +1,4 @@
-# Hero-Partikelfeld — Design
+# Seitenweites Partikelfeld — Design
 
 ## Hintergrund
 
@@ -8,8 +8,11 @@ statische, buildlose Seite ohne Framework unangemessen aufwendig. Diese Spec bes
 leichtgewichtigen, selbstgeschriebenen Canvas-Partikeleffekt im "Spirit" des Originals (mausreaktiv, organisch),
 der zur bestehenden Codebase passt.
 
-Betroffene Seite: `index.html`, Sektion `#hero` mit dem Container `.hero-particles`, der heute nur einen statischen
-CSS-Radial-Gradient mit sechs fest positionierten Punkten enthält (`css/landing.css:229`).
+**Umfang (nach Rückmeldung angepasst):** Kein Ersatz für die bestehende `.hero-particles`-Dekoration, sondern eine
+**zusätzliche, seitenweite Ebene** auf `index.html`. Nichts Bestehendes wird entfernt — der heutige CSS-Gradient im
+Hero, das Herz-Feld bei Raya, das Kronen-Feld bei Unbesiegbar, die Straßen-SVG bei Radfahren bleiben alle
+unverändert. Der neue Partikel-Layer kommt als eigenständige Ebene obendrauf, sichtbar über die gesamte Startseite
+hinweg (Hero + alle vier Story-Sektionen).
 
 ## Architektur
 
@@ -19,53 +22,97 @@ Neues Modul **`js/particles.js`**, unabhängig von `landing.js`, exportiert eine
 createParticleField(container, options)
 ```
 
-- `container`: DOM-Element, das den `<canvas>` aufnimmt (z. B. `.hero-particles`)
+- `container`: DOM-Element, das den `<canvas>` aufnimmt
 - `options`:
-  - `colors`: Array von Hex-Farben für die Partikel
-  - `density`: grobe Ziel-Partikelzahl relativ zur Container-Fläche (gedeckelt)
-  - `interactive`: ob Pointer-Anziehung aktiviert werden soll (wird zusätzlich durch `hasFineCursor` gegatet)
+  - `colors`: Array von Hex-Farben für die Partikel (initiale Palette)
+  - `density`: grobe Ziel-Partikelzahl relativ zur Viewport-Fläche (gedeckelt)
+  - `interactive`: ob Pointer-Anziehung aktiviert werden soll (zusätzlich durch `hasFineCursor` gegatet)
+- Rückgabewert: ein Handle mit `setColors(colors)` — erlaubt es, die Zielpalette von außen sanft zu wechseln
+  (siehe Farbverlauf unten), ohne die Instanz neu zu erzeugen.
 
-Jeder Aufruf von `createParticleField` erzeugt eine unabhängige Instanz (eigener Canvas, eigene
-`requestAnimationFrame`-Schleife, eigener `IntersectionObserver`). Das macht das Modul wiederverwendbar für
-spätere Sektionen (z. B. Raya, Unbesiegbar) mit jeweils eigener Farbpalette, ohne Kopplung an "Hero" im Modulcode.
+Die Funktion selbst bleibt generisch und containerbezogen (kein Wissen über "Startseite" oder "Hero" im Modul) —
+sie könnte später auch für eine einzelne Sektion instanziiert werden. Auf `index.html` wird sie aber nur **einmal**
+aufgerufen, mit einem neuen, eigenen Container-Element, das direkt als Kind von `<body>` eingehängt wird (nicht in
+einer der `.story`-Sektionen), und `position: fixed; inset: 0` bekommt — das macht daraus einen einzigen,
+viewport-großen Layer, der unabhängig vom Scroll-Fortschritt sichtbar bleibt.
 
-`index.html` bindet `js/particles.js` per `<script>`-Tag vor `js/landing.js` ein. Die Initialisierung für den Hero
-erfolgt entweder direkt in `particles.js` (Self-Init über ein Daten-Attribut, z. B.
-`data-particle-colors="#33E7FF,#C264FF,#ECEAE3"` auf `.hero-particles`) oder per explizitem Aufruf aus
-`landing.js` — Details dazu in der Implementierungsplanung.
+`index.html` bindet `js/particles.js` per `<script>`-Tag vor `js/landing.js` ein, da `landing.js` das Handle für
+den Farbwechsel braucht (siehe Integration).
 
 ## Visuelles Verhalten
+
+*(Rendering-Technik und Jank-Testmethode unten übernommen aus dem "Ambient hero layer"-Abschnitt des
+`scroll-film-studio`-Skills — dort für Canvas-Partikel über einem Film-Standbild beschrieben, hier fürs
+seitenweite Feld angewendet.)*
 
 Kein echter Fluid-Solver, sondern zwei überlagerte Bewegungskomponenten pro Partikel:
 
 1. **Ambiente Drift** — langsame, individuelle Sinus-Wanderung (Phase und Frequenz pro Partikel zufällig versetzt),
-   damit sich das Feld organisch statt synchron bewegt. Ersetzt die heutige starre `drift`-Keyframe-Animation.
+   damit sich das Feld organisch statt synchron bewegt.
 2. **Cursor-Anziehung** (nur bei `hasFineCursor`) — Partikel innerhalb eines Anziehungsradius um die Cursor-Position
    werden sanft in Richtung Cursor gezogen, mit einem Mindestabstand, damit sie nicht übereinander stapeln. Verlässt
-   der Cursor den Radius bzw. bewegt er sich weiter, federn die Partikel gedämpft zurück in ihre Drift-Bahn.
+   der Cursor den Radius bzw. bewegt er sich weiter, federn die Partikel gedämpft zurück in ihre Drift-Bahn. Gilt
+   über die ganze Seite hinweg, nicht nur im Hero.
 
-Größe, Farbe (aus der übergebenen `colors`-Palette) und Deckkraft sind pro Partikel leicht randomisiert.
-Für den Hero: `#33E7FF` (Cyan), `#C264FF` (Magenta), `#ECEAE3` (Off-White) — identisch zur heutigen Palette in
-`css/landing.css`.
+**Tiefe statt reiner Zufallsstreuung:** Jedes Partikel bekommt beim Erzeugen einen zufälligen Tiefenwert (0–1), von
+dem Größe, Drift-Geschwindigkeit und Deckkraft gemeinsam abhängen — Partikel mit niedriger Tiefe sind kleiner,
+langsamer und dezenter (wirken "weiter hinten"), Partikel mit hoher Tiefe größer, etwas schneller und heller.
+Ergibt ein räumlicheres Feld statt komplett unabhängig gewürfelter Werte. Zusätzlich ein leichtes Sinus-Twinkle auf
+der Deckkraft pro Partikel (eigene Phase), statt konstanter Alpha.
 
-Dichte: an die Container-Fläche gekoppelt, aber gedeckelt auf ca. 40–70 Partikel im Hero, um GPU-Last und visuelle
-Unruhe zu begrenzen. Auf Geräten ohne feinen Zeiger (Touch) läuft nur die ambiente Drift, keine Pointer-Logik wird
-gebunden.
+**Rendering — vorgerendertes Sprite statt Live-Glow:** Ein einzelnes ~32px-Radial-Gradient-Sprite pro Grundfarbe
+wird einmalig auf einen Offscreen-Canvas gezeichnet; jedes Partikel wird pro Frame nur noch per `drawImage()`
+dieses Sprites gezeichnet (skaliert nach Tiefe/Größe), nicht per `arc()` + `fill()` + `shadowBlur`.
+`shadowBlur` wird bewusst nicht verwendet — bei 40–70 Partikeln pro Frame ist das spürbar teurer als ein simples
+Sprite-Blit und bringt bei diesem Effekt keinen sichtbaren Zusatznutzen.
+
+### Farbverlauf passend zur Sektion
+
+Die Seite hat pro Sektion schon ein Farbthema (`THEME_PULSE_COLORS` in `js/landing.js:93`, gesteuert über den
+bestehenden `themeObserver`, der beim Scrollen erkennt, welche `.story`-Sektion gerade sichtbar ist). Der
+Partikel-Layer zieht mit, **inklusive Kontrastanpassung** für helle vs. dunkle Sektions-Hintergründe:
+
+| Sektion | Hintergrund | Partikel-Palette |
+|---|---|---|
+| Hero / Gaming | dunkel (`#12121A`) | `#33E7FF` Cyan, `#C264FF` Magenta, `#ECEAE3` Off-White |
+| Radfahren | hell (`#F6F3EC` Papier) | `#D45A22` Lehm, `#5C7A52` Moos |
+| Raya | hell (`#FAF7F2` Papier) | `#C98572` Blush, `#8B8577` gedämpftes Braun |
+| Unbesiegbar | dunkel (`#1a0a2e`) | `#ffc94a` Gold, `#ff3ea5` Pink, `#fff8ec` Creme |
+
+Grund: dieselben hellen Hero-Töne wären auf den hellen Papier-Hintergründen von Radfahren/Raya kaum sichtbar —
+für diese Sektionen werden stattdessen dunklere, kontrastreiche Farben aus deren eigener Palette verwendet.
+
+Der Wechsel läuft nicht abrupt, sondern wird beim Sektionswechsel sanft über- oder ausgeblendet (kurze
+Farb-Interpolation je Partikel, ähnlich der Interaktionsstärke bei bestehenden Übergängen auf der Seite).
+
+Dichte: an die Viewport-Fläche gekoppelt, aber gedeckelt (grob 40–70 Partikel), um GPU-Last und visuelle Unruhe zu
+begrenzen. Auf Geräten ohne feinen Zeiger (Touch) läuft nur die ambiente Drift, keine Pointer-Logik wird gebunden.
 
 ## Integration & Fallbacks
 
-- `.hero-particles` bleibt als Container bestehen; der heutige CSS-Radial-Gradient-Hintergrund bleibt als
-  **No-JS-/Reduced-Motion-Fallback** unverändert im CSS.
-- `createParticleField` fügt einen `<canvas>` in den Container ein und setzt eine Klasse (z. B.
-  `.has-canvas-particles`) auf den Container, sobald der Canvas tatsächlich aktiv gestartet ist — nur dann wird der
-  CSS-Gradient per Selektor ausgeblendet.
+- Neuer Container, z. B. `<div class="site-particles" aria-hidden="true"></div>`, wird in `index.html` direkt vor
+  `<main>` (oder als letztes Element vor den Skripten, siehe Implementierungsplanung) eingefügt — **kein** Eingriff
+  in bestehende Sektionen oder deren Deko-Elemente.
+- **Ebenen-Reihenfolge:** `.site-particles` bekommt einen `z-index`, der über den Sektions-Hintergründen/Deko
+  (aktuell `z-index: 0`/`1` je Sektion) liegt, aber unter dem lesbaren Inhalt (`.story-inner`, `z-index: 2`) und
+  unter der fixen Quicknav (`z-index: 100`) — Partikel schweben über allen Hintergründen, aber Überschriften/Buttons
+  bleiben unbeeinträchtigt lesbar und klickbar (`pointer-events: none` auf dem Container zusätzlich zur
+  z-index-Platzierung).
+- `createParticleField` fügt einen `<canvas>` in `.site-particles` ein; die bestehenden Deko-Elemente pro Sektion
+  bleiben komplett unangetastet — es gibt keinen Fallback-Umschalt-Mechanismus wie ursprünglich geplant, weil
+  nichts ersetzt wird. Bei `prefers-reduced-motion: reduce` oder wenn JS fehlschlägt, erscheint einfach kein
+  zusätzlicher Layer — die Seite sieht exakt wie heute aus (reiner Zugewinn, kein Rückschritt).
 - Respektiert bestehende Konventionen aus `js/landing.js`:
-  - `prefers-reduced-motion: reduce` → Canvas wird gar nicht gestartet, statische CSS-Variante bleibt sichtbar.
+  - `prefers-reduced-motion: reduce` → Canvas wird gar nicht gestartet.
   - `hover: hover` and `pointer: fine` (`hasFineCursor`) → steuert nur, ob Pointer-Events gebunden werden; der
     Canvas selbst läuft unabhängig davon (ambient) weiter.
+- **Kopplung an `setupScrollStory()`:** Der bestehende `themeObserver` (der heute schon `nav.dataset.theme` setzt
+  und `triggerThemePulse(theme)` auslöst) ruft zusätzlich `particleField.setColors(...)` mit der zur Sektion
+  passenden Palette auf.
 - **Performance:**
-  - `IntersectionObserver` auf den Container pausiert die `requestAnimationFrame`-Schleife, sobald die Sektion den
-    Viewport verlässt, und setzt sie beim Wiedereintritt fort.
+  - Da der Layer permanent im Viewport sichtbar ist (fixed), gibt es keinen `IntersectionObserver`-Pause-Mechanismus
+    für die Sichtbarkeit selbst — stattdessen pausiert die Schleife über die `visibilitychange`-API, wenn der Tab
+    in den Hintergrund wechselt (Browser-Tab nicht aktiv), um unnötige CPU/GPU-Last zu vermeiden.
   - Canvas-Auflösung an `devicePixelRatio` gekoppelt, gedeckelt auf 2x.
   - `resize`-Listener mit `ticking`-Flag-Pattern (wie andernorts in `landing.js`) hält Canvas-Größe und
     Partikelverteilung bei Fenstergrößenänderung konsistent.
@@ -75,20 +122,27 @@ gebunden.
 Keine automatisierte Test-Suite auf dieser Seite (reines HTML/CSS/JS, bisher ausschließlich visuell in der
 Browser-Preview verifiziert — z. B. der magnetische CTA-Button, der Theme-Pulse). Verifikation manuell:
 
-1. **Sichtprüfung:** Hero lädt, Partikel erscheinen und driften ambient.
-2. **Maus-Interaktion:** Cursor über den Hero bewegen → Partikel werden sanft angezogen, federn beim Wegbewegen
-   zurück in ihre Drift-Bahn.
-3. **Reduced Motion:** `prefers-reduced-motion: reduce` in den DevTools simulieren → Canvas startet nicht,
-   CSS-Gradient-Fallback bleibt sichtbar.
-4. **Touch/kein feiner Zeiger:** Viewport auf ein Mobile-Preset stellen → Partikel driften ambient, keine
+1. **Sichtprüfung:** Startseite lädt, Partikel-Layer erscheint über allen Sektionen, driftet ambient.
+2. **Maus-Interaktion:** Cursor über verschiedene Sektionen bewegen → Partikel werden sanft angezogen, federn beim
+   Wegbewegen zurück in ihre Drift-Bahn.
+3. **Farbwechsel:** Durch die Seite scrollen und prüfen, dass die Partikelfarbe beim Sektionswechsel sanft auf die
+   jeweilige Palette umblendet (inkl. Kontrast auf den hellen Radfahren-/Raya-Hintergründen).
+4. **Reduced Motion:** `prefers-reduced-motion: reduce` in den DevTools simulieren → Canvas startet nicht, Seite
+   sieht exakt wie vorher aus.
+5. **Touch/kein feiner Zeiger:** Viewport auf ein Mobile-Preset stellen → Partikel driften ambient, keine
    Pointer-Bindung.
-5. **Viewport-Pausierung:** Aus dem Hero herausscrollen und prüfen (z. B. via Performance-Panel oder
-   Debug-Zähler), dass die Animationsschleife pausiert; beim Zurückscrollen läuft sie wieder an.
-6. **Resize:** Fenstergröße ändern → Canvas und Partikelverteilung bleiben stimmig, keine verzerrte/abgeschnittene
+6. **Lesbarkeit & Klickbarkeit:** Überschriften, CTAs und Quicknav-Links bleiben über der Partikel-Ebene scharf
+   lesbar und normal klickbar (`pointer-events: none` greift).
+7. **Jank-Test:** Pro-Frame-`requestAnimationFrame`-Deltas über ~5s Beobachtung mitloggen (Konsole oder ein
+   Debug-Zähler), **p95/max bewerten, nie den Durchschnitts-FPS-Wert** — ein Mittelwert von 60fps kann einzelne
+   80ms-Ruckler locker verstecken. Zielwert: max < 50ms, auch während Sektionswechsel/Farbüberblendung.
+8. **Resize:** Fenstergröße ändern → Canvas und Partikelverteilung bleiben stimmig, keine verzerrte/abgeschnittene
    Fläche.
 
 ## Out of Scope
 
-- Wiederverwendung des Moduls in weiteren Sektionen (Raya, Unbesiegbar, …) — das Modul wird dafür vorbereitet
-  (konfigurierbare Farben/Dichte), aber in dieser Runde nur für `#hero` verdrahtet.
+- Wiederverwendung des Moduls für weitere, eigenständige Instanzen außerhalb der Startseite — das Modul bleibt
+  dafür generisch nutzbar, aber in dieser Runde nur einmal (seitenweit auf `index.html`) verdrahtet.
 - Echte Fluid-Simulation, WebGL/Three.js, GLTF-Assets oder Post-Processing-Effekte wie im Shopify-Original.
+- GSAP/Lenis-Kamerafahrten oder generiertes Video-Footage (Scroll-Film-Ansatz) — passt nicht zum Umfang dieser
+  Ergänzung und würde einen ganz eigenen, viel größeren Aufbau bedeuten.
