@@ -137,13 +137,15 @@ function createParticleField(container, options = {}) {
     });
   }
 
-  function updatePull(p, ambientX, ambientY) {
+  function updatePull(p, ambientX, ambientY, originX, originY) {
     if (hasFineCursor && config.interactive && pointer.active) {
       // Richtungsvektor WEG vom Zeiger (Abstoßung statt Anziehung), normiert und auf
       // eine begrenzte Schub-Distanz skaliert — bleibt auch dicht am Zeiger stabil,
-      // statt bei kleinem Abstand numerisch zu "explodieren".
-      const dx = ambientX - pointer.x;
-      const dy = ambientY - pointer.y;
+      // statt bei kleinem Abstand numerisch zu "explodieren". pointer.x/y sind
+      // Viewport-Koordinaten, ambientX/Y sind lokale Container-Koordinaten (der
+      // Container scrollt mit der Seite mit) — über originX/Y ineinander umgerechnet.
+      const dx = ambientX - (pointer.x - originX);
+      const dy = ambientY - (pointer.y - originY);
       const dist = Math.hypot(dx, dy) || 1;
       const radius = 190;
       if (dist < radius) {
@@ -178,6 +180,15 @@ function createParticleField(container, options = {}) {
     if (!running) return;
     ctx.clearRect(0, 0, width, height);
 
+    // Aktuelle Bildschirmposition des Containers — ändert sich beim Scrollen, da der
+    // Container jetzt IN der Seite liegt statt fix im Viewport zu stehen. Wird nur für
+    // die Umrechnung der (Viewport-relativen) Zeigerposition in lokale Koordinaten
+    // gebraucht; die Partikel-Positionen selbst sind bereits lokal und brauchen keine
+    // Scroll-Korrektur (der Browser verschiebt den ganzen Canvas automatisch mit).
+    const rect = container.getBoundingClientRect();
+    const originX = rect.left;
+    const originY = rect.top;
+
     const t = now / 1000;
     const transitionT = clamp((now - transitionStart) / TRANSITION_MS, 0, 1);
     const crossfading = transitionT < 1;
@@ -186,7 +197,7 @@ function createParticleField(container, options = {}) {
       const ambientX = p.anchorX + Math.sin(t * p.freqX * Math.PI * 2 + p.phaseX) * p.ampX;
       const ambientY = p.anchorY + Math.cos(t * p.freqY * Math.PI * 2 + p.phaseY) * p.ampY;
 
-      updatePull(p, ambientX, ambientY);
+      updatePull(p, ambientX, ambientY, originX, originY);
 
       p.x = ambientX + p.offsetX;
       p.y = ambientY + p.offsetY;
@@ -220,9 +231,31 @@ function createParticleField(container, options = {}) {
     rafId = null;
   }
 
+  // Läuft nur, wenn die Sektion tatsächlich im Viewport ist UND der Tab aktiv ist —
+  // der Container scrollt jetzt mit der Seite, verbringt also die meiste Zeit außerhalb
+  // des sichtbaren Bereichs, und soll dann auch keine CPU/GPU verbrauchen.
+  let sectionVisible = true;
+  let tabVisible = !document.hidden;
+
+  function syncRunning() {
+    if (sectionVisible && tabVisible) start();
+    else stop();
+  }
+
+  const sectionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        sectionVisible = entry.isIntersecting;
+        syncRunning();
+      });
+    },
+    { rootMargin: "25% 0px" } // etwas Vorlauf, bevor die Sektion ins Bild scrollt
+  );
+  sectionObserver.observe(container);
+
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) stop();
-    else start();
+    tabVisible = !document.hidden;
+    syncRunning();
   });
 
   // ---- Größe & Auflösung ----

@@ -98,13 +98,6 @@ const THEME_PULSE_COLORS = {
   unbesiegbar: "#ffc94a",
 };
 
-// Einheitliche, feste Partikelfarben für die ganze Seite — bewusst NICHT an die
-// Sektionsfarben gekoppelt (Nutzerwunsch: statisch, reagiert nicht auf Scroll-Position).
-// Vivide, mittelhelle Töne gewählt, die sowohl auf den dunklen Hero-/Gaming-/Unbesiegbar-
-// Hintergründen als auch auf den hellen Papier-Hintergründen von Radfahren/Raya noch gut
-// lesbar bleiben.
-const SITE_PARTICLE_COLORS = ["#33E7FF", "#C264FF", "#ff3ea5"];
-
 function triggerThemePulse(theme) {
   const pulse = document.getElementById("theme-pulse");
   if (!pulse) return;
@@ -114,14 +107,23 @@ function triggerThemePulse(theme) {
   pulse.classList.add("is-pulsing");
 }
 
-// ---------- Seitenweites Partikelfeld ----------
+// ---------- Partikelfeld je Sektion ----------
+// Nur in #hero, #gaming und #unbesiegbar (Nutzerentscheidung) — jede Instanz liegt IN
+// ihrer Sektion (position: absolute, siehe .section-particles) und scrollt dadurch mit
+// der Seite mit, statt als Bildschirm-Overlay stehen zu bleiben.
 
-function setupSiteParticles() {
-  const container = document.getElementById("site-particles");
-  if (!container || typeof createParticleField !== "function") return null;
-  return createParticleField(container, {
-    colors: SITE_PARTICLE_COLORS,
-    interactive: true,
+const SECTION_PARTICLE_CONFIG = [
+  { id: "hero-particles-canvas", colors: ["#33E7FF", "#C264FF", "#ff3ea5"] },
+  { id: "gaming-particles-canvas", colors: ["#33E7FF", "#C264FF", "#ff3ea5"] },
+  { id: "unbesiegbar-particles-canvas", colors: ["#ffc94a", "#ff3ea5", "#fff8ec"] },
+];
+
+function setupSectionParticles() {
+  if (typeof createParticleField !== "function") return;
+  SECTION_PARTICLE_CONFIG.forEach(({ id, colors }) => {
+    const container = document.getElementById(id);
+    if (!container) return;
+    createParticleField(container, { colors, interactive: true });
   });
 }
 
@@ -307,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fillGamingTeaser(GAMES);
   fillCyclingTeaser(TOURS);
   fillRayaTeaser(RAYA_PHOTOS);
-  setupSiteParticles();
+  setupSectionParticles();
   setupScrollStory();
   setupProgressBar();
   setupParallax();

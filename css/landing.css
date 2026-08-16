@@ -54,13 +54,16 @@ body { background: var(--hero-bg); }
   100% { opacity: 0; }
 }
 
-/* ---------- Seitenweites Partikelfeld ---------- */
-/* Fixer Layer über der ganzen Startseite: über allen Sektions-Hintergründen/Deko
-   (z-index 0/1), aber unter dem lesbaren Inhalt (.story-inner, z-index 3) und der
-   Quicknav (z-index 100). Wird per js/particles.js mit einem <canvas> befüllt; ohne
-   JS oder bei prefers-reduced-motion bleibt der Container leer und unsichtbar. */
-.site-particles {
-  position: fixed;
+/* ---------- Partikelfeld je Sektion ---------- */
+/* Liegt IN der jeweiligen .story-Sektion (position: absolute, nicht fixed) und
+   scrollt dadurch mit der Seite mit statt als Bildschirm-Overlay stehen zu bleiben —
+   soll wirken, als läge das Feld auf der Website, nicht auf dem Viewport. Über allen
+   Sektions-Hintergründen/Deko (z-index 0/1), aber unter dem lesbaren Inhalt
+   (.story-inner, z-index 3). Wird per js/particles.js mit einem <canvas> befüllt; ohne
+   JS oder bei prefers-reduced-motion bleibt der Container leer und unsichtbar. Nur in
+   #hero, #gaming und #unbesiegbar eingebunden (siehe index.html), nicht bei Radfahren/Raya. */
+.section-particles {
+  position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
