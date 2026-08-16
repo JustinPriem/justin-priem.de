@@ -155,6 +155,41 @@ body { background: var(--hero-bg); }
 }
 .story-inner { max-width: 640px; width: 100%; margin: 0 auto; position: relative; z-index: 3; }
 
+/* ---------- Übergangs-Naht zwischen zwei Sektionen ---------- */
+/* Eigenständiges Element zwischen zwei .story-Sektionen statt eines Bleeds über den
+   Sektionsrand hinaus — .story hat overflow:hidden, ein überlappendes Element würde also
+   abgeschnitten. Grundzustand (kein JS / prefers-reduced-motion): ein statischer
+   Verlauf über die volle Nahthöhe. Mit JS (siehe setupSectionSeams() in landing.js)
+   bekommt .seam-band die Klasse .is-live: die Blendzone wandert dann beim Durchscrollen
+   der Naht von unten nach oben durch, gesteuert über die Custom Property --p (0–1). */
+.section-seam {
+  position: relative;
+  height: 12vh;
+  min-height: 90px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.seam-band {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--seam-from), var(--seam-to));
+}
+.seam-band.is-live {
+  --p: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--seam-from) 0%,
+    var(--seam-from) calc(78% - (var(--p) * 80%)),
+    var(--seam-to) calc(102% - (var(--p) * 80%)),
+    var(--seam-to) 100%
+  );
+}
+
+.seam-hero-gaming      { --seam-from: var(--hero-bg);       --seam-to: var(--gaming-bg); }
+.seam-gaming-cycling   { --seam-from: var(--gaming-bg);     --seam-to: var(--cycling-paper); }
+.seam-cycling-raya     { --seam-from: var(--cycling-paper); --seam-to: var(--raya-paper); }
+.seam-raya-unbesiegbar { --seam-from: var(--raya-paper);    --seam-to: var(--ub-deep); }
+
 /* ---------- Parallax-Hintergrund je Kapitel ---------- */
 .story-bg {
   position: absolute;
