@@ -315,6 +315,7 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
   .gs-stage { position: relative; height: auto; min-height: 80vh; min-height: 80svh; }
   .gs-beat { position: relative; left: auto; right: auto; top: auto; transform: none; padding: 4rem 8vw; max-width: none; text-align: left; }
   .gs-beat--mid { text-align: left; }
+  .gs-beat--stats { text-align: center; }
   #film-canvas, .gs-grain, .gs-field-canvas { display: none; }
   .gs-ch--type::before, .gs-ch--portal::before { animation: none; }
   .gs-ch--portal::after, .gs-portal { animation: none; }
@@ -322,6 +323,7 @@ body.gs-filmtext .gs-ch--type::before { display: none; }
 body.gs-still .gs-film { height: auto; }
 body.gs-still .gs-stage { position: relative; height: auto; min-height: 80vh; min-height: 80svh; }
 body.gs-still .gs-beat { position: relative; left: auto; right: auto; top: auto; transform: none; opacity: 1 !important; visibility: visible !important; padding: 4rem 8vw; max-width: none; text-align: left; }
+body.gs-still .gs-beat--stats { text-align: center; }
 body.gs-still #film-canvas, body.gs-still .gs-field-canvas { display: none; }
 body.gs-still .gs-ch--type::before, body.gs-still .gs-ch--portal::before { animation: none; }
 body.gs-still .gs-ch--portal::after, body.gs-still .gs-portal { animation: none; }
@@ -332,6 +334,7 @@ body.gs-still .gs-loader { display: none; }
 @media (max-width: 760px) {
   .gs-beat { left: 6vw; right: 6vw; max-width: none; }
   .gs-beat--mid { text-align: left; }
+  .gs-beat--stats { text-align: center; }
   .gs-run-track { padding: 0 6vw; }
 
   /* Kopfzeile: rechnete sich auf 11,5px herunter, jetzt lesbar. */
