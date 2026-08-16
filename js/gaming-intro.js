@@ -101,7 +101,7 @@
     // Stelle.
     ScrollTrigger.config({ ignoreMobileResize: true });
 
-    var lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
+    var lenis = new Lenis({ lerp: 0.35, smoothWheel: true });
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
     gsap.ticker.lagSmoothing(0);
