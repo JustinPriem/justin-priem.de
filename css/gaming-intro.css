@@ -98,6 +98,12 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 .gs-beat--mid { left: auto; right: 8vw; text-align: right; max-width: 30rem; }
 .gs-beat--mid::before { inset: -70% -14% -70% -24%; background: radial-gradient(60% 58% at 76% 50%, rgba(5,6,10,.78), rgba(5,6,10,.4) 45%, transparent 78%); }
 .gs-line { font-size: clamp(1.1rem, 2.4vw, 1.9rem); line-height: 1.4; margin: 0; }
+/* Bilanz-Beat: mittig statt links/rechts wie die beiden Text-Beats, mit einem
+   runderen, kraeftigeren Schein dahinter — die grosse Zahl braucht mehr
+   Abdunkelung als eine Zeile Fliesstext, sonst verschwimmt sie mit dem hellen
+   Kernbild darunter. */
+.gs-beat--stats { left: 50%; right: auto; top: 50%; transform: translate(-50%, -50%); max-width: 50rem; text-align: center; }
+.gs-beat--stats::before { inset: -55% -35%; background: radial-gradient(62% 62% at 50% 50%, rgba(5,6,10,.82), rgba(5,6,10,.45) 48%, transparent 78%); }
 
 /* ---------- Kapitel, gemeinsam ---------- */
 
@@ -110,52 +116,12 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 #ch-field, #ch-ticker, #ch-portal { min-height: min(62vh, 620px); min-height: min(62svh, 620px); }
 #ch-field .gs-wrap, #ch-portal .gs-wrap { padding: 2.6rem 1.6rem; }
 
-/* Kapitel 1 — Die Zahl */
-/* Endbild des Films (letztes Bild = Kern) als Standbild-Hintergrund, mit
-   einem Verlauf abgedunkelt, damit die grosse weisse Zahl darüber lesbar
-   bleibt. Auf schmalen Hochformat-Screens greift der eigene Mobil-Crop
-   (siehe js/gaming-intro-film.js MQ_SM), damit dasselbe 9:16-Bildausschnitt-
-   prinzip wie beim Film selbst gilt statt eines verzerrten Desktop-Bilds. */
-.gs-ch--number {
-  background-color: var(--void);
-  background-image:
-    linear-gradient(180deg, rgba(5,6,10,.5), rgba(5,6,10,.78) 60%, var(--void) 100%),
-    url("../assets/gaming-intro/frames/f_0240.webp");
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  text-align: center;
-}
-@media (max-width: 760px) and (orientation: portrait) {
-  .gs-ch--number {
-    background-image:
-      linear-gradient(180deg, rgba(5,6,10,.5), rgba(5,6,10,.78) 60%, var(--void) 100%),
-      url("../assets/gaming-intro/frames-sm/f_0240.webp");
-  }
-}
-/* Die beiden folgenden Schwaden liegen jetzt zusätzlich als farbige Akzente
-   über dem Standbild statt allein zu tragen. z-index unter .gs-wrap (3),
-   damit die Zahl darüber bleibt. */
-.gs-ch--number::before, .gs-ch--number::after {
-  content: ""; position: absolute; z-index: 0; pointer-events: none;
-  border-radius: 50%;
-}
-.gs-ch--number::before {
-  width: 85vmax; height: 85vmax; left: -22vmax; top: -32vmax;
-  background: radial-gradient(circle, rgba(255,164,61,.17), transparent 62%);
-  animation: gs-haze-a 26s ease-in-out infinite alternate;
-}
-.gs-ch--number::after {
-  width: 75vmax; height: 75vmax; right: -26vmax; bottom: -34vmax;
-  background: radial-gradient(circle, rgba(34,224,214,.14), transparent 62%);
-  animation: gs-haze-b 34s ease-in-out infinite alternate;
-}
-@keyframes gs-haze-a { to { transform: translate3d(6vmax, 4vmax, 0); } }
-@keyframes gs-haze-b { to { transform: translate3d(-5vmax, -6vmax, 0); } }
-@media (prefers-reduced-motion: reduce) {
-  .gs-ch--number::before, .gs-ch--number::after { animation: none; }
-}
-body.gs-still .gs-ch--number::before, body.gs-still .gs-ch--number::after { animation: none; }
+/* Kapitel 1 — Die Zahl.
+   Liegt seit dem Umbau nicht mehr als eigene Sektion mit eigenem Hintergrund
+   hier, sondern als .gs-beat--stats direkt im Film (siehe oben) — den
+   sichtbaren Hintergrund liefert dort automatisch das Kernbild selbst, auf
+   dem der Film in seiner Haltezone stehen bleibt. Die folgenden Regeln
+   gestalten nur noch die Zahl selbst, nicht mehr ihren Hintergrund. */
 .gs-huge {
   position: relative;
   font-family: "Anton", sans-serif;

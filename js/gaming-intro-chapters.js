@@ -57,9 +57,17 @@
     return wheels;
   }
 
+  // Die Zahl liegt seit dem Umbau nicht mehr in einer eigenen gescrollten
+  // Sektion, sondern als .gs-beat--stats direkt im gepinnten Film (siehe
+  // visuals.html). Ein ScrollTrigger mit start/end-Positionen ergaebe dort
+  // keinen Sinn mehr — stattdessen treibt derselbe Fortschrittswert die
+  // Walzen an, den auch die Beat-Ein-/Ausblendung selbst benutzt
+  // (js/gaming-intro-film.js progress()), gelesen aus den data-in/data-peak-
+  // Attributen desselben Beat-Elements, damit beide exakt im selben Fenster
+  // ablaufen.
   function counter() {
     var el = document.getElementById("total-hours");
-    if (!el) return;
+    if (!el || !window.GS_FILM) return;
     var target = parseInt(el.getAttribute("data-target"), 10) || 0;
     var full = target.toLocaleString("de-DE");
     var wheels = buildOdometer(el, full);
@@ -68,7 +76,7 @@
 
     function place(p) {
       for (var i = 0; i < n; i++) {
-        // Die linkeste Walze rastet bei 70% des Scrollwegs ein, die
+        // Die linkeste Walze rastet bei 70% des lokalen Fensters ein, die
         // rechteste erst bei 100% — daraus entsteht der gestaffelte
         // Kilometerzähler-Eindruck statt fünf Walzen, die gleichzeitig stoppen.
         var settleAt = 0.70 + 0.30 * (i / Math.max(1, n - 1));
@@ -79,16 +87,28 @@
       }
     }
 
-    var obj = { p: 0 };
-    gsap.to(obj, {
-      p: 1, ease: "none",
-      scrollTrigger: { trigger: "#ch-number", start: "top 80%", end: "center 55%", scrub: 0.6 },
-      onUpdate: function () { place(obj.p); },
-      onComplete: function () {
-        for (var i = 0; i < n; i++) {
-          wheels[i].strip.style.transform = "translateY(" + (-(wheels[i].L - 1)) + "em)";
-        }
-      }
+    var beat = document.getElementById("beat-bilanz");
+    var inAt = beat ? parseFloat(beat.getAttribute("data-in")) : 0.88;
+    var peakAt = beat ? parseFloat(beat.getAttribute("data-peak")) : 1;
+
+    var running = false;
+    function loop() {
+      if (!running) return;
+      var p = window.GS_FILM.progress();
+      var local = gsap.utils.clamp(0, 1, (p - inAt) / Math.max(1e-4, peakAt - inAt));
+      place(local);
+      requestAnimationFrame(loop);
+    }
+    function start() { if (running) return; running = true; requestAnimationFrame(loop); }
+    function stop() { running = false; }
+
+    // Nur waehrend der Film ueberhaupt im Bild ist — danach steht die Zahl
+    // ohnehin fertig eingerastet, ein weiterlaufender Takt waere reine
+    // Verschwendung (derselbe Grund, aus dem filmInType()/field() unten
+    // genauso gegated sind).
+    ScrollTrigger.create({
+      trigger: "#film", start: "top bottom", end: "bottom top",
+      onToggle: function (self) { if (self.isActive) start(); else stop(); }
     });
   }
 

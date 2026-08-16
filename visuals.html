@@ -50,15 +50,18 @@
       <div class="gs-beat gs-beat--mid" data-in="0.55" data-peak="0.68" data-out="0.82">
         <p class="gs-line">Alles, was einen Save-State hinterlassen hat.</p>
       </div>
+      <!-- Die Bilanz war frueher eine eigene Sektion nach dem Film; jetzt liegt
+           sie als dritter Beat direkt auf dem Kern-Bild, mit dem der Film in
+           seiner Haltezone endet — kein Sektionswechsel mehr, die Zahl blendet
+           einfach auf demselben Standbild ein. data-out liegt bewusst ueber 1:
+           progress() klemmt bei 1, der Beat soll waehrend der gesamten
+           Haltezone voll sichtbar bleiben statt wieder auszublenden. -->
+      <div class="gs-beat gs-beat--stats" id="beat-bilanz" data-in="0.88" data-peak="1" data-out="2">
+        <p class="gs-eyebrow">Bilanz</p>
+        <div class="gs-huge" id="total-hours">0</div>
+        <p class="gs-under">Stunden. In <span id="total-games">0</span> Welten.</p>
+      </div>
       <div class="gs-stage-fade" aria-hidden="true"></div>
-    </div>
-  </section>
-
-  <section class="gs-ch gs-ch--number" id="ch-number" data-chapter="BILANZ">
-    <div class="gs-wrap">
-      <p class="gs-eyebrow">Bilanz</p>
-      <div class="gs-huge" id="total-hours">0</div>
-      <p class="gs-under">Stunden. In <span id="total-games">0</span> Welten.</p>
     </div>
   </section>
 
