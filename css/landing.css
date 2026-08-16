@@ -158,10 +158,11 @@ body { background: var(--hero-bg); }
 /* ---------- Übergangs-Naht zwischen zwei Sektionen ---------- */
 /* Eigenständiges Element zwischen zwei .story-Sektionen statt eines Bleeds über den
    Sektionsrand hinaus — .story hat overflow:hidden, ein überlappendes Element würde also
-   abgeschnitten. Grundzustand (kein JS / prefers-reduced-motion): ein statischer
-   Verlauf über die volle Nahthöhe. Mit JS (siehe setupSectionSeams() in landing.js)
-   bekommt .seam-band die Klasse .is-live: die Blendzone wandert dann beim Durchscrollen
-   der Naht von unten nach oben durch, gesteuert über die Custom Property --p (0–1). */
+   abgeschnitten. Jede Naht bekommt eine zur jeweiligen Sektion passende Trennlinie statt
+   eines generischen Verlaufs: die Textur beider Nachbar-Sektionen (dieselben
+   background-image-Werte wie .story-bg) wird reproduziert, damit die Naht die Atmosphäre
+   fortsetzt statt sie zu unterbrechen. .seam-fg liegt oben und ist per clip-path/Höhe zur
+   Trennlinie geformt, .seam-bg liegt darunter und scheint durch die Aussparung hindurch. */
 .section-seam {
   position: relative;
   height: 12vh;
@@ -169,26 +170,88 @@ body { background: var(--hero-bg); }
   overflow: hidden;
   pointer-events: none;
 }
-.seam-band {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, var(--seam-from), var(--seam-to));
+.seam-layer { position: absolute; inset: 0; }
+.seam-bg { z-index: 1; }
+.seam-fg { z-index: 2; }
+.seam-trace { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; }
+
+.seam-tex-hero {
+  background-color: var(--hero-bg);
+  background-image:
+    radial-gradient(60% 50% at 50% 100%, rgba(51,231,255,.14), transparent 70%),
+    radial-gradient(40% 35% at 12% 15%, rgba(194,100,255,.10), transparent 70%);
 }
-.seam-band.is-live {
-  --p: 0;
-  background: linear-gradient(
-    to bottom,
-    var(--seam-from) 0%,
-    var(--seam-from) calc(78% - (var(--p) * 80%)),
-    var(--seam-to) calc(102% - (var(--p) * 80%)),
-    var(--seam-to) 100%
-  );
+.seam-tex-gaming {
+  background-color: var(--gaming-bg);
+  background-image:
+    linear-gradient(rgba(51,231,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(51,231,255,.06) 1px, transparent 1px),
+    radial-gradient(55% 40% at 15% 20%, rgba(194,100,255,.12), transparent 70%),
+    radial-gradient(45% 35% at 90% 85%, rgba(51,231,255,.08), transparent 70%);
+  background-size: 42px 42px, 42px 42px, auto, auto;
+}
+.seam-tex-cycling {
+  background-color: var(--cycling-paper);
+  background-image:
+    radial-gradient(50% 40% at 85% 15%, rgba(212,90,34,.10), transparent 70%),
+    radial-gradient(40% 30% at 10% 90%, rgba(92,122,82,.10), transparent 70%);
+}
+.seam-tex-raya {
+  background-color: var(--raya-paper);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='%23C98572' fill-opacity='0.14'%3E%3Cg transform='translate(4,2) rotate(-15) scale(0.55)'%3E%3Cellipse cx='20' cy='27' rx='9' ry='7'/%3E%3Cellipse cx='8' cy='15' rx='4' ry='5' transform='rotate(-25 8 15)'/%3E%3Cellipse cx='16' cy='8' rx='4' ry='5.2' transform='rotate(-8 16 8)'/%3E%3Cellipse cx='25' cy='8' rx='4' ry='5.2' transform='rotate(8 25 8)'/%3E%3Cellipse cx='33' cy='15' rx='4' ry='5' transform='rotate(25 33 15)'/%3E%3C/g%3E%3Cg transform='translate(80,72) rotate(24) scale(0.42)' fill-opacity='0.11'%3E%3Cellipse cx='20' cy='27' rx='9' ry='7'/%3E%3Cellipse cx='8' cy='15' rx='4' ry='5' transform='rotate(-25 8 15)'/%3E%3Cellipse cx='16' cy='8' rx='4' ry='5.2' transform='rotate(-8 16 8)'/%3E%3Cellipse cx='25' cy='8' rx='4' ry='5.2' transform='rotate(8 25 8)'/%3E%3Cellipse cx='33' cy='15' rx='4' ry='5' transform='rotate(25 33 15)'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(55% 45% at 50% 0%, rgba(201,133,114,.12), transparent 70%),
+    radial-gradient(35% 30% at 85% 85%, rgba(201,133,114,.08), transparent 70%);
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.seam-tex-unbesiegbar {
+  background-image:
+    radial-gradient(50% 40% at 20% 10%, rgba(255,201,74,.16), transparent 45%),
+    radial-gradient(55% 45% at 80% 85%, rgba(255,62,165,.18), transparent 50%),
+    linear-gradient(160deg, var(--ub-deep), var(--ub-mid) 60%, #170a2b);
 }
 
-.seam-hero-gaming      { --seam-from: var(--hero-bg);       --seam-to: var(--gaming-bg); }
-.seam-gaming-cycling   { --seam-from: var(--gaming-bg);     --seam-to: var(--cycling-paper); }
-.seam-cycling-raya     { --seam-from: var(--cycling-paper); --seam-to: var(--raya-paper); }
-.seam-raya-unbesiegbar { --seam-from: var(--raya-paper);    --seam-to: var(--ub-deep); }
+/* -- 1: Glitch-Riss (Hero -> Gaming) -- ein gezackter Signalabriss mit Farbversatz */
+.seam--glitch .seam-fg {
+  clip-path: polygon(0 0, 100% 0, 100% 42%, 90% 46%, 80% 39%, 70% 47%, 60% 40%, 50% 46%, 40% 39%, 30% 47%, 20% 40%, 10% 45%, 0 41%);
+}
+.seam--glitch .seam-trace polyline { fill: none; stroke: var(--gaming-cyan); stroke-width: .6; opacity: .85; filter: drop-shadow(0 0 2px var(--gaming-cyan)); }
+.seam-slice { position: absolute; left: 0; right: 0; height: 3px; mix-blend-mode: screen; z-index: 3; opacity: .5; }
+.seam-slice--cyan { top: 39%; background: var(--gaming-cyan); transform: translateX(-5px); }
+.seam-slice--pink { top: 44%; background: var(--gaming-magenta); transform: translateX(4px); }
+
+/* -- 2: Straßenlinie (Gaming -> Radfahren) -- Fahrbahnmarkierung IST die Grenze, geschwungen */
+.seam--road .seam-fg {
+  clip-path: polygon(0 0, 100% 0, 100% 41.2%, 96.4% 37.9%, 92.8% 35.2%, 89.2% 33%, 85.5% 31.4%, 81.8% 30.4%, 78% 30%, 74.1% 30.3%, 70% 31.3%, 65.8% 33.1%, 61.5% 35.6%, 57% 39%, 52.4% 43.2%, 47.7% 46.9%, 43.2% 48.9%, 38.8% 49.6%, 34.6% 49.2%, 30.4% 48.2%, 26.2% 47%, 22% 45.9%, 17.8% 45.3%, 13.5% 45.6%, 9.2% 47%, 4.7% 50%, 0 55%);
+}
+.seam--road .seam-trace .road-bed { fill: none; stroke: #2A2620; stroke-width: 3; opacity: .35; }
+.seam--road .seam-trace .road-line { fill: none; stroke: var(--cycling-clay); stroke-width: 1; stroke-dasharray: 3 2.5; }
+
+/* -- 3: Genähte Linie (Radfahren -> Raya) -- Fotobuch-Bindung */
+.seam--stitch .seam-fg { height: 50%; }
+.seam--stitch .seam-bg { top: 50%; height: 50%; }
+.seam--stitch .stitch-line {
+  position: absolute; top: calc(50% - 1px); left: 0; right: 0; height: 2px; z-index: 3;
+  background-image: repeating-linear-gradient(90deg, var(--raya-blush) 0 10px, transparent 10px 18px);
+}
+.seam--stitch .stitch-ticks {
+  position: absolute; top: calc(50% - 6px); left: 0; right: 0; height: 12px; z-index: 3;
+  background-image: repeating-linear-gradient(115deg, transparent 0 12px, color-mix(in srgb, var(--raya-blush) 55%, transparent) 12px 13px, transparent 13px 26px);
+}
+
+/* -- 4: Kristalline Bruchkante (Raya -> Unbesiegbar) -- Level-up-Screen-Crack */
+.seam--crack .seam-fg {
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 78% 40%, 60% 58%, 42% 38%, 24% 60%, 8% 42%, 0 52%);
+}
+.seam--crack .seam-trace polyline { fill: none; stroke: var(--ub-gold); stroke-width: .7; opacity: .9; filter: drop-shadow(0 0 3px var(--ub-gold)); }
+.seam-shard {
+  position: absolute; width: 12px; height: 12px; z-index: 3;
+  background: linear-gradient(135deg, var(--ub-gold-bright), var(--ub-pink));
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  opacity: .8; filter: drop-shadow(0 0 4px rgba(255,201,74,.6));
+}
+.seam-shard--1 { top: 33%; left: 44%; transform: rotate(12deg) scale(0.9); }
+.seam-shard--2 { top: 52%; left: 68%; transform: rotate(-18deg) scale(0.6); }
 
 /* ---------- Parallax-Hintergrund je Kapitel ---------- */
 .story-bg {

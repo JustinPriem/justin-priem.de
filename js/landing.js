@@ -197,52 +197,9 @@ function setupProgressBar() {
   );
 }
 
-// ---------- Übergangs-Naht zwischen zwei Sektionen ----------
-// Verschiebt die Blendzone im Gradienten jeder .seam-band-Fläche beim Durchscrollen von
-// unten nach oben (siehe .seam-band.is-live in landing.css). Ohne JS oder bei
-// prefers-reduced-motion bleibt die CSS-Grundform stehen: ein statischer Verlauf über
-// die volle Nahthöhe, ohne aufdringlich zu wirken — bewusst kein hartes Aus/Einblenden.
-
-function setupSectionSeams() {
-  if (prefersReducedMotion) return;
-
-  const seams = Array.from(document.querySelectorAll(".section-seam")).map((seam) => ({
-    seam,
-    band: seam.querySelector(".seam-band"),
-  }));
-  if (!seams.length) return;
-
-  seams.forEach(({ band }) => band?.classList.add("is-live"));
-
-  let ticking = false;
-
-  function update() {
-    const viewportH = window.innerHeight;
-    seams.forEach(({ seam, band }) => {
-      if (!band) return;
-      const rect = seam.getBoundingClientRect();
-      const raw = (viewportH - rect.top) / (viewportH + rect.height);
-      const p = Math.min(1, Math.max(0, raw));
-      band.style.setProperty("--p", p.toFixed(3));
-    });
-    ticking = false;
-  }
-
-  update();
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (!ticking) {
-        requestAnimationFrame(update);
-        ticking = true;
-      }
-    },
-    { passive: true }
-  );
-  window.addEventListener("resize", update);
-}
-
 // ---------- Dezenter Parallax-Effekt auf den Kapitel-Hintergründen ----------
+// (Die Übergangs-Nähte zwischen den Sektionen — Glitch-Riss, Straßenlinie, genähte
+// Linie, Bruchkante — sind reines CSS/SVG ohne JS, siehe .section-seam in landing.css.)
 
 function setupParallax() {
   if (prefersReducedMotion) return;
@@ -357,7 +314,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupSectionParticles();
   setupScrollStory();
   setupProgressBar();
-  setupSectionSeams();
   setupParallax();
   setupMagnetic(".story-cta", 0.25, 8);
   setupCursorTrails();
