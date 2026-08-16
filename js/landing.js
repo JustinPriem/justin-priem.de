@@ -98,16 +98,12 @@ const THEME_PULSE_COLORS = {
   unbesiegbar: "#ffc94a",
 };
 
-// Partikelfarben pro Sektion — helle Töne auf den dunklen Hero-/Gaming-/Unbesiegbar-
-// Hintergründen, dunklere/kontrastreichere Töne auf den hellen Papier-Hintergründen
-// von Radfahren und Raya (sonst kaum sichtbar). Siehe docs/superpowers/specs/2026-08-16-hero-particle-field-design.md
-const THEME_PARTICLE_COLORS = {
-  hero: ["#33E7FF", "#C264FF", "#ECEAE3"],
-  gaming: ["#33E7FF", "#C264FF", "#ECEAE3"],
-  cycling: ["#D45A22", "#5C7A52"],
-  raya: ["#C98572", "#8B8577"],
-  unbesiegbar: ["#ffc94a", "#ff3ea5", "#fff8ec"],
-};
+// Einheitliche, feste Partikelfarben für die ganze Seite — bewusst NICHT an die
+// Sektionsfarben gekoppelt (Nutzerwunsch: statisch, reagiert nicht auf Scroll-Position).
+// Vivide, mittelhelle Töne gewählt, die sowohl auf den dunklen Hero-/Gaming-/Unbesiegbar-
+// Hintergründen als auch auf den hellen Papier-Hintergründen von Radfahren/Raya noch gut
+// lesbar bleiben.
+const SITE_PARTICLE_COLORS = ["#33E7FF", "#C264FF", "#ff3ea5"];
 
 function triggerThemePulse(theme) {
   const pulse = document.getElementById("theme-pulse");
@@ -124,14 +120,14 @@ function setupSiteParticles() {
   const container = document.getElementById("site-particles");
   if (!container || typeof createParticleField !== "function") return null;
   return createParticleField(container, {
-    colors: THEME_PARTICLE_COLORS.hero,
+    colors: SITE_PARTICLE_COLORS,
     interactive: true,
   });
 }
 
 // ---------- Scroll-Story: Reveal, Zähler, Quicknav-Theme ----------
 
-function setupScrollStory(particleField) {
+function setupScrollStory() {
   const nav = document.getElementById("quicknav");
   const sections = document.querySelectorAll(".story");
   const navLinks = document.querySelectorAll(".qn-links a");
@@ -147,10 +143,7 @@ function setupScrollStory(particleField) {
           link.classList.toggle("is-active", link.dataset.section === theme)
         );
         // Nicht beim ersten Laden pulsieren, nur bei einem echten Kapitelwechsel
-        if (lastTheme !== null && theme !== lastTheme) {
-          triggerThemePulse(theme);
-          particleField?.setColors(THEME_PARTICLE_COLORS[theme]);
-        }
+        if (lastTheme !== null && theme !== lastTheme) triggerThemePulse(theme);
         lastTheme = theme;
       });
     },
@@ -314,8 +307,8 @@ document.addEventListener("DOMContentLoaded", () => {
   fillGamingTeaser(GAMES);
   fillCyclingTeaser(TOURS);
   fillRayaTeaser(RAYA_PHOTOS);
-  const particleField = setupSiteParticles();
-  setupScrollStory(particleField);
+  setupSiteParticles();
+  setupScrollStory();
   setupProgressBar();
   setupParallax();
   setupMagnetic(".story-cta", 0.25, 8);

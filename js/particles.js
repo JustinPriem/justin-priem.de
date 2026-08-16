@@ -1,6 +1,6 @@
 // ---------- Wiederverwendbares Canvas-Partikelfeld ----------
 // Kein Fluid-Solver, sondern zwei überlagerte Bewegungen pro Partikel:
-// eine ambiente Sinus-Drift plus eine gedämpfte Anziehung zum Mauszeiger.
+// eine ambiente Sinus-Drift plus eine gedämpfte Abstoßung vom Mauszeiger.
 // Rendering per vorgerendertem Sprite (kein shadowBlur, siehe getSprite()).
 //
 // Nutzung: const field = createParticleField(containerEl, { colors, density, interactive });
@@ -33,9 +33,21 @@ function createParticleField(container, options = {}) {
 
   // ---- Sprite-Vorrender: ein Radial-Gradient-Sprite pro Grundfarbe ----
   // Ersetzt Live-Glow via shadowBlur (teuer) durch einmal vorgerechnete Sprites,
-  // die pro Partikel nur noch per drawImage() gezeichnet werden.
-  const SPRITE_SIZE = 32;
+  // die pro Partikel nur noch per drawImage() gezeichnet werden. Dreistufiger
+  // Verlauf (aufgehelltes Zentrum → volle Farbe → transparent) statt eines flachen
+  // Farbpunkts, für einen glühenden Glint-Look statt schlichter Kreise.
+  const SPRITE_SIZE = 48;
   const spriteCache = new Map();
+
+  function lighten(hexColor, amount) {
+    const n = parseInt(hexColor.slice(1), 16);
+    const r = (n >> 16) & 255;
+    const g = (n >> 8) & 255;
+    const b = n & 255;
+    const mix = (c) => Math.round(c + (255 - c) * amount);
+    return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
+  }
+
   function getSprite(hexColor) {
     let sprite = spriteCache.get(hexColor);
     if (sprite) return sprite;
@@ -45,7 +57,8 @@ function createParticleField(container, options = {}) {
     const sctx = sprite.getContext("2d");
     const r = SPRITE_SIZE / 2;
     const grad = sctx.createRadialGradient(r, r, 0, r, r, r);
-    grad.addColorStop(0, hexColor);
+    grad.addColorStop(0, lighten(hexColor, 0.72));
+    grad.addColorStop(0.32, hexColor);
     grad.addColorStop(1, `${hexColor}00`); // 8-stelliges Hex mit Alpha 0 = transparent
     sctx.fillStyle = grad;
     sctx.beginPath();
@@ -74,8 +87,8 @@ function createParticleField(container, options = {}) {
       phaseY: Math.random() * Math.PI * 2,
       twinkleFreq: 0.5 + Math.random() * 0.7,
       twinklePhase: Math.random() * Math.PI * 2,
-      size: 2 + depth * 3.6,
-      baseAlpha: 0.3 + depth * 0.45,
+      size: 2.4 + depth * 4.6,
+      baseAlpha: 0.35 + depth * 0.5,
       offsetX: 0,
       offsetY: 0,
       colorIdx: Math.floor(Math.random() * 8),
@@ -85,7 +98,7 @@ function createParticleField(container, options = {}) {
   }
 
   function targetParticleCount() {
-    return clamp(Math.round((width * height) / 24000), 40, 70);
+    return clamp(Math.round((width * height) / 7000), 90, 260);
   }
 
   function ensureParticleCount() {
@@ -126,16 +139,22 @@ function createParticleField(container, options = {}) {
 
   function updatePull(p, ambientX, ambientY) {
     if (hasFineCursor && config.interactive && pointer.active) {
-      const dx = pointer.x - ambientX;
-      const dy = pointer.y - ambientY;
+      // Richtungsvektor WEG vom Zeiger (Abstoßung statt Anziehung), normiert und auf
+      // eine begrenzte Schub-Distanz skaliert — bleibt auch dicht am Zeiger stabil,
+      // statt bei kleinem Abstand numerisch zu "explodieren".
+      const dx = ambientX - pointer.x;
+      const dy = ambientY - pointer.y;
       const dist = Math.hypot(dx, dy) || 1;
-      const radius = 170;
+      const radius = 190;
       if (dist < radius) {
         const strength = 1 - dist / radius;
-        const targetX = dx * strength * 0.9;
-        const targetY = dy * strength * 0.9;
-        p.offsetX += (targetX - p.offsetX) * 0.09;
-        p.offsetY += (targetY - p.offsetY) * 0.09;
+        const nx = dx / dist;
+        const ny = dy / dist;
+        const pushDistance = strength * 120;
+        const targetX = nx * pushDistance;
+        const targetY = ny * pushDistance;
+        p.offsetX += (targetX - p.offsetX) * 0.12;
+        p.offsetY += (targetY - p.offsetY) * 0.12;
         return;
       }
     }

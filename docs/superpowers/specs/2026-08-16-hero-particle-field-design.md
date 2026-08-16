@@ -14,6 +14,11 @@ Hero, das Herz-Feld bei Raya, das Kronen-Feld bei Unbesiegbar, die Straßen-SVG 
 unverändert. Der neue Partikel-Layer kommt als eigenständige Ebene obendrauf, sichtbar über die gesamte Startseite
 hinweg (Hero + alle vier Story-Sektionen).
 
+**Revision nach erstem Deploy (Live-Feedback):** Vier Nachjustierungen — deutlich höhere Partikeldichte, ein
+"cooleres" Sprite mit hellerem Kern statt flachem Farbpunkt, **Abstoßung statt Anziehung** vom Cursor, und eine
+**einheitliche, feste Farbpalette statt Farbwechsel pro Sektion** (der Nutzer wollte, dass die Partikel nicht auf
+die Scroll-Position reagieren). Die betroffenen Abschnitte unten sind entsprechend aktualisiert.
+
 ## Architektur
 
 Neues Modul **`js/particles.js`**, unabhängig von `landing.js`, exportiert eine Fabrik-Funktion:
@@ -49,10 +54,11 @@ Kein echter Fluid-Solver, sondern zwei überlagerte Bewegungskomponenten pro Par
 
 1. **Ambiente Drift** — langsame, individuelle Sinus-Wanderung (Phase und Frequenz pro Partikel zufällig versetzt),
    damit sich das Feld organisch statt synchron bewegt.
-2. **Cursor-Anziehung** (nur bei `hasFineCursor`) — Partikel innerhalb eines Anziehungsradius um die Cursor-Position
-   werden sanft in Richtung Cursor gezogen, mit einem Mindestabstand, damit sie nicht übereinander stapeln. Verlässt
-   der Cursor den Radius bzw. bewegt er sich weiter, federn die Partikel gedämpft zurück in ihre Drift-Bahn. Gilt
-   über die ganze Seite hinweg, nicht nur im Hero.
+2. **Cursor-Abstoßung** (nur bei `hasFineCursor`) — Partikel innerhalb eines Abstoßungsradius um die Cursor-Position
+   werden entlang des normierten Richtungsvektors vom Cursor weg geschoben (Schub-Distanz begrenzt, damit es auch
+   direkt am Cursor stabil bleibt statt numerisch zu "explodieren"). Verlässt der Cursor den Radius bzw. bewegt er
+   sich weiter, federn die Partikel gedämpft zurück in ihre Drift-Bahn. Gilt über die ganze Seite hinweg, nicht nur
+   im Hero.
 
 **Tiefe statt reiner Zufallsstreuung:** Jedes Partikel bekommt beim Erzeugen einen zufälligen Tiefenwert (0–1), von
 dem Größe, Drift-Geschwindigkeit und Deckkraft gemeinsam abhängen — Partikel mit niedriger Tiefe sind kleiner,
@@ -60,33 +66,30 @@ langsamer und dezenter (wirken "weiter hinten"), Partikel mit hoher Tiefe größ
 Ergibt ein räumlicheres Feld statt komplett unabhängig gewürfelter Werte. Zusätzlich ein leichtes Sinus-Twinkle auf
 der Deckkraft pro Partikel (eigene Phase), statt konstanter Alpha.
 
-**Rendering — vorgerendertes Sprite statt Live-Glow:** Ein einzelnes ~32px-Radial-Gradient-Sprite pro Grundfarbe
+**Rendering — vorgerendertes Sprite statt Live-Glow:** Ein einzelnes ~48px-Radial-Gradient-Sprite pro Grundfarbe
 wird einmalig auf einen Offscreen-Canvas gezeichnet; jedes Partikel wird pro Frame nur noch per `drawImage()`
 dieses Sprites gezeichnet (skaliert nach Tiefe/Größe), nicht per `arc()` + `fill()` + `shadowBlur`.
-`shadowBlur` wird bewusst nicht verwendet — bei 40–70 Partikeln pro Frame ist das spürbar teurer als ein simples
-Sprite-Blit und bringt bei diesem Effekt keinen sichtbaren Zusatznutzen.
+`shadowBlur` wird bewusst nicht verwendet — bei der hohen Partikelzahl pro Frame (siehe Dichte unten) ist das
+spürbar teurer als ein simples Sprite-Blit. Für einen "coolen", glühenden Glint-Look statt flacher Farbpunkte hat
+das Sprite einen dreistufigen Verlauf (aufgehelltes Zentrum → volle Grundfarbe → transparent) statt einer
+einfachen Farbe-zu-transparent-Stufe.
 
-### Farbverlauf passend zur Sektion
+### Feste, einheitliche Farbpalette
 
-Die Seite hat pro Sektion schon ein Farbthema (`THEME_PULSE_COLORS` in `js/landing.js:93`, gesteuert über den
-bestehenden `themeObserver`, der beim Scrollen erkennt, welche `.story`-Sektion gerade sichtbar ist). Der
-Partikel-Layer zieht mit, **inklusive Kontrastanpassung** für helle vs. dunkle Sektions-Hintergründe:
+**Änderung nach Live-Feedback:** ursprünglich war ein Farbwechsel pro sichtbarer Sektion geplant (gekoppelt an
+den bestehenden `themeObserver`). Der Nutzer wollte stattdessen ein Feld, das **nicht auf die Scroll-Position
+reagiert** — die Partikel behalten durchgehend dieselbe Palette: `#33E7FF` Cyan, `#C264FF` Magenta, `#ff3ea5`
+Pink (definiert als `SITE_PARTICLE_COLORS` in `js/landing.js`). Diese drei Töne sind bewusst vivide und
+mittelhell gewählt, damit sie sowohl auf den dunklen Hero-/Gaming-/Unbesiegbar-Hintergründen als auch auf den
+helleren Papier-Hintergründen von Radfahren/Raya noch lesbar bleiben — ein reiner Kompromiss, da ohne
+Sektionskopplung keine Hintergrund-genaue Kontrastanpassung mehr möglich ist. Der `setColors()`-Mechanismus im
+Modul (Cross-Fade zwischen zwei Paletten) bleibt für spätere Wiederverwendung erhalten, wird aber auf
+`index.html` aktuell nicht aufgerufen.
 
-| Sektion | Hintergrund | Partikel-Palette |
-|---|---|---|
-| Hero / Gaming | dunkel (`#12121A`) | `#33E7FF` Cyan, `#C264FF` Magenta, `#ECEAE3` Off-White |
-| Radfahren | hell (`#F6F3EC` Papier) | `#D45A22` Lehm, `#5C7A52` Moos |
-| Raya | hell (`#FAF7F2` Papier) | `#C98572` Blush, `#8B8577` gedämpftes Braun |
-| Unbesiegbar | dunkel (`#1a0a2e`) | `#ffc94a` Gold, `#ff3ea5` Pink, `#fff8ec` Creme |
-
-Grund: dieselben hellen Hero-Töne wären auf den hellen Papier-Hintergründen von Radfahren/Raya kaum sichtbar —
-für diese Sektionen werden stattdessen dunklere, kontrastreiche Farben aus deren eigener Palette verwendet.
-
-Der Wechsel läuft nicht abrupt, sondern wird beim Sektionswechsel sanft über- oder ausgeblendet (kurze
-Farb-Interpolation je Partikel, ähnlich der Interaktionsstärke bei bestehenden Übergängen auf der Seite).
-
-Dichte: an die Viewport-Fläche gekoppelt, aber gedeckelt (grob 40–70 Partikel), um GPU-Last und visuelle Unruhe zu
-begrenzen. Auf Geräten ohne feinen Zeiger (Touch) läuft nur die ambiente Drift, keine Pointer-Logik wird gebunden.
+Dichte: **deutlich erhöht** nach Live-Feedback — an die Viewport-Fläche gekoppelt, gedeckelt auf 90–260 Partikel
+(vorher 40–70), um auf großen Desktop-Viewports spürbar dichter zu wirken, ohne auf kleinen Viewports zu
+überladen. Auf Geräten ohne feinen Zeiger (Touch) läuft nur die ambiente Drift, keine Pointer-Logik wird
+gebunden.
 
 ## Integration & Fallbacks
 
@@ -106,9 +109,9 @@ begrenzen. Auf Geräten ohne feinen Zeiger (Touch) läuft nur die ambiente Drift
   - `prefers-reduced-motion: reduce` → Canvas wird gar nicht gestartet.
   - `hover: hover` and `pointer: fine` (`hasFineCursor`) → steuert nur, ob Pointer-Events gebunden werden; der
     Canvas selbst läuft unabhängig davon (ambient) weiter.
-- **Kopplung an `setupScrollStory()`:** Der bestehende `themeObserver` (der heute schon `nav.dataset.theme` setzt
-  und `triggerThemePulse(theme)` auslöst) ruft zusätzlich `particleField.setColors(...)` mit der zur Sektion
-  passenden Palette auf.
+- **Keine Kopplung an `setupScrollStory()`:** Das Partikelfeld wird einmalig mit der festen `SITE_PARTICLE_COLORS`-
+  Palette initialisiert und reagiert nicht auf den `themeObserver` — bewusste Entscheidung nach Live-Feedback
+  (siehe "Feste, einheitliche Farbpalette" oben).
 - **Performance:**
   - Da der Layer permanent im Viewport sichtbar ist (fixed), gibt es keinen `IntersectionObserver`-Pause-Mechanismus
     für die Sichtbarkeit selbst — stattdessen pausiert die Schleife über die `visibilitychange`-API, wenn der Tab
@@ -123,10 +126,10 @@ Keine automatisierte Test-Suite auf dieser Seite (reines HTML/CSS/JS, bisher aus
 Browser-Preview verifiziert — z. B. der magnetische CTA-Button, der Theme-Pulse). Verifikation manuell:
 
 1. **Sichtprüfung:** Startseite lädt, Partikel-Layer erscheint über allen Sektionen, driftet ambient.
-2. **Maus-Interaktion:** Cursor über verschiedene Sektionen bewegen → Partikel werden sanft angezogen, federn beim
+2. **Maus-Interaktion:** Cursor über verschiedene Sektionen bewegen → Partikel werden sanft abgestoßen, federn beim
    Wegbewegen zurück in ihre Drift-Bahn.
-3. **Farbwechsel:** Durch die Seite scrollen und prüfen, dass die Partikelfarbe beim Sektionswechsel sanft auf die
-   jeweilige Palette umblendet (inkl. Kontrast auf den hellen Radfahren-/Raya-Hintergründen).
+3. **Farbe bleibt konstant:** Durch die Seite scrollen und prüfen, dass die Partikelfarbe unverändert bleibt,
+   unabhängig davon, welche Sektion gerade sichtbar ist.
 4. **Reduced Motion:** `prefers-reduced-motion: reduce` in den DevTools simulieren → Canvas startet nicht, Seite
    sieht exakt wie vorher aus.
 5. **Touch/kein feiner Zeiger:** Viewport auf ein Mobile-Preset stellen → Partikel driften ambient, keine
@@ -135,7 +138,8 @@ Browser-Preview verifiziert — z. B. der magnetische CTA-Button, der Theme-Puls
    lesbar und normal klickbar (`pointer-events: none` greift).
 7. **Jank-Test:** Pro-Frame-`requestAnimationFrame`-Deltas über ~5s Beobachtung mitloggen (Konsole oder ein
    Debug-Zähler), **p95/max bewerten, nie den Durchschnitts-FPS-Wert** — ein Mittelwert von 60fps kann einzelne
-   80ms-Ruckler locker verstecken. Zielwert: max < 50ms, auch während Sektionswechsel/Farbüberblendung.
+   80ms-Ruckler locker verstecken. Zielwert: max < 50ms, auch bei der höheren Partikeldichte (90–260) und aktiver
+   Cursor-Abstoßung.
 8. **Resize:** Fenstergröße ändern → Canvas und Partikelverteilung bleiben stimmig, keine verzerrte/abgeschnittene
    Fläche.
 
