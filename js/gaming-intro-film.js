@@ -221,10 +221,15 @@
     ensureBitmaps(idx);
     draw(idx, false);
 
+    // Nur der Y-Drift kommt aus JS, per CSS-Variable — nicht der ganze
+    // transform. Der Bilanz-Beat braucht zusaetzlich eine horizontale
+    // Zentrierung (translateX(-50%)), die in seiner eigenen CSS-Regel steht;
+    // ein hier fest gesetztes style.transform wuerde das als Inline-Style
+    // JEDEN Takt ueberschreiben, egal was im Stylesheet steht.
     for (var i = 0; i < beats.length; i++) {
       var a = beatAlpha(beats[i], p);
       beats[i].style.opacity = a;
-      beats[i].style.transform = "translateY(" + (-50 + (1 - a) * 4) + "%)";
+      beats[i].style.setProperty("--gs-beat-drift", (-50 + (1 - a) * 4) + "%");
     }
 
     requestAnimationFrame(tick);

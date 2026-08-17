@@ -82,7 +82,12 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 .gs-poster.is-hidden { opacity: 0; }
 .gs-stage-fade { position: absolute; inset: auto 0 0 0; height: 30vh; opacity: 0; background: linear-gradient(to bottom, transparent, var(--void)); }
 
-.gs-beat { position: absolute; z-index: 3; left: 8vw; top: 50%; transform: translateY(-50%); max-width: 44rem; }
+/* --gs-beat-drift kommt aus js/gaming-intro-film.js (tick()) und traegt nur
+   den vertikalen Reveal-Versatz. Faellt kein JS-Wert, greift -50% als
+   Ruhezustand — dieselbe Zentrierung wie zuvor rein statisch. So kann jeder
+   Beat seine eigene horizontale Positionierung behalten (translateX), ohne
+   dass der Takt sie mit einem festen translateY() ueberschreibt. */
+.gs-beat { position: absolute; z-index: 3; left: 8vw; top: 50%; transform: translateY(var(--gs-beat-drift, -50%)); max-width: 44rem; }
 .gs-beat::before {
   content: ""; position: absolute; z-index: -1; inset: -70% -24% -70% -14%;
   background: radial-gradient(60% 58% at 24% 50%, rgba(5,6,10,.78), rgba(5,6,10,.4) 45%, transparent 78%);
@@ -102,7 +107,7 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
    runderen, kraeftigeren Schein dahinter — die grosse Zahl braucht mehr
    Abdunkelung als eine Zeile Fliesstext, sonst verschwimmt sie mit dem hellen
    Kernbild darunter. */
-.gs-beat--stats { left: 50%; right: auto; top: 50%; transform: translate(-50%, -50%); max-width: 50rem; text-align: center; }
+.gs-beat--stats { left: 50%; right: auto; top: 50%; transform: translate(-50%, var(--gs-beat-drift, -50%)); max-width: 50rem; text-align: center; }
 .gs-beat--stats::before { inset: -55% -35%; background: radial-gradient(62% 62% at 50% 50%, rgba(5,6,10,.82), rgba(5,6,10,.45) 48%, transparent 78%); }
 
 /* ---------- Kapitel, gemeinsam ---------- */
@@ -334,7 +339,11 @@ body.gs-still .gs-loader { display: none; }
 @media (max-width: 760px) {
   .gs-beat { left: 6vw; right: 6vw; max-width: none; }
   .gs-beat--mid { text-align: left; }
-  .gs-beat--stats { text-align: center; }
+  /* Ohne diese left/right-Ausnahme wuerde die Zeile darueber (.gs-beat
+     left:6vw; right:6vw) die Bilanz genauso links/rechts einspannen wie die
+     beiden Textzeilen — kombiniert mit translateX(-50%) aus der Basisregel
+     laege sie dann weit ausserhalb des Bildschirms statt mittig. */
+  .gs-beat--stats { left: 50%; right: auto; max-width: none; text-align: center; }
   .gs-run-track { padding: 0 6vw; }
 
   /* Kopfzeile: rechnete sich auf 11,5px herunter, jetzt lesbar. */
