@@ -198,8 +198,6 @@ function setupProgressBar() {
 }
 
 // ---------- Dezenter Parallax-Effekt auf den Kapitel-Hintergründen ----------
-// (Die Übergangs-Nähte zwischen den Sektionen — Glitch-Riss, Straßenlinie, genähte
-// Linie, Bruchkante — sind reines CSS/SVG ohne JS, siehe .section-seam in landing.css.)
 
 function setupParallax() {
   if (prefersReducedMotion) return;
