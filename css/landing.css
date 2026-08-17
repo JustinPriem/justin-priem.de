@@ -212,13 +212,17 @@ body { background: var(--hero-bg); }
 }
 
 /* -- 1: Glitch-Riss (Hero -> Gaming) -- ein gezackter Signalabriss mit Farbversatz */
-/* 40 statt 10 Punkte: bei voller Seitenbreite (~14:1 Breite:Höhe statt ~2,4:1 in der
-   Vorschau-Karte) macht ein grob gerastertes Zickzack praktisch eine gerade Linie —
-   erst die enge Zahnung bleibt bei jeder Viewport-Breite als Zacke erkennbar. */
+/* Treppen-/Block-Form statt diagonaler Zacken: bei ~14:1 Breite:Höhe (echte Nahtbreite)
+   wirkt JEDE diagonale Zacke flach, egal wie viele Punkte man setzt. Flache Segmente mit
+   fast senkrechten Sprüngen dazwischen bleiben dagegen bei jedem Seitenverhältnis als
+   klare Stufen erkennbar. Der Glow kommt jetzt per drop-shadow direkt auf dem geclippten
+   div (echte Box-Pixel) statt per SVG-Filter im gestreckten viewBox — Letzteres hat den
+   Blur bei preserveAspectRatio="none" nicht-uniform verzerrt (auf senkrechten Segmenten
+   ~12x breiter als auf waagerechten) und dadurch verschmiert statt sauber geglüht. */
 .seam--glitch .seam-fg {
-  clip-path: polygon(0 0, 100% 0, 100% 42.8%, 97.5% 42.1%, 95% 40.8%, 92.5% 41.1%, 90% 33%, 87.5% 40.2%, 85% 36.8%, 82.5% 43.8%, 80% 40.1%, 77.5% 36.8%, 75% 33.8%, 72.5% 42.1%, 70% 37.7%, 67.5% 34.6%, 65% 44.3%, 62.5% 46.5%, 60% 43.7%, 57.5% 33.6%, 55% 44.8%, 52.5% 36.9%, 50% 39.3%, 47.5% 44.8%, 45% 44.9%, 42.5% 45.6%, 40% 34.5%, 37.5% 36.6%, 35% 38.1%, 32.5% 42.4%, 30% 42.9%, 27.5% 47%, 25% 37%, 22.5% 36.2%, 20% 33.7%, 17.5% 35.1%, 15% 40.3%, 12.5% 42.7%, 10% 43.5%, 7.5% 42.8%, 5% 45.8%, 2.5% 40.3%, 0 41.2%);
+  clip-path: polygon(0 0, 100% 0, 100% 41%, 92% 41%, 92% 43%, 82% 43%, 82% 39%, 74% 39%, 74% 47%, 60% 47%, 60% 35%, 52% 35%, 52% 44%, 38% 44%, 38% 38%, 30% 38%, 30% 46%, 18% 46%, 18% 33%, 10% 33%, 10% 40%, 0 40%);
+  filter: drop-shadow(0 0 3px var(--gaming-cyan));
 }
-.seam--glitch .seam-trace polyline { fill: none; stroke: var(--gaming-cyan); stroke-width: .6; opacity: .85; filter: drop-shadow(0 0 2px var(--gaming-cyan)); }
 .seam-slice { position: absolute; left: 0; right: 0; height: 3px; mix-blend-mode: screen; z-index: 3; opacity: .5; }
 .seam-slice--cyan { top: 39%; background: var(--gaming-cyan); transform: translateX(-5px); }
 .seam-slice--pink { top: 44%; background: var(--gaming-magenta); transform: translateX(4px); }
@@ -243,11 +247,13 @@ body { background: var(--hero-bg); }
 }
 
 /* -- 4: Kristalline Bruchkante (Raya -> Unbesiegbar) -- Level-up-Screen-Crack */
-/* 22 statt 9 Punkte, aus demselben Grund wie beim Glitch-Riss (siehe dort). */
+/* Gleiches Prinzip wie beim Glitch-Riss (siehe dort), aber unregelmäßigere Blockbreiten
+   und größere Sprünge -- soll organischer/kantiger wirken als das regelmäßige HUD-Raster
+   des Glitch-Risses. */
 .seam--crack .seam-fg {
-  clip-path: polygon(0 0, 100% 0, 100% 49%, 95.5% 30.2%, 90.9% 53.2%, 86.4% 55.5%, 81.8% 59.4%, 77.3% 50.9%, 72.7% 30.4%, 68.2% 29%, 63.6% 41.1%, 59.1% 30%, 54.5% 61.8%, 50% 34.6%, 45.5% 35.1%, 40.9% 61.9%, 36.4% 30.5%, 31.8% 59.1%, 27.3% 57.6%, 22.7% 46%, 18.2% 50.9%, 13.6% 61.6%, 9.1% 46.4%, 4.5% 38.2%, 0 48.3%);
+  clip-path: polygon(0 0, 100% 0, 100% 58%, 88% 58%, 88% 35%, 72% 35%, 72% 75%, 58% 75%, 58% 30%, 40% 30%, 40% 68%, 22% 68%, 22% 22%, 8% 22%, 8% 50%, 0 50%);
+  filter: drop-shadow(0 0 4px var(--ub-gold));
 }
-.seam--crack .seam-trace polyline { fill: none; stroke: var(--ub-gold); stroke-width: .7; opacity: .9; filter: drop-shadow(0 0 3px var(--ub-gold)); }
 .seam-shard {
   position: absolute; width: 12px; height: 12px; z-index: 3;
   background: linear-gradient(135deg, var(--ub-gold-bright), var(--ub-pink));
