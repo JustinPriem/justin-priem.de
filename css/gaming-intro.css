@@ -107,7 +107,11 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
    runderen, kraeftigeren Schein dahinter — die grosse Zahl braucht mehr
    Abdunkelung als eine Zeile Fliesstext, sonst verschwimmt sie mit dem hellen
    Kernbild darunter. */
-.gs-beat--stats { left: 50%; right: auto; top: 50%; transform: translate(-50%, var(--gs-beat-drift, -50%)); max-width: 50rem; text-align: center; }
+/* max-width: none statt eines festen rem-Werts — die Zahl darf so breit
+   werden, wie sie bei aktueller Stundenzahl tatsaechlich ist (white-space:
+   nowrap auf .gs-huge verhindert den Umbruch); die eigentliche Begrenzung
+   passiert ueber deren eigenen font-size-clamp, nicht ueber diese Box. */
+.gs-beat--stats { left: 50%; right: auto; top: 50%; transform: translate(-50%, var(--gs-beat-drift, -50%)); max-width: none; text-align: center; }
 .gs-beat--stats::before { inset: -55% -35%; background: radial-gradient(62% 62% at 50% 50%, rgba(5,6,10,.82), rgba(5,6,10,.45) 48%, transparent 78%); }
 
 /* ---------- Kapitel, gemeinsam ---------- */
@@ -130,9 +134,15 @@ body.on-light .gs-progress { background: rgba(5,6,10,.3); }
 .gs-huge {
   position: relative;
   font-family: "Anton", sans-serif;
-  font-size: clamp(5rem, 24vw, 22rem); line-height: .82;
+  /* War clamp(5rem,24vw,22rem) — passte zur alten, eigenstaendigen Sektion mit
+     1100px breitem .gs-wrap. Als Beat auf dem Film braucht die Zahl eine
+     Groesse, die auf typischen Desktop-Breiten sicher in einer Zeile bleibt
+     (siehe white-space unten), auch wenn die Gesamtstundenzahl noch auf
+     sechs Stellen waechst. */
+  font-size: clamp(3.5rem, 13vw, 15rem); line-height: .82;
   color: #fff; letter-spacing: -.02em;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 /* Der warme Schein lag früher als text-shadow direkt auf den Ziffern —
    seit die Zahl aus Walzen mit overflow:hidden besteht, schnitt das den
