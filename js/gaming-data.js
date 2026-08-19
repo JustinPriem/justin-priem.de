@@ -326,7 +326,7 @@ const GAMES = [
     "title": "Fortnite",
     "genre": "Battle Royal",
     "status": "retired",
-    "hours": 260,
+    "hours": 534,
     "since": "2018",
     "rank": "",
     "rankPct": 0,
