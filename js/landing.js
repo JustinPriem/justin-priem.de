@@ -158,8 +158,10 @@ function setupSectionParticles() {
 
 function setupScrollStory() {
   const nav = document.getElementById("quicknav");
+  const sideNav = document.getElementById("side-nav");
   const sections = document.querySelectorAll(".story");
   const navLinks = document.querySelectorAll(".qn-links a");
+  const sideLinks = document.querySelectorAll(".side-nav a");
   let lastTheme = null;
 
   const themeObserver = new IntersectionObserver(
@@ -168,7 +170,11 @@ function setupScrollStory() {
         if (!entry.isIntersecting) return;
         const theme = entry.target.dataset.theme;
         nav.dataset.theme = theme;
+        if (sideNav) sideNav.dataset.theme = theme;
         navLinks.forEach((link) =>
+          link.classList.toggle("is-active", link.dataset.section === theme)
+        );
+        sideLinks.forEach((link) =>
           link.classList.toggle("is-active", link.dataset.section === theme)
         );
         // Nicht beim ersten Laden pulsieren, nur bei einem echten Kapitelwechsel
