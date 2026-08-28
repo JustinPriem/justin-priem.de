@@ -793,4 +793,12 @@ body { background: var(--hero-bg); }
   .qn-links { gap: .9rem; }
   .qn-links a { font-size: 0; gap: 0; }
   .qn-dot { width: 8px; height: 8px; }
+
+  /* Zwei statt einer Spalte, sonst wird die Karten-Sektion mit 12 Projekten auf
+     schmalen Bildschirmen unnötig lang (eine Bildschirmhöhe pro Karte). */
+  .project-grid { grid-template-columns: repeat(2, 1fr); gap: .7rem; }
+  .project-name { font-size: .82rem; }
+  .project-tag { font-size: .58rem; padding: .16rem .45rem; }
+  .project-url { font-size: .6rem; }
+  .project-meta { padding: .6rem .65rem .4rem; flex-wrap: wrap; }
 }

@@ -176,7 +176,11 @@ function setupScrollStory() {
         lastTheme = theme;
       });
     },
-    { threshold: 0.55 }
+    // Löst aus, sobald die Sektion die Viewport-Mitte kreuzt — funktioniert unabhängig
+    // von der Sektionshöhe (wichtig für die Projekte-Sektion, die auf schmalen
+    // Bildschirmen durch die einspaltige Kartenliste deutlich höher als 100svh wird
+    // und mit einem flächenbasierten Schwellwert wie 0.55 nie "sichtbar genug" wäre).
+    { threshold: 0, rootMargin: "-45% 0px -45% 0px" }
   );
   sections.forEach((section) => themeObserver.observe(section));
 
@@ -191,7 +195,11 @@ function setupScrollStory() {
         revealObserver.unobserve(inner);
       });
     },
-    { threshold: 0.3 }
+    // threshold 0 + rootMargin statt eines Flächen-Schwellwerts: löst zuverlässig aus,
+    // sobald der obere Teil des Elements in Sicht kommt — auch bei sehr hohen
+    // .story-inner-Elementen (z.B. die Projekte-Karten-Liste einspaltig auf Mobile),
+    // die mit einem Flächen-Schwellwert wie 0.3 nie ausreichend sichtbar wären.
+    { threshold: 0, rootMargin: "0px 0px -15% 0px" }
   );
   document.querySelectorAll(".story-inner").forEach((inner) => revealObserver.observe(inner));
 }
