@@ -46,7 +46,9 @@ function fillProjectsTeaser(PROJECTS) {
 
   document.getElementById("projects-grid").innerHTML = PROJECTS.map((p, i) => {
     const host = new URL(p.url).host;
-    const shotSrc = `https://s0.wp.com/mshots/v1/${encodeURIComponent(p.url)}?w=640&h=420`;
+    // thum.io rendert synchron beim ersten Aufruf (kein "generating"-Platzhalter
+    // wie bei mshots), danach cacht der Dienst das Bild selbst.
+    const shotSrc = `https://image.thum.io/get/width/700/crop/460/noanimate/${p.url}`;
     return `
       <a class="project-card" style="--i:${i}" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${p.name} öffnen (neuer Tab)">
         <span class="project-chrome" aria-hidden="true">
@@ -54,7 +56,7 @@ function fillProjectsTeaser(PROJECTS) {
           <span class="project-url">${host}</span>
         </span>
         <span class="project-shot">
-          <img src="${shotSrc}" alt="Vorschau von ${p.name}" loading="lazy">
+          <img src="${shotSrc}" alt="Vorschau von ${p.name}" loading="lazy" onerror="this.style.display='none'">
         </span>
         <span class="project-meta">
           <span class="project-name">${p.name}</span>
