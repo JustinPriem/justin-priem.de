@@ -165,7 +165,7 @@ function setupSectionParticles() {
 // "Unbesiegbar" direkt zurück zu "Start" springen statt sich durchscrollen zu müssen.
 const SIDE_WHEEL_ORDER = ["hero", "gaming", "projects", "cycling", "raya", "unbesiegbar"];
 const SIDE_WHEEL_ANGLE_STEP = 15; // Grad pro Kapitel-Abstand
-const SIDE_WHEEL_RADIUS = 100; // px, steuert den vertikalen Abstand der Einträge
+const SIDE_WHEEL_RADIUS = 200; // px, steuert den vertikalen Abstand der Einträge
 
 function updateSideWheel(theme) {
   const sideLinks = document.querySelectorAll(".side-nav a");
