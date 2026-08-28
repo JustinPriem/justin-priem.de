@@ -158,10 +158,14 @@ function setupSectionParticles() {
 // Jeder Link bekommt anhand seines Index-Abstands zum aktiven Kapitel eine Position
 // entlang eines Kreisbogens (Sinus für die Höhe, Kosinus für Skalierung/Blässe/Rückzug
 // nach links) verpasst — reines 2D-Trigonometrie-Layout statt echtem 3D-Transform,
-// damit der Text lesbar bleibt statt perspektivisch verzerrt zu werden.
+// damit der Text lesbar bleibt statt perspektivisch verzerrt zu werden. Winkel-Schritt
+// bewusst klein gehalten (statt vorher 30°), damit bei 6 Kapiteln auch der am
+// weitesten entfernte Eintrag (±5 Schritte) noch eine positive Skalierung/Deckkraft
+// behält — so bleiben ALLE Punkte sichtbar und klickbar, man kann also z.B. von
+// "Unbesiegbar" direkt zurück zu "Start" springen statt sich durchscrollen zu müssen.
 const SIDE_WHEEL_ORDER = ["hero", "gaming", "projects", "cycling", "raya", "unbesiegbar"];
-const SIDE_WHEEL_ANGLE_STEP = 30; // Grad pro Kapitel-Abstand
-const SIDE_WHEEL_RADIUS = 56; // px, steuert den vertikalen Abstand der Einträge
+const SIDE_WHEEL_ANGLE_STEP = 15; // Grad pro Kapitel-Abstand
+const SIDE_WHEEL_RADIUS = 100; // px, steuert den vertikalen Abstand der Einträge
 
 function updateSideWheel(theme) {
   const sideLinks = document.querySelectorAll(".side-nav a");
@@ -172,17 +176,17 @@ function updateSideWheel(theme) {
     const index = SIDE_WHEEL_ORDER.indexOf(link.dataset.section);
     const d = index - activeIndex;
     const angleRad = (d * SIDE_WHEEL_ANGLE_STEP * Math.PI) / 180;
-    const y = Math.sin(angleRad) * SIDE_WHEEL_RADIUS * 1.9;
+    const y = Math.sin(angleRad) * SIDE_WHEEL_RADIUS;
     const scale = Math.cos(angleRad);
-    const visible = Math.abs(d) <= 2;
     // Zurückweichen nach links, je kleiner (=weiter weg auf der Walze) ein Eintrag wird
     const x = (1 - Math.max(scale, 0)) * -34;
-    const opacity = visible ? Math.max(0, scale) : 0;
+    // Mindest-Deckkraft, damit auch die äußersten Einträge klar lesbar/klickbar bleiben
+    const opacity = Math.max(0.45, scale);
 
-    link.style.transform = `translate(${x.toFixed(1)}px, calc(-50% + ${y.toFixed(1)}px)) scale(${Math.max(scale, 0.001).toFixed(3)})`;
+    link.style.transform = `translate(${x.toFixed(1)}px, calc(-50% + ${y.toFixed(1)}px)) scale(${Math.max(scale, 0.2).toFixed(3)})`;
     link.style.opacity = opacity.toFixed(2);
     link.style.zIndex = String(100 - Math.abs(d));
-    link.style.pointerEvents = visible ? "auto" : "none";
+    link.style.pointerEvents = "auto";
     link.classList.toggle("is-active", d === 0);
     link.setAttribute("aria-current", d === 0 ? "true" : "false");
   });
