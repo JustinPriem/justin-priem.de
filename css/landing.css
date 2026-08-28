@@ -158,6 +158,82 @@ body { background: var(--hero-bg); }
 }
 .quicknav[data-theme="unbesiegbar"] a.is-active { color: var(--ub-gold); }
 
+/* ---------- Side-Nav (Desktop): vertikale Kapitel-Übersicht, scrollt mit ---------- */
+/* Nur ab 960px, darunter reicht die Quicknav oben. Fixed statt absolute, damit sie
+   beim Scrollen an derselben Bildschirmposition bleibt ("mitscrollt" im Sinn von:
+   folgt der Ansicht statt Teil des Dokumentflusses zu sein). Farbe/Theme folgt der
+   aktuell sichtbaren Sektion, exakt wie die Quicknav (siehe setupScrollStory in
+   landing.js, das dieselbe .is-active-Klasse und data-theme setzt). */
+.side-nav {
+  display: none;
+}
+@media (min-width: 960px) {
+  .side-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1.05rem;
+    position: fixed;
+    right: 1.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 90;
+    color: var(--hero-text);
+    transition: color .5s ease;
+  }
+}
+.side-nav a {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  opacity: .55;
+  transition: opacity .2s ease;
+}
+.side-nav a:hover,
+.side-nav a:focus-visible { opacity: 1; }
+.side-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: .68rem;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.side-nav a:hover .side-label,
+.side-nav a:focus-visible .side-label,
+.side-nav a.is-active .side-label {
+  opacity: .85;
+  transform: translateX(0);
+}
+.side-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .5;
+  flex-shrink: 0;
+  transition: opacity .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.side-nav a.is-active {
+  opacity: 1;
+}
+.side-nav a.is-active .side-dot {
+  opacity: 1;
+  transform: scale(1.5);
+  box-shadow: 0 0 10px currentColor;
+}
+
+.side-nav[data-theme="gaming"] { color: var(--gaming-text); }
+.side-nav[data-theme="gaming"] a.is-active { color: var(--gaming-cyan); }
+.side-nav[data-theme="projects"] { color: var(--proj-text); }
+.side-nav[data-theme="projects"] a.is-active { color: var(--proj-accent); }
+.side-nav[data-theme="cycling"] { color: var(--cycling-ink); }
+.side-nav[data-theme="cycling"] a.is-active { color: var(--cycling-clay); }
+.side-nav[data-theme="raya"] { color: var(--raya-ink); }
+.side-nav[data-theme="raya"] a.is-active { color: var(--raya-blush); }
+.side-nav[data-theme="unbesiegbar"] { color: var(--ub-cream); }
+.side-nav[data-theme="unbesiegbar"] a.is-active { color: var(--ub-gold); }
+
 /* ---------- Story-Sections: gemeinsames Gerüst ---------- */
 .story {
   min-height: 100svh;
