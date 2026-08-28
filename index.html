@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Justin Priem</title>
-<meta name="description" content="Justin Priem — Gaming, Radtouren und Raya, meine Hündin.">
+<meta name="description" content="Justin Priem — Gaming, Webprojekte, Radtouren und Raya, meine Hündin.">
 <link rel="canonical" href="https://justin-priem.de/">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/landing.css?v=20260816f">
+<link rel="stylesheet" href="css/landing.css?v=20260828a">
 </head>
 <body>
 
@@ -25,6 +25,7 @@
   <a class="qn-logo" href="#hero">Justin Priem</a>
   <div class="qn-links">
     <a href="gaming.html" data-section="gaming" aria-label="Zur Gaming-Seite"><span class="qn-dot"></span>Gaming</a>
+    <a href="#projects" data-section="projects" aria-label="Zu Projekte"><span class="qn-dot"></span>Projekte</a>
     <a href="cycling.html" data-section="cycling" aria-label="Zur Radfahren-Seite"><span class="qn-dot"></span>Radfahren</a>
     <a href="raya.html" data-section="raya" aria-label="Zur Raya-Seite"><span class="qn-dot"></span>Raya</a>
     <a href="unbesiegbar.html" data-section="unbesiegbar" aria-label="Zu Unbesiegbar"><span class="qn-dot"></span>Unbesiegbar</a>
@@ -64,13 +65,25 @@
     </div>
   </section>
 
+  <section id="projects" class="story story-projects" data-theme="projects">
+    <div class="story-bg" aria-hidden="true"></div>
+    <div class="story-inner story-inner-wide">
+      <p class="story-eyebrow">02 — Deployed</p>
+      <h2>Projekte</h2>
+      <p class="story-text">Websites, die ich entworfen und gebaut habe — von Shops bis Portfolios. Klick auf eine Karte, um live vorbeizuschauen.</p>
+
+      <div class="story-stats" id="projects-stats"></div>
+      <div class="project-grid" id="projects-grid"></div>
+    </div>
+  </section>
+
   <section id="cycling" class="story story-cycling" data-theme="cycling">
     <div class="story-bg" aria-hidden="true"></div>
     <svg class="story-road" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
       <path pathLength="1" d="M-10,90 C70,20 130,110 210,55 S350,10 410,50" />
     </svg>
     <div class="story-inner">
-      <p class="story-eyebrow">02 — Auf der Strecke</p>
+      <p class="story-eyebrow">03 — Auf der Strecke</p>
       <h2>Radfahren</h2>
       <p class="story-text">Von Tagesausfahrten bis zur Tour nach Amsterdam — Strecken, Höhenmeter und Fotos, aufgezeichnet mit Strava und Komoot.</p>
 
@@ -91,7 +104,7 @@
       <span class="heart hf-5">🤍</span>
     </div>
     <div class="story-inner">
-      <p class="story-eyebrow">03 — Gute Hündin</p>
+      <p class="story-eyebrow">04 — Gute Hündin</p>
       <h2>Raya</h2>
       <p class="story-text">Ein kleines Fotobuch von meiner Hündin, sortierbar nach Datum.</p>
 
@@ -113,7 +126,7 @@
     </div>
     <div class="section-particles" id="unbesiegbar-particles-canvas" aria-hidden="true"></div>
     <div class="story-inner">
-      <p class="story-eyebrow">04 — Bonus-Level</p>
+      <p class="story-eyebrow">05 — Bonus-Level</p>
       <h2>Unbesiegbar</h2>
       <p class="story-text">12 kleine Spiele, 100 % Gewinnquote, ein paar XP zu holen — wissenschaftlich nicht geprüft.</p>
 
@@ -127,9 +140,10 @@
 
 <script src="js/socials.js"></script>
 <script src="js/gaming-data.js"></script>
+<script src="js/projects-data.js"></script>
 <script src="js/cycling-data.js"></script>
 <script src="js/raya-data.js"></script>
-<script src="js/particles.js?v=20260816f"></script>
-<script src="js/landing.js?v=20260816f"></script>
+<script src="js/particles.js?v=20260828a"></script>
+<script src="js/landing.js?v=20260828a"></script>
 </body>
 </html>

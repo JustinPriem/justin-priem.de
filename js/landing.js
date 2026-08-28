@@ -41,6 +41,30 @@ function fillCyclingTeaser(TOURS) {
     .join("");
 }
 
+function fillProjectsTeaser(PROJECTS) {
+  document.getElementById("projects-stats").innerHTML = statBlock(PROJECTS.length, "Live-Projekte");
+
+  document.getElementById("projects-grid").innerHTML = PROJECTS.map((p, i) => {
+    const host = new URL(p.url).host;
+    const shotSrc = `https://s0.wp.com/mshots/v1/${encodeURIComponent(p.url)}?w=640&h=420`;
+    return `
+      <a class="project-card" style="--i:${i}" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${p.name} öffnen (neuer Tab)">
+        <span class="project-chrome" aria-hidden="true">
+          <span class="project-dots"><span></span><span></span><span></span></span>
+          <span class="project-url">${host}</span>
+        </span>
+        <span class="project-shot">
+          <img src="${shotSrc}" alt="Vorschau von ${p.name}" loading="lazy">
+        </span>
+        <span class="project-meta">
+          <span class="project-name">${p.name}</span>
+          <span class="project-tag">${p.tag}</span>
+        </span>
+        <span class="project-visit" aria-hidden="true">Website öffnen <i>→</i></span>
+      </a>`;
+  }).join("");
+}
+
 function fillRayaTeaser(RAYA_PHOTOS) {
   document.getElementById("raya-stats").innerHTML = statBlock(RAYA_PHOTOS.length, "Fotos");
 
@@ -93,6 +117,7 @@ function animateCount(el) {
 const THEME_PULSE_COLORS = {
   hero: "#33E7FF",
   gaming: "#33E7FF",
+  projects: "#4FC9B0",
   cycling: "#D45A22",
   raya: "#C98572",
   unbesiegbar: "#ffc94a",
@@ -266,6 +291,7 @@ function setupMagnetic(selector, strength, maxOffset) {
 const TRAIL_ICONS = {
   hero: "✨",
   gaming: "⚡",
+  projects: "🔗",
   cycling: "🚲",
   raya: "🐾",
   unbesiegbar: "👑",
@@ -307,6 +333,7 @@ function setupCursorTrails() {
 
 document.addEventListener("DOMContentLoaded", () => {
   fillGamingTeaser(GAMES);
+  fillProjectsTeaser(PROJECTS);
   fillCyclingTeaser(TOURS);
   fillRayaTeaser(RAYA_PHOTOS);
   setupSectionParticles();
