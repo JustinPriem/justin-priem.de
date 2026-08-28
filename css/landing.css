@@ -158,80 +158,85 @@ body { background: var(--hero-bg); }
 }
 .quicknav[data-theme="unbesiegbar"] a.is-active { color: var(--ub-gold); }
 
-/* ---------- Side-Nav (Desktop): vertikale Kapitel-Übersicht, scrollt mit ---------- */
+/* ---------- Side-Nav (Desktop): Kapitel-"Walze" links, scrollt mit ---------- */
 /* Nur ab 960px, darunter reicht die Quicknav oben. Fixed statt absolute, damit sie
-   beim Scrollen an derselben Bildschirmposition bleibt ("mitscrollt" im Sinn von:
-   folgt der Ansicht statt Teil des Dokumentflusses zu sein). Farbe/Theme folgt der
-   aktuell sichtbaren Sektion, exakt wie die Quicknav (siehe setupScrollStory in
-   landing.js, das dieselbe .is-active-Klasse und data-theme setzt). */
+   beim Scrollen an derselben Bildschirmposition bleibt. Statt einer schlichten
+   Linkliste stehen die Kapitel wie auf einer liegenden Walze/einem Datumsrädchen:
+   .side-wheel ist der Drehpunkt, jeder <a> wird per JS (updateSideWheel in
+   landing.js) anhand seines Abstands zum aktiven Kapitel per Sinus/Kosinus
+   positioniert — vorne (aktiv) groß und deckend, weiter weg kleiner, blasser und
+   nach links Richtung "Walzeninneres" verschoben. So wirkt es beim Scrollen, als
+   rolle die Liste durch, während das aktuelle Kapitel immer vorne steht. */
 .side-nav {
   display: none;
 }
 @media (min-width: 960px) {
   .side-nav {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 1.05rem;
+    display: block;
     position: fixed;
-    right: 1.9rem;
+    left: 2rem;
     top: 50%;
     transform: translateY(-50%);
     z-index: 90;
-    color: var(--hero-text);
-    transition: color .5s ease;
+    height: 230px;
+    width: 190px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%);
+    pointer-events: none;
   }
 }
+.side-wheel {
+  position: relative;
+  height: 100%;
+}
 .side-nav a {
+  position: absolute;
+  left: 0;
+  top: 50%;
   display: flex;
   align-items: center;
-  gap: .7rem;
-  opacity: .55;
-  transition: opacity .2s ease;
-}
-.side-nav a:hover,
-.side-nav a:focus-visible { opacity: 1; }
-.side-label {
-  font-family: "JetBrains Mono", monospace;
-  font-size: .68rem;
-  letter-spacing: .04em;
+  gap: .6rem;
   white-space: nowrap;
+  font-family: "JetBrains Mono", monospace;
+  font-size: .82rem;
+  letter-spacing: .02em;
+  color: var(--hero-text);
   opacity: 0;
-  transform: translateX(6px);
-  transition: opacity .2s ease, transform .2s ease;
+  pointer-events: auto;
+  transform-origin: left center;
+  transition: transform .55s cubic-bezier(.16,.84,.44,1), opacity .5s ease, color .5s ease;
+  will-change: transform, opacity;
 }
-.side-nav a:hover .side-label,
-.side-nav a:focus-visible .side-label,
-.side-nav a.is-active .side-label {
-  opacity: .85;
-  transform: translateX(0);
-}
-.side-dot {
-  width: 8px; height: 8px;
+.side-nav a::before {
+  content: "";
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: currentColor;
   opacity: .5;
   flex-shrink: 0;
-  transition: opacity .2s ease, transform .2s ease, box-shadow .2s ease;
+  transition: opacity .3s ease, box-shadow .3s ease;
 }
 .side-nav a.is-active {
-  opacity: 1;
+  font-weight: 600;
 }
-.side-nav a.is-active .side-dot {
+.side-nav a.is-active::before {
   opacity: 1;
-  transform: scale(1.5);
   box-shadow: 0 0 10px currentColor;
 }
+@media (prefers-reduced-motion: reduce) {
+  .side-nav a { transition: opacity .3s ease, color .5s ease; }
+}
 
-.side-nav[data-theme="gaming"] { color: var(--gaming-text); }
+.side-nav[data-theme="gaming"] a { color: var(--gaming-text); }
 .side-nav[data-theme="gaming"] a.is-active { color: var(--gaming-cyan); }
-.side-nav[data-theme="projects"] { color: var(--proj-text); }
+.side-nav[data-theme="projects"] a { color: var(--proj-text); }
 .side-nav[data-theme="projects"] a.is-active { color: var(--proj-accent); }
-.side-nav[data-theme="cycling"] { color: var(--cycling-ink); }
+.side-nav[data-theme="cycling"] a { color: var(--cycling-ink); }
 .side-nav[data-theme="cycling"] a.is-active { color: var(--cycling-clay); }
-.side-nav[data-theme="raya"] { color: var(--raya-ink); }
+.side-nav[data-theme="raya"] a { color: var(--raya-ink); }
 .side-nav[data-theme="raya"] a.is-active { color: var(--raya-blush); }
-.side-nav[data-theme="unbesiegbar"] { color: var(--ub-cream); }
+.side-nav[data-theme="unbesiegbar"] a { color: var(--ub-cream); }
 .side-nav[data-theme="unbesiegbar"] a.is-active { color: var(--ub-gold); }
 
 /* ---------- Story-Sections: gemeinsames Gerüst ---------- */

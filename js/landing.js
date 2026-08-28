@@ -154,6 +154,40 @@ function setupSectionParticles() {
   });
 }
 
+// ---------- Side-Nav-"Walze": Kapitel liegen auf einer gedachten liegenden Walze ----------
+// Jeder Link bekommt anhand seines Index-Abstands zum aktiven Kapitel eine Position
+// entlang eines Kreisbogens (Sinus für die Höhe, Kosinus für Skalierung/Blässe/Rückzug
+// nach links) verpasst — reines 2D-Trigonometrie-Layout statt echtem 3D-Transform,
+// damit der Text lesbar bleibt statt perspektivisch verzerrt zu werden.
+const SIDE_WHEEL_ORDER = ["hero", "gaming", "projects", "cycling", "raya", "unbesiegbar"];
+const SIDE_WHEEL_ANGLE_STEP = 30; // Grad pro Kapitel-Abstand
+const SIDE_WHEEL_RADIUS = 46; // px, steuert den vertikalen Abstand der Einträge
+
+function updateSideWheel(theme) {
+  const sideLinks = document.querySelectorAll(".side-nav a");
+  if (!sideLinks.length) return;
+  const activeIndex = SIDE_WHEEL_ORDER.indexOf(theme);
+
+  sideLinks.forEach((link) => {
+    const index = SIDE_WHEEL_ORDER.indexOf(link.dataset.section);
+    const d = index - activeIndex;
+    const angleRad = (d * SIDE_WHEEL_ANGLE_STEP * Math.PI) / 180;
+    const y = Math.sin(angleRad) * SIDE_WHEEL_RADIUS * 1.9;
+    const scale = Math.cos(angleRad);
+    const visible = Math.abs(d) <= 2;
+    // Zurückweichen nach links, je kleiner (=weiter weg auf der Walze) ein Eintrag wird
+    const x = (1 - Math.max(scale, 0)) * -34;
+    const opacity = visible ? Math.max(0, scale) : 0;
+
+    link.style.transform = `translate(${x.toFixed(1)}px, calc(-50% + ${y.toFixed(1)}px)) scale(${Math.max(scale, 0.001).toFixed(3)})`;
+    link.style.opacity = opacity.toFixed(2);
+    link.style.zIndex = String(100 - Math.abs(d));
+    link.style.pointerEvents = visible ? "auto" : "none";
+    link.classList.toggle("is-active", d === 0);
+    link.setAttribute("aria-current", d === 0 ? "true" : "false");
+  });
+}
+
 // ---------- Scroll-Story: Reveal, Zähler, Quicknav-Theme ----------
 
 function setupScrollStory() {
@@ -161,7 +195,6 @@ function setupScrollStory() {
   const sideNav = document.getElementById("side-nav");
   const sections = document.querySelectorAll(".story");
   const navLinks = document.querySelectorAll(".qn-links a");
-  const sideLinks = document.querySelectorAll(".side-nav a");
   let lastTheme = null;
 
   const themeObserver = new IntersectionObserver(
@@ -174,9 +207,7 @@ function setupScrollStory() {
         navLinks.forEach((link) =>
           link.classList.toggle("is-active", link.dataset.section === theme)
         );
-        sideLinks.forEach((link) =>
-          link.classList.toggle("is-active", link.dataset.section === theme)
-        );
+        updateSideWheel(theme);
         // Nicht beim ersten Laden pulsieren, nur bei einem echten Kapitelwechsel
         if (lastTheme !== null && theme !== lastTheme) triggerThemePulse(theme);
         lastTheme = theme;
