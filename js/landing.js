@@ -161,7 +161,7 @@ function setupSectionParticles() {
 // damit der Text lesbar bleibt statt perspektivisch verzerrt zu werden.
 const SIDE_WHEEL_ORDER = ["hero", "gaming", "projects", "cycling", "raya", "unbesiegbar"];
 const SIDE_WHEEL_ANGLE_STEP = 30; // Grad pro Kapitel-Abstand
-const SIDE_WHEEL_RADIUS = 46; // px, steuert den vertikalen Abstand der Einträge
+const SIDE_WHEEL_RADIUS = 56; // px, steuert den vertikalen Abstand der Einträge
 
 function updateSideWheel(theme) {
   const sideLinks = document.querySelectorAll(".side-nav a");
